@@ -2,11 +2,15 @@ package com.dreamreco.joodiary
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.R
 import com.dreamreco.joodiary.databinding.ActivityMainBinding
+import com.dreamreco.joodiary.ui.calendar.CalendarViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -14,6 +18,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val calendarViewModel by viewModels<CalendarViewModel>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,5 +45,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // 앱이 시작할 때마다, calendarDate = Today 로 업데이트
+        calendarViewModel.calendarDateReset()
     }
 }

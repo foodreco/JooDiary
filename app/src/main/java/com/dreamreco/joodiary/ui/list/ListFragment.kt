@@ -1,34 +1,97 @@
 package com.dreamreco.joodiary.ui.list
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.dreamreco.joodiary.R
+import com.dreamreco.joodiary.databinding.FragmentListBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ListFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = ListFragment()
-    }
+    private val listViewModel by viewModels<ListViewModel>()
+    private val binding by lazy { FragmentListBinding.inflate(layoutInflater) }
+    private val mAdapter by lazy { ListFragmentAdapter(requireContext(), childFragmentManager) }
 
-    private lateinit var viewModel: ListViewModel
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setRecyclerView()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_list, container, false)
+
+//        Listfragment 2중 recyclerview
+
+        listViewModel.getAllDataDESC().observe(viewLifecycleOwner){
+            listViewModel.makeList(it)
+        }
+
+        listViewModel.listFragmentDiaryData.observe(viewLifecycleOwner){
+            mAdapter.submitList(it)
+        }
+
+        // 1. 툴바 관련 코드
+        with(binding.listFragmentToolbar) {
+            title = getString(com.dreamreco.joodiary.R.string.list_fragment_toolbar_title)
+//            setOnMenuItemClickListener {
+//                when (it.itemId) {
+//                    R.id.menu_search -> {
+//                        val search = menu.findItem(R.id.menu_search)
+//                        val searchView = search?.actionView as? SearchView
+//                        searchView?.isSubmitButtonEnabled = true
+//                        searchView?.setOnQueryTextListener(this@ListFragment)
+//                        true
+//                    }
+//                    R.id.sort_by_call -> {
+//                        showProgress(true)
+//                        sortNumber.postValue(SORT_BY_IMPORTANCE)
+//                        true
+//                    }
+//                    R.id.sort_all -> {
+//                        showProgress(true)
+//                        sortNumber.postValue(SORT_NORMAL_STATE)
+//                        true
+//                    }
+//                    R.id.sort_by_recent -> {
+//                        showProgress(true)
+//                        sortNumber.postValue(SORT_BY_REGISTERED)
+//                        true
+//                    }
+//                    R.id.delete_all -> {
+//                        deleteDataAll()
+//                        true
+//                    }
+//                    R.id.delete_part -> {
+//                        deletePart()
+//                        true
+//                    }
+//                    else -> false
+//                }
+//            }
+        }
+
+        return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ListViewModel::class.java)
-        // TODO: Use the ViewModel
+    private fun setRecyclerView() {
+        with(binding) {
+            listFragmentRecyclerView.adapter = mAdapter
+
+            // recyclerView 갱신 시, 깜빡임 방지
+            val animator = listFragmentRecyclerView.itemAnimator
+            if (animator is SimpleItemAnimator){
+                animator.supportsChangeAnimations = false
+            }
+        }
     }
+
 
 }

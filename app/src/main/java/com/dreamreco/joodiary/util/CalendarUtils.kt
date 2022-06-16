@@ -1,20 +1,28 @@
 package com.dreamreco.joodiary.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
+import androidx.core.app.NotificationCompat.getColor
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
+import androidx.core.content.res.ResourcesCompat.getColor
 import com.dreamreco.joodiary.R
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import java.util.*
+import kotlin.coroutines.coroutineContext
 
 class TodayDecorator(context: Context): DayViewDecorator {
+    private val mContext = context
     private var date = CalendarDay.today()
-    val drawable = context.resources.getDrawable(R.drawable.style_only_radius_10)
+    @SuppressLint("UseCompatLoadingForDrawables")
+    val drawable = context.resources.getDrawable(R.drawable.style_only_radius_10, null)
 
     // day 가 today()와 같은지 확인 후 true 라면 decorate()로 이동
     override fun shouldDecorate(day: CalendarDay?): Boolean {
@@ -22,7 +30,11 @@ class TodayDecorator(context: Context): DayViewDecorator {
     }
     override fun decorate(view: DayViewFacade?) {
 //        view?.setBackgroundDrawable(drawable)
-        view?.addSpan(object: ForegroundColorSpan(Color.DKGRAY){})
+//        view?.addSpan(object: ForegroundColorSpan(Color.GREEN){})
+        view?.addSpan(object: ForegroundColorSpan(getColor(mContext, R.color.teal_200)){})
+        view?.addSpan(object: StyleSpan(Typeface.BOLD){})
+        view?.addSpan(object: RelativeSizeSpan(1.3f){})
+
     }
 }
 

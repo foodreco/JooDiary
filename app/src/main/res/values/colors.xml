@@ -7,4 +7,20 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="red">#FD0000</color>
+    <color name="yellow">#FFE500</color>
+    <color name="gray">#8E8E8E</color>
+
+    <!--기본테마 색-->
+    <color name="splash_background">#f3e5f5</color>
+    <color name="joo_dark">#4b178b</color>
+    <color name="joo_main_color">#CD95D7</color>
+    <color name="spinner_text_color">#000000</color>
+    <color name="textView_text_color">#000000</color>
+    <!--레이아웃 색-->
+    <color name="menu_icon_tint_color">#000000</color>
+    <color name="important_color">#4b178b</color>
+    <color name="not_important_color">#000000</color>
+
+
 </resources>

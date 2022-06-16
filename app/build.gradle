@@ -80,4 +80,13 @@ dependencies {
     // Material Calendar View
     implementation 'com.prolificinteractive:material-calendarview:1.4.3'
 //    implementation 'com.github.prolificinteractive:material-calendarview:2.0.1'
+
+    // Lottie for Splash
+    implementation "com.airbnb.android:lottie:4.2.2"
+
+    //Gson (for Room list apply)
+    implementation 'com.google.code.gson:gson:2.9.0'
+
+    // ExtendedFloatingActionButton
+    implementation 'com.google.android.material:material:1.7.0-alpha02'
 }

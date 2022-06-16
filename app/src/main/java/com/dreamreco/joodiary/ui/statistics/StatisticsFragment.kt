@@ -6,30 +6,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.dreamreco.joodiary.R
+import com.dreamreco.joodiary.databinding.FragmentListBinding
+import com.dreamreco.joodiary.databinding.FragmentStatisticsBinding
+import com.dreamreco.joodiary.ui.list.ListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class StatisticsFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = StatisticsFragment()
-    }
-
-    private lateinit var viewModel: StatisticsViewModel
+    private val statisticsViewModel by viewModels<StatisticsViewModel>()
+    private val binding by lazy { FragmentStatisticsBinding.inflate(layoutInflater) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_statistics, container, false)
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(StatisticsViewModel::class.java)
-        // TODO: Use the ViewModel
+        return binding.root
     }
 
 }

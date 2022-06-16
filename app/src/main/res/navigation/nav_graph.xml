@@ -6,14 +6,22 @@
     app:startDestination="@id/calenderFragment">
     <fragment
         android:id="@+id/calenderFragment"
-        android:name="com.dreamreco.joodiary.ui.calendar.CalenderFragment"
+        android:name="com.dreamreco.joodiary.ui.calendar.CalendarFragment"
         android:label="fragment_calendar"
-        tools:layout="@layout/fragment_calendar" />
+        tools:layout="@layout/fragment_calendar" >
+        <action
+            android:id="@+id/action_calenderFragment_to_diaryDetailDialog"
+            app:destination="@id/diaryDetailDialog" />
+    </fragment>
     <fragment
         android:id="@+id/listFragment"
         android:name="com.dreamreco.joodiary.ui.list.ListFragment"
         android:label="fragment_list"
-        tools:layout="@layout/fragment_list" />
+        tools:layout="@layout/fragment_list" >
+        <action
+            android:id="@+id/action_listFragment_to_diaryDetailDialog"
+            app:destination="@id/diaryDetailDialog" />
+    </fragment>
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.dreamreco.joodiary.ui.setting.SettingFragment"
@@ -24,4 +32,22 @@
         android:name="com.dreamreco.joodiary.ui.statistics.StatisticsFragment"
         android:label="fragment_statistics"
         tools:layout="@layout/fragment_statistics" />
+    <fragment
+        android:id="@+id/diaryDetailDialog"
+        android:name="com.dreamreco.joodiary.ui.customDialog.DiaryDetailDialog"
+        android:label="dialog_detail"
+        tools:layout="@layout/diary_detail_dialog" >
+        <argument
+            android:name="diaryBase"
+            app:argType="com.dreamreco.joodiary.room.entity.DiaryBase" />
+        <argument
+            android:name="sendPosition"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_diaryDetailDialog_to_calenderFragment"
+            app:destination="@id/calenderFragment" />
+        <action
+            android:id="@+id/action_diaryDetailDialog_to_listFragment"
+            app:destination="@id/listFragment" />
+    </fragment>
 </navigation>
