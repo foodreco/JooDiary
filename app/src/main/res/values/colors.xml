@@ -21,6 +21,9 @@
     <color name="menu_icon_tint_color">#000000</color>
     <color name="important_color">#4b178b</color>
     <color name="not_important_color">#000000</color>
+    <!--캘린더 색-->
+    <color name="calendar_dot_normal">#FF000000</color>
+    <color name="calendar_dot_important">#FD0000</color>
 
 
 </resources>

@@ -6,20 +6,16 @@ import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -38,11 +34,8 @@ import com.dreamreco.joodiary.ui.calendar.CalendarViewModel
 import com.dreamreco.joodiary.util.*
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONArray
-import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.*
 
 @AndroidEntryPoint
 class DiaryDetailDialog : DialogFragment() {
@@ -64,6 +57,7 @@ class DiaryDetailDialog : DialogFragment() {
     // update 변수 역할도 함
     private var photoUri: Uri? = null
 
+    private var imagePath : String? = null
 
 
 //    // Dialog 배경 투명하게 하는 코드??
@@ -530,9 +524,24 @@ class DiaryDetailDialog : DialogFragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
+    @SuppressLint("IntentReset")
     private fun getImageFromGallery() {
-        Toast.makeText(requireContext(), "갤러리에서 가져왔다.", Toast.LENGTH_SHORT).show()
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        intent.type = "image/*"
+        getImageFromGallery.launch(intent)
     }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    private val getImageFromGallery =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { it ->
+            if (it.resultCode == Activity.RESULT_OK) {
+                photoUri = it.data?.data as Uri
+                setImageFromUri()
+            }
+        }
+
 
     @RequiresApi(Build.VERSION_CODES.P)
     private fun getImageFromCamera() {
@@ -569,18 +578,7 @@ class DiaryDetailDialog : DialogFragment() {
     private val cameraAndSaveFile =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { it ->
             if (it.resultCode == Activity.RESULT_OK) {
-                // 원본 사진은 지정 경로에 저장됨.
-                val imageBitmap =
-                    photoUri?.let {
-                        ImageDecoder.createSource(
-                            requireContext().contentResolver,
-                            it
-                        )
-                    }
-                with(binding) {
-                    diaryImageView.imageTintList = null
-                    diaryImageView.setImageBitmap(imageBitmap?.let { ImageDecoder.decodeBitmap(it) })
-                }
+                setImageFromUri()
             }
         }
 
@@ -589,6 +587,23 @@ class DiaryDetailDialog : DialogFragment() {
         val sdf = SimpleDateFormat("yyyyMMdd_HHmmss")
         val filename = sdf.format(System.currentTimeMillis())
         return "${filename}.jpg"
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun setImageFromUri() {
+        // 원본 사진은 지정 경로에 저장됨.
+        val imageBitmap =
+            photoUri?.let {
+                ImageDecoder.createSource(
+                    requireContext().contentResolver,
+                    it
+                )
+            }
+
+        with(binding) {
+            diaryImageView.imageTintList = null
+            diaryImageView.setImageBitmap(imageBitmap?.let { ImageDecoder.decodeBitmap(it) })
+        }
     }
 
     // 허용 여부에 따른 Boolean 반환
@@ -605,7 +620,8 @@ class DiaryDetailDialog : DialogFragment() {
         return true
     }
 
-    // 허용 요청 코드 및 작동 #1
+    // 허용 요청 코드 및 작동 #1(갤러리 가져오기)
+    @RequiresApi(Build.VERSION_CODES.P)
     private val requestMultiplePermissionsForGallery =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val granted = permissions.entries.all {
@@ -630,7 +646,14 @@ class DiaryDetailDialog : DialogFragment() {
             }
         }
 
-    // 허용 요청 코드 및 작동 #2
+    // GetImageDialog 를 열어 이미지를 세팅하는 함수
+    private fun takeImage() {
+        val bottomSheetDialog = GetImageDialog()
+        bottomSheetDialog.show(childFragmentManager, "GetImageDialog")
+    }
+
+
+    // 허용 요청 코드 및 작동 #2(카메라 사용하기)
     @RequiresApi(Build.VERSION_CODES.P)
     private val requestMultiplePermissionsForCamera =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -655,13 +678,6 @@ class DiaryDetailDialog : DialogFragment() {
                 ).show()
             }
         }
-
-
-    // GetImageDialog 를 열어 이미지를 세팅하는 함수
-    private fun takeImage() {
-        val bottomSheetDialog = GetImageDialog()
-        bottomSheetDialog.show(childFragmentManager, "GetImageDialog")
-    }
 
 
     // 이전 Fragment 로 되돌아가는 함수
@@ -728,12 +744,14 @@ class DiaryDetailDialog : DialogFragment() {
         val updateList = DiaryBase(
             newImage,
             newDate,
+            args.diaryBase.calendarDay,
             newTitle,
             newContent,
             newDrinkType,
             newPOA,
             newVOD,
             newImportance,
+            args.diaryBase.calendarDay.toDateInt(),
             args.diaryBase.id
         )
 

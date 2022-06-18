@@ -1,17 +1,14 @@
 package com.dreamreco.joodiary.ui.calendar
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.dreamreco.joodiary.MyApplication
 import com.dreamreco.joodiary.room.dao.CalendarDateDao
 import com.dreamreco.joodiary.room.dao.DiaryBaseDao
 import com.dreamreco.joodiary.room.dao.LoadImageSignalDao
-import com.dreamreco.joodiary.room.entity.CalendarDate
-import com.dreamreco.joodiary.room.entity.DiaryBase
-import com.dreamreco.joodiary.room.entity.LoadImageSignal
-import com.dreamreco.joodiary.room.entity.MyDate
+import com.dreamreco.joodiary.room.entity.*
 import com.dreamreco.joodiary.util.LOAD_NOTHING
+import com.dreamreco.joodiary.util.toDateInt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.launch
@@ -118,8 +115,20 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
+    // 달력에서 선택된 날짜를 가져오는 함수
     fun getRecentDate(): LiveData<CalendarDate> {
         return databaseForCalendarDate.getRecentDate().asLiveData()
+    }
+
+
+    // 기록이 있는 모든 날짜를 가져오는 함수
+    fun getNotImportantCalendarDayForDecorator() : LiveData<List<CalendarDay>> {
+        return database.getNotImportantCalendarDayForDecorator().asLiveData()
+    }
+
+    // 기록이 있는 모든 날짜를 가져오는 함수
+    fun getImportantCalendarDayForDecorator() : LiveData<List<CalendarDay>> {
+        return database.getImportantCalendarDayForDecorator().asLiveData()
     }
 
     fun changeRecentDate(recentDate: CalendarDay) {
@@ -172,12 +181,14 @@ class CalendarViewModel @Inject constructor(
                 val updateList = DiaryBase(
                     newDiaryBase.image,
                     newDiaryBase.date,
+                    newDiaryBase.calendarDay,
                     newDiaryBase.title,
                     newDiaryBase.content,
                     newDiaryBase.drinkType,
                     newDiaryBase.POA,
                     newDiaryBase.VOD,
                     newDiaryBase.importance,
+                    newDiaryBase.calendarDay.toDateInt(),
                     preDiaryBase.id
                 )
                 if ((newDiaryBase.title == preDiaryBase.title) && (newDiaryBase.date == preDiaryBase.date)) {
@@ -274,6 +285,7 @@ class CalendarViewModel @Inject constructor(
             databaseForLoadImageSignal.insert(insertDate)
         }
     }
+
 
 
 }

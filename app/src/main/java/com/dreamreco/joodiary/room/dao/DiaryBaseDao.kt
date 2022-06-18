@@ -1,9 +1,9 @@
 package com.dreamreco.joodiary.room.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.dreamreco.joodiary.room.entity.DiaryBase
 import com.dreamreco.joodiary.room.entity.MyDate
+import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -55,15 +55,23 @@ interface DiaryBaseDao {
     fun getDiaryBaseByDateAndTitleFlow(date: MyDate, title: String): Flow<DiaryBase>
 
     // 모든 DiaryBase 를 날짜 오름차순으로 가져오는 함수
-    @Query("SELECT * FROM diary_base ORDER BY date ASC")
+    @Query("SELECT * FROM diary_base ORDER BY dateForSort ASC")
     fun getAllDiaryBaseByDateASC(): Flow<List<DiaryBase>>
 
     // 모든 DiaryBase 를 날짜 내람차순으로 가져오는 함수
-    @Query("SELECT * FROM diary_base ORDER BY date DESC")
+    @Query("SELECT * FROM diary_base ORDER BY dateForSort DESC")
     fun getAllDiaryBaseByDateDESC(): Flow<List<DiaryBase>>
 
     // 특정 날짜의 DiaryBase 를 가져오는 함수
     @Query("SELECT * FROM diary_base WHERE date = :date ORDER BY title ASC")
     fun getDiaryBaseFlowInDate(date: MyDate): Flow<List<DiaryBase>>
+
+    // 기록된 것 중 중요표시 안된 날짜를 List 로 가져오는 함수
+    @Query("SELECT calendarDay FROM diary_base WHERE importance = :important ORDER BY calendarDay ASC")
+    fun getNotImportantCalendarDayForDecorator(important : Boolean = false): Flow<List<CalendarDay>>
+
+    // 기록된 것 중 중요한 날짜를 List 로 가져오는 함수
+    @Query("SELECT calendarDay FROM diary_base WHERE importance = :important  ORDER BY calendarDay ASC")
+    fun getImportantCalendarDayForDecorator(important : Boolean = true): Flow<List<CalendarDay>>
 
 }

@@ -3,8 +3,11 @@ package com.dreamreco.joodiary.room.entity
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.dreamreco.joodiary.util.toDateInt
+import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.parcelize.Parcelize
 import java.util.function.DoubleConsumer
 
@@ -13,12 +16,15 @@ import java.util.function.DoubleConsumer
 data class DiaryBase(
     var image : Uri?,
     var date : MyDate,
+    var calendarDay : CalendarDay,
     var title : String,
     var content : String?,
     var drinkType : String?,
     var POA : String?,
     var VOD : String?,
     var importance : Boolean = false,
+    var dateForSort : Int = 0,
+
     @PrimaryKey(autoGenerate = true)
     var id : Int = 0
 ) : Parcelable
@@ -29,7 +35,6 @@ data class MyDate (
     var month : Int,
     var day : Int
 ) : Parcelable
-
 
 
 

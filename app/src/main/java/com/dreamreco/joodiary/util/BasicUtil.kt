@@ -2,8 +2,6 @@ package com.dreamreco.joodiary.util
 
 import android.Manifest
 import android.content.Context
-import android.graphics.Color
-import android.os.Parcelable
 import android.view.Window
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
@@ -11,13 +9,12 @@ import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.dreamreco.joodiary.room.entity.DiaryBase
+import com.dreamreco.joodiary.ui.statistics.MyMonth
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import kotlinx.parcelize.Parcelize
 
 
 fun EditText.setFocusAndShowKeyboard(context: Context) {
@@ -123,6 +120,62 @@ class InputModeLifecycleHelper(
         ADJUST_RESIZE, ADJUST_PAN
     }
 }
+
+// CalendarDay 를 Int 로 변환하는 함수
+fun CalendarDay.toDateInt(): Int {
+
+    val year = this.year.toString()
+
+    val month = this.month + 1
+    var monthString = ""
+
+    val day = this.day
+    var dayString = ""
+
+    if (month < 10) {
+        monthString = "0$month"
+    } else {
+        monthString = month.toString()
+    }
+
+    if (day < 10) {
+        dayString = "0$day"
+    } else {
+        dayString = day.toString()
+    }
+
+    return (year + monthString + dayString).toInt()
+}
+
+fun DiaryBase.toMonthInt(): Int {
+
+    val year = this.date.year.toString()
+
+    val month = this.date.month
+    var monthString = ""
+
+
+    if (month < 10) {
+        monthString = "0$month"
+    } else {
+        monthString = month.toString()
+    }
+
+    return (year + monthString).toInt()
+}
+
+fun Int.intToMyMonth(): MyMonth {
+
+    val stringInt = this.toString()
+
+    val year = stringInt.substring(0, 4).toInt()
+
+    val month = stringInt.substring(4, 6).toInt()
+
+    return MyMonth(year, month)
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // // windowSoftInputMode 를 제어하는 코드 deprecated 대비형

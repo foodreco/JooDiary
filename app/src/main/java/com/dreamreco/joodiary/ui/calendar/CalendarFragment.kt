@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -30,6 +32,12 @@ class CalendarFragment : Fragment() {
     lateinit var recentDate: CalendarDate
     private val mAdapter by lazy { CalenderAdapter(requireContext(), childFragmentManager) }
 
+    // 뒤로 가기 연속 클릭 대기 시간
+    var mBackWait: Long = 0
+
+    // 뒤로 가기 처리를 위한 콜백 변수
+    private lateinit var callback: OnBackPressedCallback
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,21 +61,11 @@ class CalendarFragment : Fragment() {
             }
         }
 
-//        캘린더에 일기가 있으면 표시
-//                중요 일기가 있으면 별표 표시
-
-
         // selectedDate event 처리 코드
-        calendar.setOnDateChangedListener(object : OnDateSelectedListener {
-            override fun onDateSelected(
-                widget: MaterialCalendarView,
-                date: CalendarDay,
-                selected: Boolean
-            ) {
-                // 선택 시, recentDate 업데이트
-                calendarViewModel.changeRecentDate(date)
-            }
-        })
+        // 날짜 선택 시, date 이용
+        calendar.setOnDateChangedListener { widget, date, selected -> // 선택 시, recentDate 업데이트
+            calendarViewModel.changeRecentDate(date)
+        }
 
         // ※ 주의 : CalendarDay month 는 1월이 0 부터 시작함.
         // ex) 2022-06-24 -> 2022-05-24 로 표현됨
@@ -79,7 +77,7 @@ class CalendarFragment : Fragment() {
                 mAdapter.submitList(it)
             }
 
-            // 캘린더 날짜 옵저버
+            // 캘린더 선택 날짜 옵저버
             // CalendarDate Room 호출
             getRecentDate().observe(viewLifecycleOwner) { calendarDate ->
                 if (calendarDate != null) {
@@ -108,9 +106,24 @@ class CalendarFragment : Fragment() {
                         calendarDate.date.month,
                         calendarDate.date.day
                     )
-                    calendarViewModel.getDiaryBaseFlowInDate(myDate).observe(viewLifecycleOwner) {
-                        calendarViewModel.makeList(it)
+
+                    getDiaryBaseFlowInDate(myDate).observe(viewLifecycleOwner) {
+                        makeList(it)
                     }
+                }
+            }
+
+            //  일반 기록 날짜에 dot 표시를 하는 코드
+            getNotImportantCalendarDayForDecorator().observe(viewLifecycleOwner){ listOfCalendarDay ->
+                if (listOfCalendarDay != emptyList<CalendarDay>()) {
+                    binding.calenderView.addDecorators(EventDecorator(requireContext(), listOfCalendarDay))
+                }
+            }
+
+            // 중요한 기록 날짜에 dot 표시를 하는 코드
+            getImportantCalendarDayForDecorator().observe(viewLifecycleOwner){ listOfImportantCalendarDay ->
+                if (listOfImportantCalendarDay != emptyList<CalendarDay>()) {
+                    binding.calenderView.addDecorators(EventDecoratorForImportantData(requireContext(), listOfImportantCalendarDay))
                 }
             }
         }
@@ -155,8 +168,14 @@ class CalendarFragment : Fragment() {
 //            }
         }
 
+        // 종료 백버튼 콜백
+        setBackButtonToFinishTheApp()
+
         return binding.root
     }
+
+
+
     //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
     //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
     //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
@@ -164,7 +183,7 @@ class CalendarFragment : Fragment() {
     // 리스트 추가
     private fun listAdd() {
         val date = MyDate(recentDate.date.year, recentDate.date.month, recentDate.date.day)
-        val item = DiaryBase(null, date, "", null, null, null, null)
+        val item = DiaryBase(null, date, recentDate.calendarDate, "", null, null, null, null)
         val action = CalendarFragmentDirections.actionCalenderFragmentToDiaryDetailDialog(
             item,
             CALENDAR_FRAGMENT
@@ -240,5 +259,25 @@ class CalendarFragment : Fragment() {
                 animator.supportsChangeAnimations = false
             }
         }
+    }
+
+    private fun setBackButtonToFinishTheApp() {
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                //뒤로 가기 시 특정 코드 작동
+                if (System.currentTimeMillis() - mBackWait >= 2000) {
+                    mBackWait = System.currentTimeMillis()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.exit_callback_toast),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    //액티비티 종료
+                    requireActivity().finishAndRemoveTask()
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 }

@@ -89,4 +89,7 @@ dependencies {
 
     // ExtendedFloatingActionButton
     implementation 'com.google.android.material:material:1.7.0-alpha02'
+
+    // Viewpager for listFragment
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
 }
