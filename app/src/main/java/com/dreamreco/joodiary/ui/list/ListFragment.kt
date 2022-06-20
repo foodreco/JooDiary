@@ -6,7 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.FragmentListBinding
@@ -29,7 +32,7 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-//        Listfragment 2중 recyclerview
+//        Listfragment 2중 recyclerview x -> 상단 Textview 스와이프, 스와이프 적용 시, RecyclerView SubmitList 변경하는 방식으로...
 
         listViewModel.getAllDataDESC().observe(viewLifecycleOwner){
             listViewModel.makeList(it)
@@ -79,18 +82,23 @@ class ListFragment : Fragment() {
 //            }
         }
 
+
+
         return binding.root
     }
+
+
+
 
     private fun setRecyclerView() {
         with(binding) {
             listFragmentRecyclerView.adapter = mAdapter
 
-//            // recyclerView 갱신 시, 깜빡임 방지
-//            val animator = listFragmentRecyclerView.itemAnimator
-//            if (animator is SimpleItemAnimator){
-//                animator.supportsChangeAnimations = false
-//            }
+            // recyclerView 갱신 시, 깜빡임 방지
+            val animator = listFragmentRecyclerView.itemAnimator
+            if (animator is SimpleItemAnimator){
+                animator.supportsChangeAnimations = false
+            }
         }
     }
 

@@ -71,12 +71,6 @@ class CalendarFragment : Fragment() {
         // ex) 2022-06-24 -> 2022-05-24 로 표현됨
         // 캘린더 날짜를 출력하는 코드
         with(calendarViewModel) {
-
-            // recyclerView 출력
-            calendarFragmentAdapterBaseData.observe(viewLifecycleOwner) {
-                mAdapter.submitList(it)
-            }
-
             // 캘린더 선택 날짜 옵저버
             // CalendarDate Room 호출
             getRecentDate().observe(viewLifecycleOwner) { calendarDate ->
@@ -111,6 +105,11 @@ class CalendarFragment : Fragment() {
                         makeList(it)
                     }
                 }
+            }
+
+            // recyclerView 출력
+            calendarFragmentAdapterBaseData.observe(viewLifecycleOwner) {
+                mAdapter.submitList(it)
             }
 
             //  일반 기록 날짜에 dot 표시를 하는 코드
@@ -185,8 +184,7 @@ class CalendarFragment : Fragment() {
         val date = MyDate(recentDate.date.year, recentDate.date.month, recentDate.date.day)
         val item = DiaryBase(null, date, recentDate.calendarDate, "", null, null, null, null)
         val action = CalendarFragmentDirections.actionCalenderFragmentToDiaryDetailDialog(
-            item,
-            CALENDAR_FRAGMENT
+            item
         )
         findNavController().navigate(action)
 

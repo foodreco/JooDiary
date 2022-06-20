@@ -124,14 +124,24 @@ class CalenderAdapter(
                     } catch (e: FileNotFoundException) {
                         // room 에는 등록되었으나, 앨범에서 사진이 삭제되었을 때,
                         // FileNotFoundException 에러 발생
-                        diaryImage.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.gray))
+                        diaryImage.imageTintList =
+                            ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.gray))
                         diaryImage.setImageDrawable(
                             ContextCompat.getDrawable(
                                 mContext, R.drawable.ic_add_photo_52
                             )
                         )
                     }
+                } else {
+                    diaryImage.imageTintList =
+                        ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.gray))
+                    diaryImage.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            mContext, R.drawable.ic_add_photo_52
+                        )
+                    )
                 }
+
                 if (item.drinkType != null) {
                     diaryDrinkType.text = item.drinkType
                 }
@@ -152,9 +162,7 @@ class CalenderAdapter(
                 recyclerViewChildLayout.setOnClickListener {
                     val action =
                         CalendarFragmentDirections.actionCalenderFragmentToDiaryDetailDialog(
-                            item,
-                            CALENDAR_FRAGMENT
-                        )
+                            item)
                     it.findNavController().navigate(action)
                 }
             }

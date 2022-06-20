@@ -141,6 +141,14 @@ class ListFragmentAdapter(
                             )
                         )
                     }
+                } else {
+                    diaryImage.imageTintList =
+                        ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.gray))
+                    diaryImage.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            mContext, R.drawable.ic_add_photo_52
+                        )
+                    )
                 }
                 if (item.drinkType != null) {
                     diaryDrinkType.text = item.drinkType
@@ -161,8 +169,7 @@ class ListFragmentAdapter(
                 //리싸이클러 터치 시, 해당 ContactBase 정보를 bundle 로 넘기고 updateDialog show
                 recyclerViewChildLayout.setOnClickListener {
                     val action = ListFragmentDirections.actionListFragmentToDiaryDetailDialog(
-                        item,
-                        LIST_FRAGMENT
+                        item
                     )
                     it.findNavController().navigate(action)
                 }
@@ -206,10 +213,9 @@ class ListFragmentDateHeaderViewHolder constructor(
         val diaryBase = (item as ListFragmentAdapterBase.DateHeader).diaryBase
         binding.apply {
             textDate.text = mContext.getString(
-                R.string.diary_date,
+                R.string.diary_month,
                 diaryBase.date.year,
-                diaryBase.date.month,
-                diaryBase.date.day
+                diaryBase.date.month
             )
         }
     }

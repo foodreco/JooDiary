@@ -13,7 +13,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.dreamreco.joodiary.room.entity.DiaryBase
-import com.dreamreco.joodiary.ui.statistics.MyMonth
 import com.prolificinteractive.materialcalendarview.CalendarDay
 
 
@@ -62,6 +61,7 @@ const val LIST_FRAGMENT = 1
 const val LOAD_NOTHING = 0
 const val LOAD_IMAGE_FROM_GALLERY = 1
 const val LOAD_IMAGE_FROM_CAMERA = 2
+const val IMAGE_DELETE = 3
 
 
 // Permisisons
@@ -147,6 +147,12 @@ fun CalendarDay.toDateInt(): Int {
     return (year + monthString + dayString).toInt()
 }
 
+fun CalendarDay.toMyMonth(): MyMonth {
+    val year = this.year
+    val month = this.month + 1
+    return MyMonth(year, month)
+}
+
 fun DiaryBase.toMonthInt(): Int {
 
     val year = this.date.year.toString()
@@ -174,6 +180,11 @@ fun Int.intToMyMonth(): MyMonth {
 
     return MyMonth(year, month)
 }
+
+data class MyMonth(
+    var year: Int,
+    var month: Int,
+)
 
 
 

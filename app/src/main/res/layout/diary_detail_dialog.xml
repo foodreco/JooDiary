@@ -14,7 +14,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/dialog_menu"
         app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar">
 
         <TextView
@@ -23,9 +22,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="툴바타이틀"
             android:textSize="16sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/menu_data_save"
+            style="@style/font_mr_line_5dp"
+            android:textColor="@color/menu_icon_tint_color"
+            android:textStyle="bold"
+            android:text="저장하기"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:textSize="14sp" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -66,6 +76,7 @@
         android:id="@+id/diary_detail_scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:padding="8dp"
         app:layout_constraintBottom_toTopOf="@id/dialog_bottom_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,22 +87,10 @@
             android:layout_height="match_parent"
             android:padding="4dp">
 
-            <!--            <TextView-->
-            <!--                android:id="@+id/diary_date_text"-->
-            <!--                style="@style/font_mr_line_5dp"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginStart="8dp"-->
-            <!--                android:textSize="16sp"-->
-            <!--                android:textStyle="bold"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toTopOf="parent" />-->
-
             <ImageView
                 android:id="@+id/diary_imageView"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_width="350dp"
+                android:layout_height="250dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
                 android:background="?attr/selectableItemBackground"

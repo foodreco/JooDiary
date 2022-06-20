@@ -7,18 +7,23 @@
     <string name="spinner_second">직접입력</string>
     <string name="calendar_fragment_toolbar_title">캘린더</string>
     <string name="diary_detail_dialog_toolbar_title">일기</string>
-    <string name="diary_date">%1$d년%2$d월%3$d일</string>
+    <string name="diary_date">%1$d년 %2$d월 %3$d일</string>
+    <string name="diary_month">%1$d년 %2$d월</string>
     <string name="empty_title">제목을 입력하세요.</string>
     <string name="title_duplication">같은 날짜에 동일한 제목이 있습니다.</string>
     <string name="list_fragment_toolbar_title">일기목록</string>
     <string name="positive_button">예</string>
     <string name="negative_button">아니오</string>
-    <string name="data_delete">삭제</string>
-    <string name="data_format_setMessage">해당 데이터를 삭제하시겠습니까?</string>
+    <string name="data_delete">기록 삭제</string>
+    <string name="image_delete">이미지 삭제</string>
+    <string name="data_format_setMessage">해당 기록을 삭제하시겠습니까?</string>
+    <string name="image_delete_setMessage">해당 이미지를 삭제하시겠습니까?</string>
     <string name="data_deleted">데이터 삭제됨</string>
     <string name="getImageDialog_title">이미지 불러오기</string>
     <string name="permission_access">권한이 허용되었습니다.</string>
     <string name="permission_denied_gallery">권한이 거부되었습니다.\n갤러리를 이용할 수 없습니다.</string>
     <string name="permission_denied_camera">권한이 거부되었습니다.\n카메라를 이용할 수 없습니다.</string>
     <string name="exit_callback_toast">뒤로 가기 버튼을 한번 더 누르면 종료됩니다.</string>
+    <string name="menu_image_change">이미지 변경</string>
+    <string name="changed_apply_confirm">저장을 하셔야 적용됩니다.</string>
 </resources>

@@ -275,7 +275,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun getImage(): LiveData<Int> {
+    fun getImageChangeSignal(): LiveData<Int> {
         return databaseForLoadImageSignal.getSignalFlow().asLiveData()
     }
 

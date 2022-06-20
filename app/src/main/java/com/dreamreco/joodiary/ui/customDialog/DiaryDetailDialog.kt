@@ -15,11 +15,14 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -57,8 +60,6 @@ class DiaryDetailDialog : DialogFragment() {
     // update 변수 역할도 함
     private var photoUri: Uri? = null
 
-    private var imagePath : String? = null
-
 
 //    // Dialog 배경 투명하게 하는 코드??
 //    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -73,64 +74,201 @@ class DiaryDetailDialog : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        // diaryBase 요소 세팅
+        basicDiarySetting()
 
-//        // 새 데이터 생성 시, 키보드 팝업
-//        if (args.diaryBase.title == "") {
-//            binding.titleText.setFocusAndShowKeyboard(requireContext())
-//        }
+        // 스피너 세팅
+        spinnerSetting()
+
+        // 새 데이터 생성 시, 타이틀 키보드 팝업
+        if (args.diaryBase.title == "") {
+            binding.titleText.setFocusAndShowKeyboard(requireContext())
+        }
 
         with(binding) {
-            // 제목
-            titleText.setText(args.diaryBase.title)
-            // 내용
-            contentText.setText(args.diaryBase.content)
-            // 이미지
-            if (args.diaryBase.image != null) {
-                try {
-                    photoUri = args.diaryBase.image
-                    diaryImageView.imageTintList = null
-                    val imageBitmap = ImageDecoder.createSource(
-                        requireContext().contentResolver,
-                        args.diaryBase.image!!
-                    )
-                    diaryImageView.setImageBitmap(ImageDecoder.decodeBitmap(imageBitmap))
-                } catch (e: FileNotFoundException) {
-                    // room 에는 등록되었으나, 앨범에서 사진이 삭제되었을 때,
-                    // FileNotFoundException 에러 발생
-                    diaryImageView.imageTintList = ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.gray
-                        )
-                    )
-                    diaryImageView.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            requireContext(), R.drawable.ic_add_photo_52
-                        )
-                    )
-                }
-            } else {
-                diaryImageView.imageTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.gray))
-                diaryImageView.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(), R.drawable.ic_add_photo_52
-                    )
-                )
-            }
-            // 주종
-            drinkType.setText(args.diaryBase.drinkType)
-            // 도수
-            POA.setText(args.diaryBase.POA.toString())
-            // 주량
-            VOD.setText(args.diaryBase.VOD.toString())
-
+            // 이미지 터치 시 작동
             diaryImageView.setOnClickListener {
-                takeImage()
+                // 만약 이미지가 존재하지 않으면,
+                if (photoUri == null) {
+                    // 바로 이미지 가져오기 작동
+                    takeImage()
+                } else {
+                    // 이미지가 존재한다면, FullImageDialog 이동
+                    val argument = photoUri.toString()
+                    val action =
+                        DiaryDetailDialogDirections.actionDiaryDetailDialogToFullImageDialog(
+                            argument
+                        )
+                    findNavController().navigate(action)
+                }
             }
         }
 
-        // 리스트를 스피너 리스트에 저장하는 함수
+        with(calendarViewModel) {
+
+            // 저장 시 타이틀이 중복되면 작동하는 코드
+            listDuplication.observe(viewLifecycleOwner) { isDuplicated ->
+                if (isDuplicated) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.title_duplication),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    listDuplicationDone()
+                }
+            }
+
+            // 저장 완료 후, 이전으로 돌아가는 코드
+            insertOrUpdateEventDone.observe(viewLifecycleOwner) { done ->
+                if (done) {
+                    findNavController().navigateUp()
+                }
+            }
+            // 삭제 완료 후, 이전으로 돌아가는 코드
+            dialogDeleteCompleted.observe(viewLifecycleOwner) { done ->
+                if (done) {
+                    findNavController().navigateUp()
+                }
+            }
+
+            // 이미지를 불러오는 코드(Dialog 에서 결정 시, 옵저버로 작동)
+            getImageChangeSignal().observe(viewLifecycleOwner) { loadType ->
+                when (loadType) {
+                    LOAD_IMAGE_FROM_GALLERY -> {
+                        getImageFromGalleryOrCamera(GET_DATA_PERMISSIONS)
+                        calendarViewModel.loadImageTypeReset()
+                    }
+                    LOAD_IMAGE_FROM_CAMERA -> {
+                        getImageFromGalleryOrCamera(CAMERA_PERMISSION)
+                        calendarViewModel.loadImageTypeReset()
+                    }
+                    IMAGE_DELETE -> {
+                        setImageNullState()
+                        calendarViewModel.loadImageTypeReset()
+                        Toast.makeText(requireContext(), getString(R.string.changed_apply_confirm), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
+//        3) 툴바 타이틀 날짜로 해서 중간으로 정렬 (스피너로 날짜 변경가능 [insertOrUpdateData 로직 바꿔야함]/ 기존 데이터의 경우 날짜 수정 가능)
+//        4) 주종, 도수, 주량 부분 감싸기 extendedLayout 또는 내용 아래로 내리기
+//        주종 작성 후 키보드 '다음' 터치 시, 다음 스피너로 포커스 변경?
+
+
+        // 1. 툴바 관련 코드
+        with(binding) {
+            // #1 Top Toolbar
+            toolbarTitleTextView.text = getString(
+                R.string.diary_date,
+                args.diaryBase.date.year,
+                args.diaryBase.date.month,
+                args.diaryBase.date.day
+            )
+            with(dialogToolbar) {
+
+                // X 터치 시 이전으로 돌아가는 코드
+                setNavigationIcon(R.drawable.ic_close)
+                setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+
+                menuDataSave.setOnClickListener {
+                    updateData()
+                }
+
+            }
+
+            // #2 Bottom Toolbar
+            btnBottomToolbarImportance.setOnClickListener {
+                checkImportance()
+            }
+            btnBottomToolbarDelete.setOnClickListener {
+                deleteData()
+            }
+
+            // 해당 Data 의 정보를 가져와, imageButton 에 반영하는 코드
+            // 수정 상태로 들어왔을 때만 작동하는 코드
+            // 1.삭제여부 2.중요도 옵저버
+            if (args.diaryBase.title != "") {
+                btnBottomToolbarDelete.visibility = View.VISIBLE
+                with(calendarViewModel) {
+                    getDiaryBaseData(args.diaryBase.date, args.diaryBase.title)
+                    diaryBaseImportance.observe(viewLifecycleOwner) { isImportant ->
+                        if (isImportant != null) {
+                            when (isImportant) {
+                                true -> {
+                                    diaryImportance.value = true
+                                    diaryImportanceForUpdate = true
+                                }
+                                false -> {
+                                    diaryImportance.value = false
+                                    diaryImportanceForUpdate = false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 중요 여부를 반영하는 코드
+            diaryImportance.observe(viewLifecycleOwner) { isImportance ->
+                if (isImportance) {
+                    btnBottomToolbarImportance.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            requireContext(), R.drawable.ic_star
+                        )
+                    )
+                    btnBottomToolbarImportance.setColorFilter(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.important_color
+                        )
+                    )
+                } else {
+                    btnBottomToolbarImportance.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            requireContext(), R.drawable.ic_star_border
+                        )
+                    )
+                    btnBottomToolbarImportance.setColorFilter(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.not_important_color
+                        )
+                    )
+                }
+            }
+        }
+
+
+        return binding.root
+    }
+
+    private fun setImageNullState() {
+        photoUri = null
+        with(binding) {
+            diaryImageView.imageTintList = ColorStateList.valueOf(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.gray
+                )
+            )
+            diaryImageView.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(), R.drawable.ic_add_photo_52
+                )
+            )
+        }
+    }
+
+
+    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
+    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
+    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
+
+
+    private fun spinnerSetting() {
         with(calendarViewModel) {
             getOnlyDrinkType(getString(R.string.spinner_first), getString(R.string.spinner_second))
             getOnlyPOA(getString(R.string.spinner_first), getString(R.string.spinner_second))
@@ -349,149 +487,72 @@ class DiaryDetailDialog : DialogFragment() {
                         }
                 }
             }
-
-            // 저장 시 타이틀이 중복되면 작동하는 코드
-            listDuplication.observe(viewLifecycleOwner) { isDuplicated ->
-                if (isDuplicated) {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.title_duplication),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    listDuplicationDone()
-                }
-            }
-
-            // 저장 완료 후, 이전으로 돌아가는 코드
-            insertOrUpdateEventDone.observe(viewLifecycleOwner) { done ->
-                if (done) {
-                    backToPreFragment(args.sendPosition)
-                }
-            }
-            // 삭제 완료 후, 이전으로 돌아가는 코드
-            dialogDeleteCompleted.observe(viewLifecycleOwner) { done ->
-                if (done) {
-                    backToPreFragment(args.sendPosition)
-                }
-            }
-            // 이미지를 불러오는 코드(GetImageDialog 에서 결정 시, 옵저버로 작동)
-            getImage().observe(viewLifecycleOwner) { loadType ->
-                when (loadType) {
-                    1 -> {
-                        getImageFromGalleryOrCamera(GET_DATA_PERMISSIONS)
-                        calendarViewModel.loadImageTypeReset()
-                    }
-                    2 -> {
-                        getImageFromGalleryOrCamera(CAMERA_PERMISSION)
-                        calendarViewModel.loadImageTypeReset()
-                    }
-                }
-            }
         }
-
-//        3) 툴바 타이틀 날짜로 해서 중간으로 정렬 (스피너로 날짜 변경가능 [insertOrUpdateData 로직 바꿔야함]/ 기존 데이터의 경우 날짜 수정 가능)
-//        4) 주종, 도수, 주량 부분 감싸기 extendedLayout 또는 내용 아래로 내리기
-//        이미지 있을 경우, 터치 시 확대 + 이미지 변경
-//        주종 작성 후 키보드 '다음' 터치 시, 다음 스피너로 포커스 변경?
-
-
-        // 1. 툴바 관련 코드
-        with(binding) {
-            // #1 Top Toolbar
-            toolbarTitleTextView.text = getString(
-                R.string.diary_date,
-                args.diaryBase.date.year,
-                args.diaryBase.date.month,
-                args.diaryBase.date.day
-            )
-            with(dialogToolbar) {
-                setNavigationIcon(R.drawable.ic_close)
-                setNavigationOnClickListener {
-                    backToPreFragment(args.sendPosition)
-                }
-                setOnMenuItemClickListener {
-                    when (it.itemId) {
-                        // 저장
-                        R.id.menu_save -> {
-                            updateData()
-                            true
-                        }
-                        else -> false
-                    }
-                }
-            }
-
-            // #2 Bottom Toolbar
-            btnBottomToolbarImportance.setOnClickListener {
-                checkImportance()
-            }
-            btnBottomToolbarDelete.setOnClickListener {
-                deleteData()
-            }
-
-            // 해당 Data 의 정보를 가져와, imageButton 에 반영하는 코드
-            // 수정 상태로 들어왔을 때만 작동하는 코드
-            // 1.삭제여부 2.중요도 옵저버
-            if (args.diaryBase.title != "") {
-                btnBottomToolbarDelete.visibility = View.VISIBLE
-                with(calendarViewModel) {
-                    getDiaryBaseData(args.diaryBase.date, args.diaryBase.title)
-                    diaryBaseImportance.observe(viewLifecycleOwner) { isImportant ->
-                        if (isImportant != null) {
-                            when (isImportant) {
-                                true -> {
-                                    diaryImportance.value = true
-                                    diaryImportanceForUpdate = true
-                                }
-                                false -> {
-                                    diaryImportance.value = false
-                                    diaryImportanceForUpdate = false
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // 중요 여부를 반영하는 코드
-            diaryImportance.observe(viewLifecycleOwner) { isImportance ->
-                if (isImportance) {
-                    btnBottomToolbarImportance.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            requireContext(), R.drawable.ic_star
-                        )
-                    )
-                    btnBottomToolbarImportance.setColorFilter(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.important_color
-                        )
-                    )
-                } else {
-                    btnBottomToolbarImportance.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            requireContext(), R.drawable.ic_star_border
-                        )
-                    )
-                    btnBottomToolbarImportance.setColorFilter(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.not_important_color
-                        )
-                    )
-                }
-            }
-        }
-        return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun basicDiarySetting() {
+        with(binding) {
+            // 제목
+            titleText.setText(args.diaryBase.title)
+            // 내용
+            contentText.setText(args.diaryBase.content)
+            // 이미지
+            if (args.diaryBase.image != null) {
+                try {
+                    photoUri = args.diaryBase.image
+                    diaryImageView.imageTintList = null
+                    val imageBitmap = ImageDecoder.createSource(
+                        requireContext().contentResolver,
+                        args.diaryBase.image!!
+                    )
+                    diaryImageView.setImageBitmap(ImageDecoder.decodeBitmap(imageBitmap))
+                } catch (e: FileNotFoundException) {
+                    // room 에는 등록되었으나, 앨범에서 사진이 삭제되었을 때,
+                    // FileNotFoundException 에러 발생
+                    setImageNullState()
+                }
+            } else {
+                setImageNullState()
+            }
+            // 주종
+            drinkType.setText(args.diaryBase.drinkType)
+            // 도수
+            POA.setText(args.diaryBase.POA.toString())
+            // 주량
+            VOD.setText(args.diaryBase.VOD.toString())
 
 
-    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
-    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
-    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
+            // 키보드 다음 버튼 시, 포커스 지정 이동 #1
+            drinkType.setOnEditorActionListener { textView, action, event ->
+                var handled = false
+                if (action == EditorInfo.IME_ACTION_NEXT) {
+                    // 키보드 내리고
+                    drinkType.clearFocusAndHideKeyboard(requireContext())
 
+                    // spinnerPOA 로 포커스 이동
+                    spinnerPOA.performClick()
+                    handled = true
+                }
+                handled
+            }
 
+            // 키보드 다음 버튼 시, 포커스 지정 이동 #2
+            POA.setOnEditorActionListener { textView, action, event ->
+                var handled = false
+                if (action == EditorInfo.IME_ACTION_NEXT) {
+                    // 키보드 내리고
+                    POA.clearFocusAndHideKeyboard(requireContext())
+
+                    // spinnerPOA 로 포커스 이동
+                    spinnerVOD.performClick()
+                    handled = true
+                }
+                handled
+            }
+
+        }
+    }
 
     // 권한 허용 및 카메라 작동 코드
     @RequiresApi(Build.VERSION_CODES.P)
@@ -679,25 +740,6 @@ class DiaryDetailDialog : DialogFragment() {
             }
         }
 
-
-    // 이전 Fragment 로 되돌아가는 함수
-    private fun backToPreFragment(sendPosition: Int) {
-        val action = when (sendPosition) {
-            CALENDAR_FRAGMENT -> {
-                DiaryDetailDialogDirections.actionDiaryDetailDialogToCalenderFragment()
-            }
-            LIST_FRAGMENT -> {
-                DiaryDetailDialogDirections.actionDiaryDetailDialogToListFragment()
-            }
-            else -> {
-                null
-            }
-        }
-        if (action != null) {
-            findNavController().navigate(action)
-        }
-    }
-
     // SharedPreferences 로부터 요소를 불러와서 spinner 에 추가하는 함수
     private fun spinnerDrinkTypeListCall() {
         val lastList = MyApplication.prefs.getString("drinkType", "None")
@@ -727,6 +769,22 @@ class DiaryDetailDialog : DialogFragment() {
 
     // 저장 버튼 터치 시, 데이터를 업데이트하는 함수
     private fun updateData() {
+        val newTitle = binding.titleText.text.trim().toString()
+        // 제목이 빈칸이면
+        if (newTitle == "") {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.empty_title),
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            // 빈칸이 아닐 때, DB update 진행
+            calendarViewModel.insertOrUpdateData(updatedList(), args.diaryBase)
+        }
+    }
+
+    // 반영할 최신 updatedList
+    private fun updatedList(): DiaryBase {
         val newImage = photoUri
 //        스피너 추가 시 변경
         val newDate = MyDate(
@@ -754,19 +812,9 @@ class DiaryDetailDialog : DialogFragment() {
             args.diaryBase.calendarDay.toDateInt(),
             args.diaryBase.id
         )
-
-        // 제목이 빈칸이면
-        if (newTitle == "") {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.empty_title),
-                Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            // 빈칸이 아닐 때, DB update 진행
-            calendarViewModel.insertOrUpdateData(updateList, args.diaryBase)
-        }
+        return updateList
     }
+
 
     private fun deleteData() {
         val builder = AlertDialog.Builder(requireContext())
@@ -792,5 +840,6 @@ class DiaryDetailDialog : DialogFragment() {
         diaryImportance.value = !diaryImportance.value!!
         diaryImportanceForUpdate = !diaryImportanceForUpdate
     }
+
 
 }

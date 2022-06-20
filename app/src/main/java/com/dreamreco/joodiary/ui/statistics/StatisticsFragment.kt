@@ -23,40 +23,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class StatisticsFragment : Fragment() {
 
     private val statisticsViewModel by viewModels<StatisticsViewModel>()
-    private val listViewModel by viewModels<ListViewModel>()
     private val binding by lazy { FragmentStatisticsBinding.inflate(layoutInflater) }
-    private val mAdapter by lazy { PagerRecyclerAdapter(requireContext(), childFragmentManager) }
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        with(binding.viewPager) {
-            adapter = mAdapter
-            orientation = ViewPager2.ORIENTATION_HORIZONTAL
-            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
-                override fun onPageSelected(position: Int) {
-                    super.onPageSelected(position)
-                    Toast.makeText(requireContext(),"페이지 : ${position+1}",Toast.LENGTH_SHORT).show()
-
-                }
-            })
-        }
-
-        with(listViewModel) {
-            getPagerOutData().observe(viewLifecycleOwner){
-                makePagerOutDataList(it)
-                Log.e("뷰페이져 확인","makePagerOutDataList : $it")
-            }
-
-            listFragmentPagerOutData.observe(viewLifecycleOwner){
-                mAdapter.submitList(it)
-                Log.e("뷰페이져 확인","listFragmentPagerOutData : $it")
-            }
-        }
-
 
         return binding.root
     }
