@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:icon="@drawable/ic_sort"
+        android:iconTint="@color/menu_icon_tint_color"
+        android:title="@string/list_menu_sort"
+        app:showAsAction="ifRoom|collapseActionView">
+        <menu>
+            <item
+                android:id="@+id/sort_by_recent"
+                android:title="@string/list_menu_sort_recent"/>
+            <item
+                android:id="@+id/sort_by_importance"
+                android:title="@string/list_menu_sort_important"/>
+        </menu>
+    </item>
+
+</menu>

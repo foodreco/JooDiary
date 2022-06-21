@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.FragmentListBinding
+import com.dreamreco.joodiary.util.SORT_IMPORTANCE
+import com.dreamreco.joodiary.util.SORT_NORMAL
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,12 +22,21 @@ class ListFragment : Fragment() {
 
     private val listViewModel by viewModels<ListViewModel>()
     private val binding by lazy { FragmentListBinding.inflate(layoutInflater) }
-    private val mAdapter by lazy { ListFragmentAdapter(requireContext(), childFragmentManager) }
+    private val mAdapter by lazy { ListFragmentAdapter(requireContext(), childFragmentManager)}
+
+    // 정렬 관련 변수
+    private val sortNumber = MutableLiveData(SORT_NORMAL) // 기본 세팅
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setRecyclerView()
     }
+
+
+    // RecyclerView 스크롤 렉 개선하기
+    // 1) 사진 출력 로직 단순화하기
+    // 2) Room 개선하기
+    // 3) 이미지 가로 세로 똑같이 유지하기
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,55 +45,53 @@ class ListFragment : Fragment() {
 
 //        Listfragment 2중 recyclerview x -> 상단 Textview 스와이프, 스와이프 적용 시, RecyclerView SubmitList 변경하는 방식으로...
 
-        listViewModel.getAllDataDESC().observe(viewLifecycleOwner){
-            listViewModel.makeList(it)
+        with(listViewModel) {
+
+//             정렬 설정에 따라 가져오는 데이터
+            sortNumber.observe(viewLifecycleOwner) { sortType ->
+                when (sortType) {
+                    SORT_NORMAL -> {
+                        getAllDataDESC().observe(viewLifecycleOwner){
+                            if (sortNumber.value == SORT_NORMAL) {
+                                makeList(it)
+                                binding.sortTextView.text = getString(R.string.list_menu_sort_recent)
+                            }
+                        }
+                    }
+                    SORT_IMPORTANCE -> {
+                        getDiaryDataImportant().observe(viewLifecycleOwner){
+                            if (sortNumber.value == SORT_IMPORTANCE) {
+                                makeList(it)
+                                binding.sortTextView.text = getString(R.string.list_menu_sort_important)
+                            }
+                        }
+                    }
+                }
+            }
+
+            listFragmentDiaryData.observe(viewLifecycleOwner){
+                mAdapter.submitList(it)
+            }
         }
 
-        listViewModel.listFragmentDiaryData.observe(viewLifecycleOwner){
-            mAdapter.submitList(it)
-        }
 
         // 1. 툴바 관련 코드
         with(binding.listFragmentToolbar) {
             title = getString(com.dreamreco.joodiary.R.string.list_fragment_toolbar_title)
-//            setOnMenuItemClickListener {
-//                when (it.itemId) {
-//                    R.id.menu_search -> {
-//                        val search = menu.findItem(R.id.menu_search)
-//                        val searchView = search?.actionView as? SearchView
-//                        searchView?.isSubmitButtonEnabled = true
-//                        searchView?.setOnQueryTextListener(this@ListFragment)
-//                        true
-//                    }
-//                    R.id.sort_by_call -> {
-//                        showProgress(true)
-//                        sortNumber.postValue(SORT_BY_IMPORTANCE)
-//                        true
-//                    }
-//                    R.id.sort_all -> {
-//                        showProgress(true)
-//                        sortNumber.postValue(SORT_NORMAL_STATE)
-//                        true
-//                    }
-//                    R.id.sort_by_recent -> {
-//                        showProgress(true)
-//                        sortNumber.postValue(SORT_BY_REGISTERED)
-//                        true
-//                    }
-//                    R.id.delete_all -> {
-//                        deleteDataAll()
-//                        true
-//                    }
-//                    R.id.delete_part -> {
-//                        deletePart()
-//                        true
-//                    }
-//                    else -> false
-//                }
-//            }
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.sort_by_recent -> {
+                        sortNumber.postValue(SORT_NORMAL)
+                        true
+                    }
+                    R.id.sort_by_importance -> {
+                        sortNumber.postValue(SORT_IMPORTANCE)
+                        true
+                    }
+                    else -> false
+                }
+            }
         }
-
-
 
         return binding.root
     }
@@ -92,7 +101,12 @@ class ListFragment : Fragment() {
 
     private fun setRecyclerView() {
         with(binding) {
-            listFragmentRecyclerView.adapter = mAdapter
+            with(listFragmentRecyclerView) {
+                adapter = mAdapter
+                setHasFixedSize(true)
+                setItemViewCacheSize(13)
+            }
+
 
             // recyclerView 갱신 시, 깜빡임 방지
             val animator = listFragmentRecyclerView.itemAnimator

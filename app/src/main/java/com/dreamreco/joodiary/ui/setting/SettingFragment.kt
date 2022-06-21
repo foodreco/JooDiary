@@ -24,6 +24,11 @@ class SettingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+
+//        2.pdf txt 파일로 내보내기
+//                4.설정 앱 텍스트 및 색상 바꾸기
+
+
         return binding.root
     }
 }

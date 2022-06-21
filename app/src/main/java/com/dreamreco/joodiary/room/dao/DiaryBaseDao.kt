@@ -62,6 +62,10 @@ interface DiaryBaseDao {
     @Query("SELECT * FROM diary_base ORDER BY dateForSort DESC")
     fun getAllDiaryBaseByDateDESC(): Flow<List<DiaryBase>>
 
+    // 중요 표시된 DiaryBase 를 날짜 내람차순으로 가져오는 함수
+    @Query("SELECT * FROM diary_base WHERE importance = :important ORDER BY dateForSort DESC")
+    fun getDiaryBaseByImportance(important : Boolean = true): Flow<List<DiaryBase>>
+
     // 특정 날짜의 DiaryBase 를 모두 가져오는 함수
     @Query("SELECT * FROM diary_base WHERE date = :date ORDER BY title ASC")
     fun getDiaryBaseFlowInDate(date: MyDate): Flow<List<DiaryBase>>

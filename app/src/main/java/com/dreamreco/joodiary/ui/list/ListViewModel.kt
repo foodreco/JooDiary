@@ -28,6 +28,10 @@ class ListViewModel @Inject constructor(
         return database.getAllDiaryBaseByDateASC().asLiveData()
     }
 
+    fun getDiaryDataImportant(): LiveData<List<DiaryBase>> {
+        return database.getDiaryBaseByImportance().asLiveData()
+    }
+
     fun makeList(diaryData: List<DiaryBase>) {
         val listItems = diaryData.toListItems()
         _listFragmentDiaryData.postValue(listItems)

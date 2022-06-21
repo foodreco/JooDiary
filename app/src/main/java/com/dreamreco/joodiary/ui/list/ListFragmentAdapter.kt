@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.ImageDecoder
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -18,7 +19,7 @@ import com.dreamreco.joodiary.databinding.CalendarEmptyHeaderBinding
 import com.dreamreco.joodiary.databinding.DateHeaderBinding
 import com.dreamreco.joodiary.databinding.ListFragmentChildBinding
 import com.dreamreco.joodiary.room.entity.DiaryBase
-import com.dreamreco.joodiary.util.LIST_FRAGMENT
+import com.dreamreco.joodiary.util.decodeSampledBitmapFromInputStream
 import java.io.FileNotFoundException
 
 class ListFragmentAdapter(
@@ -124,12 +125,20 @@ class ListFragmentAdapter(
 
                 if (item.image != null) {
                     try {
-                        diaryImage.imageTintList = null
-                        val imageBitmap = ImageDecoder.createSource(
-                            mContext.contentResolver,
-                            item.image!!
-                        )
-                        diaryImage.setImageBitmap(ImageDecoder.decodeBitmap(imageBitmap))
+                        with(diaryImage) {
+                            imageTintList = null
+//                            setImageBitmap(
+//                                decodeSampledBitmapFromInputStream(
+//                                    item.image!!,
+//                                    50,
+//                                    50,
+//                                    mContext
+//                                )
+//                            )
+                            setImageBitmap(
+                                item.bitmapForRecyclerView
+                            )
+                        }
                     } catch (e: FileNotFoundException) {
                         // room 에는 등록되었으나, 앨범에서 사진이 삭제되었을 때,
                         // FileNotFoundException 에러 발생
@@ -150,6 +159,8 @@ class ListFragmentAdapter(
                         )
                     )
                 }
+
+
                 if (item.drinkType != null) {
                     diaryDrinkType.text = item.drinkType
                 }
@@ -162,7 +173,6 @@ class ListFragmentAdapter(
 
                 //리싸이클러 길게 터치 시,
                 recyclerViewChildLayout.setOnLongClickListener {
-
                     return@setOnLongClickListener true
                 }
 

@@ -18,7 +18,7 @@ import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.CalendarChildBinding
 import com.dreamreco.joodiary.databinding.CalendarEmptyHeaderBinding
 import com.dreamreco.joodiary.room.entity.DiaryBase
-import com.dreamreco.joodiary.util.CALENDAR_FRAGMENT
+import com.dreamreco.joodiary.util.decodeSampledBitmapFromInputStream
 import java.io.FileNotFoundException
 
 class CalenderAdapter(
@@ -115,12 +115,20 @@ class CalenderAdapter(
 
                 if (item.image != null) {
                     try {
-                        diaryImage.imageTintList = null
-                        val imageBitmap = ImageDecoder.createSource(
-                            mContext.contentResolver,
-                            item.image!!
-                        )
-                        diaryImage.setImageBitmap(ImageDecoder.decodeBitmap(imageBitmap))
+                        with(diaryImage) {
+                            imageTintList = null
+//                            setImageBitmap(
+//                                decodeSampledBitmapFromInputStream(
+//                                    item.image!!,
+//                                    50,
+//                                    50,
+//                                    mContext
+//                                )
+//                            )
+                            setImageBitmap(
+                                item.bitmapForRecyclerView
+                            )
+                        }
                     } catch (e: FileNotFoundException) {
                         // room 에는 등록되었으나, 앨범에서 사진이 삭제되었을 때,
                         // FileNotFoundException 에러 발생
@@ -162,7 +170,8 @@ class CalenderAdapter(
                 recyclerViewChildLayout.setOnClickListener {
                     val action =
                         CalendarFragmentDirections.actionCalenderFragmentToDiaryDetailDialog(
-                            item)
+                            item
+                        )
                     it.findNavController().navigate(action)
                 }
             }

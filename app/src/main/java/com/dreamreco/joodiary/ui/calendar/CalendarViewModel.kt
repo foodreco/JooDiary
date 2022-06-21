@@ -19,7 +19,7 @@ import javax.inject.Inject
 class CalendarViewModel @Inject constructor(
     private val database: DiaryBaseDao,
     private val databaseForCalendarDate: CalendarDateDao,
-    private val databaseForLoadImageSignal : LoadImageSignalDao,
+    private val databaseForLoadImageSignal: LoadImageSignalDao,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -122,12 +122,12 @@ class CalendarViewModel @Inject constructor(
 
 
     // 기록이 있는 모든 날짜를 가져오는 함수
-    fun getNotImportantCalendarDayForDecorator() : LiveData<List<CalendarDay>> {
+    fun getNotImportantCalendarDayForDecorator(): LiveData<List<CalendarDay>> {
         return database.getNotImportantCalendarDayForDecorator().asLiveData()
     }
 
     // 기록이 있는 모든 날짜를 가져오는 함수
-    fun getImportantCalendarDayForDecorator() : LiveData<List<CalendarDay>> {
+    fun getImportantCalendarDayForDecorator(): LiveData<List<CalendarDay>> {
         return database.getImportantCalendarDayForDecorator().asLiveData()
     }
 
@@ -189,6 +189,7 @@ class CalendarViewModel @Inject constructor(
                     newDiaryBase.VOD,
                     newDiaryBase.importance,
                     newDiaryBase.calendarDay.toDateInt(),
+                    newDiaryBase.bitmapForRecyclerView,
                     preDiaryBase.id
                 )
                 if ((newDiaryBase.title == preDiaryBase.title) && (newDiaryBase.date == preDiaryBase.date)) {
@@ -269,7 +270,7 @@ class CalendarViewModel @Inject constructor(
 
     fun setImageLoadType(loadType: Int) {
         viewModelScope.launch {
-            val insertDate = LoadImageSignal(loadType,0)
+            val insertDate = LoadImageSignal(loadType, 0)
             databaseForLoadImageSignal.insert(insertDate)
             _changeLoadImageTypeCompleted.value = true
         }
@@ -281,11 +282,10 @@ class CalendarViewModel @Inject constructor(
 
     fun loadImageTypeReset() {
         viewModelScope.launch {
-            val insertDate = LoadImageSignal(LOAD_NOTHING,0)
+            val insertDate = LoadImageSignal(LOAD_NOTHING, 0)
             databaseForLoadImageSignal.insert(insertDate)
         }
     }
-
 
 
 }

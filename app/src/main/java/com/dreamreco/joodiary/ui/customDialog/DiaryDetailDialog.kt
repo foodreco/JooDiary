@@ -3,26 +3,31 @@ package com.dreamreco.joodiary.ui.customDialog
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.ImageDecoder
+import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -38,7 +43,9 @@ import com.dreamreco.joodiary.util.*
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONArray
 import java.io.FileNotFoundException
+import java.io.IOException
 import java.text.SimpleDateFormat
+
 
 @AndroidEntryPoint
 class DiaryDetailDialog : DialogFragment() {
@@ -145,7 +152,11 @@ class DiaryDetailDialog : DialogFragment() {
                     IMAGE_DELETE -> {
                         setImageNullState()
                         calendarViewModel.loadImageTypeReset()
-                        Toast.makeText(requireContext(), getString(R.string.changed_apply_confirm), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.changed_apply_confirm),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -153,7 +164,6 @@ class DiaryDetailDialog : DialogFragment() {
 
 //        3) 툴바 타이틀 날짜로 해서 중간으로 정렬 (스피너로 날짜 변경가능 [insertOrUpdateData 로직 바꿔야함]/ 기존 데이터의 경우 날짜 수정 가능)
 //        4) 주종, 도수, 주량 부분 감싸기 extendedLayout 또는 내용 아래로 내리기
-//        주종 작성 후 키보드 '다음' 터치 시, 다음 스피너로 포커스 변경?
 
 
         // 1. 툴바 관련 코드
@@ -244,6 +254,9 @@ class DiaryDetailDialog : DialogFragment() {
 
         return binding.root
     }
+    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
+    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
+    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
 
     private fun setImageNullState() {
         photoUri = null
@@ -261,12 +274,6 @@ class DiaryDetailDialog : DialogFragment() {
             )
         }
     }
-
-
-    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
-    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
-    //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
-
 
     private fun spinnerSetting() {
         with(calendarViewModel) {
@@ -501,12 +508,11 @@ class DiaryDetailDialog : DialogFragment() {
             if (args.diaryBase.image != null) {
                 try {
                     photoUri = args.diaryBase.image
-                    diaryImageView.imageTintList = null
-                    val imageBitmap = ImageDecoder.createSource(
-                        requireContext().contentResolver,
-                        args.diaryBase.image!!
-                    )
-                    diaryImageView.setImageBitmap(ImageDecoder.decodeBitmap(imageBitmap))
+                    with(diaryImageView) {
+                        imageTintList = null
+                        diaryImageView.setImageBitmap(decodeSampledBitmapFromInputStream(args.diaryBase.image!!,500,500,requireContext()))
+//                        여기
+                    }
                 } catch (e: FileNotFoundException) {
                     // room 에는 등록되었으나, 앨범에서 사진이 삭제되었을 때,
                     // FileNotFoundException 에러 발생
@@ -588,10 +594,19 @@ class DiaryDetailDialog : DialogFragment() {
     @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("IntentReset")
     private fun getImageFromGallery() {
+
+//        val intent = Intent(Intent.ACTION_PICK)
+//        intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+//        intent.type = "image/*"
+//        getImageFromGallery.launch(intent)
+
         val intent = Intent(Intent.ACTION_PICK)
         intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         intent.type = "image/*"
+//        intent.action = Intent.ACTION_GET_CONTENT // 이걸로 제한해서 열어줘야 함??
         getImageFromGallery.launch(intent)
+
+
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -653,17 +668,18 @@ class DiaryDetailDialog : DialogFragment() {
     @RequiresApi(Build.VERSION_CODES.P)
     private fun setImageFromUri() {
         // 원본 사진은 지정 경로에 저장됨.
-        val imageBitmap =
-            photoUri?.let {
-                ImageDecoder.createSource(
-                    requireContext().contentResolver,
-                    it
-                )
-            }
-
         with(binding) {
             diaryImageView.imageTintList = null
-            diaryImageView.setImageBitmap(imageBitmap?.let { ImageDecoder.decodeBitmap(it) })
+            diaryImageView.setImageBitmap(
+                photoUri?.let {
+                    decodeSampledBitmapFromInputStream(
+                        it,
+                        1500,
+                        1500,
+                        requireContext()
+                    )
+                }
+            )
         }
     }
 
@@ -798,6 +814,13 @@ class DiaryDetailDialog : DialogFragment() {
         val newPOA = binding.POA.text.trim().toString()
         val newVOD = binding.VOD.text.trim().toString()
         val newImportance = diaryImportanceForUpdate
+        var newBitmap : Bitmap? = null
+
+        // photoUri 가 존재하면, bitmap 으로 변환하는 코드
+        if (photoUri != null) {
+            newBitmap = decodeSampledBitmapFromInputStream(photoUri!!,50,50,requireContext())
+//            여기 이미지 변경
+        }
 
         val updateList = DiaryBase(
             newImage,
@@ -810,6 +833,7 @@ class DiaryDetailDialog : DialogFragment() {
             newVOD,
             newImportance,
             args.diaryBase.calendarDay.toDateInt(),
+            newBitmap,
             args.diaryBase.id
         )
         return updateList
@@ -840,6 +864,12 @@ class DiaryDetailDialog : DialogFragment() {
         diaryImportance.value = !diaryImportance.value!!
         diaryImportanceForUpdate = !diaryImportanceForUpdate
     }
-
-
 }
+
+
+
+
+
+
+
+

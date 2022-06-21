@@ -179,13 +179,15 @@ class CalendarFragment : Fragment() {
     //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
     //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
 
-    // 리스트 추가
+    // 리스트 신규 추가 코드
     private fun listAdd() {
         val date = MyDate(recentDate.date.year, recentDate.date.month, recentDate.date.day)
-        val item = DiaryBase(null, date, recentDate.calendarDate, "", null, null, null, null)
+        val item = DiaryBase(null, date, recentDate.calendarDate, "", null, null, null, null, false,0,null)
+
         val action = CalendarFragmentDirections.actionCalenderFragmentToDiaryDetailDialog(
             item
         )
+
         findNavController().navigate(action)
 
 //        val bundle = bundleOf()
@@ -249,7 +251,11 @@ class CalendarFragment : Fragment() {
 
     private fun setRecyclerView() {
         with(binding) {
-            calenderRecyclerView.adapter = mAdapter
+            with(calenderRecyclerView) {
+                adapter = mAdapter
+                setHasFixedSize(true)
+                setItemViewCacheSize(5)
+            }
 
             // recyclerView 갱신 시, 깜빡임 방지
             val animator = calenderRecyclerView.itemAnimator

@@ -2,6 +2,11 @@ package com.dreamreco.joodiary.util
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Log
 import android.view.Window
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
@@ -14,6 +19,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.dreamreco.joodiary.room.entity.DiaryBase
 import com.prolificinteractive.materialcalendarview.CalendarDay
+import java.io.InputStream
 
 
 fun EditText.setFocusAndShowKeyboard(context: Context) {
@@ -55,13 +61,13 @@ fun Button.clearFocusAndHideKeyboard(context: Context) {
 //    return "$year$month$day" //20220405
 //}
 
-const val CALENDAR_FRAGMENT = 0
-const val LIST_FRAGMENT = 1
-
 const val LOAD_NOTHING = 0
 const val LOAD_IMAGE_FROM_GALLERY = 1
 const val LOAD_IMAGE_FROM_CAMERA = 2
 const val IMAGE_DELETE = 3
+
+const val SORT_NORMAL = 0
+const val SORT_IMPORTANCE = 1
 
 
 // Permisisons
@@ -73,12 +79,6 @@ val GET_DATA_PERMISSIONS = arrayOf(
 
 val CAMERA_PERMISSION = arrayOf(Manifest.permission.CAMERA)
 
-// Request Code
-const val BUTTON1 = 100
-const val BUTTON2 = 200
-const val BUTTON3 = 300
-const val BUTTON4 = 400
-const val BUTTON5 = 500
 
 // windowSoftInputMode 를 제어하는 코드
 // manifest 지정 모드 : adjustPan
@@ -120,6 +120,69 @@ class InputModeLifecycleHelper(
         ADJUST_RESIZE, ADJUST_PAN
     }
 }
+
+// uri 를 받아 이미지를 원하는 사이즈 이하로 줄여주는 코드
+fun decodeSampledBitmapFromInputStream(
+    photoUri : Uri,
+    reqWidth: Int,
+    reqHeight: Int,
+    context: Context
+): Bitmap? {
+
+    var fileInputStream: InputStream =
+        context.contentResolver.openInputStream(photoUri)!!
+
+    // First decode with inJustDecodeBounds=true to check dimensions
+    return BitmapFactory.Options().run {
+        inJustDecodeBounds = true
+        BitmapFactory.decodeStream(fileInputStream, null, this)
+
+        // Calculate inSampleSize
+        // 줄이려는 사이즈 배수(inSampleSize = 2 이면 원래 10MB -> 5MB 로 줄임)
+        inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
+
+        fileInputStream.close()
+
+        fileInputStream = context.contentResolver.openInputStream(photoUri)!!
+
+        // Decode bitmap with inSampleSize set
+        inJustDecodeBounds = false
+
+//        BitmapFactory.decodeStream(fileInputStream, null, this)
+
+        ImageOrientation.modifyOrientation(
+            context,
+            BitmapFactory.decodeStream(fileInputStream, null, this)!!,
+            photoUri
+        )
+    }
+
+}
+
+fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+    // Raw height and width of image
+    // 불러온 이미지의 폭, 넓이
+    val (height: Int, width: Int) = options.run { outHeight to outWidth }
+
+    var inSampleSize = 1
+
+    // 이미지 크기가 기준 초과하는 경우
+    if (height > reqHeight || width > reqWidth) {
+
+        val halfHeight: Int = height / 2
+        val halfWidth: Int = width / 2
+
+        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+        // height and width larger than the requested height and width.
+        while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+            inSampleSize *= 2
+        }
+    }
+
+    // 배수만큼 본 사이즈를 줄임
+    return inSampleSize
+}
+
 
 // CalendarDay 를 Int 로 변환하는 함수
 fun CalendarDay.toDateInt(): Int {

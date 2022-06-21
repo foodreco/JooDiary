@@ -24,7 +24,7 @@ data class DiaryBase(
     var VOD : String?,
     var importance : Boolean = false,
     var dateForSort : Int = 0,
-
+    var bitmapForRecyclerView : Bitmap?,
     @PrimaryKey(autoGenerate = true)
     var id : Int = 0
 ) : Parcelable
