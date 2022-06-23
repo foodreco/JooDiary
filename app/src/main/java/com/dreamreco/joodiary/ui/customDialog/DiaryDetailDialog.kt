@@ -3,22 +3,15 @@ package com.dreamreco.joodiary.ui.customDialog
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
@@ -28,6 +21,7 @@ import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -38,12 +32,12 @@ import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.DiaryDetailDialogBinding
 import com.dreamreco.joodiary.room.entity.DiaryBase
 import com.dreamreco.joodiary.room.entity.MyDate
+import com.dreamreco.joodiary.room.entity.MyDrink
 import com.dreamreco.joodiary.ui.calendar.CalendarViewModel
 import com.dreamreco.joodiary.util.*
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONArray
 import java.io.FileNotFoundException
-import java.io.IOException
 import java.text.SimpleDateFormat
 
 
@@ -277,12 +271,10 @@ class DiaryDetailDialog : DialogFragment() {
 
     private fun spinnerSetting() {
         with(calendarViewModel) {
-            getOnlyDrinkType(getString(R.string.spinner_first), getString(R.string.spinner_second))
-            getOnlyPOA(getString(R.string.spinner_first), getString(R.string.spinner_second))
-            getOnlyVOD(getString(R.string.spinner_first), getString(R.string.spinner_second))
+            getMyDrink(getString(R.string.spinner_first), getString(R.string.spinner_second))
 
             // 리스트 저장이 받는게 끝나면, 스피너 #1 을 동작시키는 코드
-            getDrinkTypeDoneEvent.observe(viewLifecycleOwner) {
+            getMyDrinkDoneEvent.observe(viewLifecycleOwner) {
                 if (it) {
                     spinnerDrinkTypeListCall()
                     //스피너
@@ -314,13 +306,13 @@ class DiaryDetailDialog : DialogFragment() {
                                     // 0. 초기상태, 아무 변화 없음
                                     "" -> {
                                         binding.drinkType.isEnabled = false
-                                        binding.drinkType.setText(args.diaryBase.drinkType)
+                                        binding.drinkType.setText(args.diaryBase.myDrink?.drinkType)
                                     }
 
                                     // 1. " " 선택 시, 아무 변화 없음
                                     getString(R.string.spinner_first) -> {
                                         binding.drinkType.isEnabled = false
-                                        binding.drinkType.setText(args.diaryBase.drinkType)
+                                        binding.drinkType.setText(args.diaryBase.myDrink?.drinkType)
                                     }
 
                                     // 2. 직접입력 선택 시,
@@ -353,7 +345,7 @@ class DiaryDetailDialog : DialogFragment() {
                 }
             }
             // 리스트 저장이 받는게 끝나면, 스피너 #2 을 동작시키는 코드
-            getPOADoneEvent.observe(viewLifecycleOwner) {
+            getMyDrinkDoneEvent.observe(viewLifecycleOwner) {
                 if (it) {
                     spinnerPOAListCall()
                     //스피너
@@ -385,13 +377,13 @@ class DiaryDetailDialog : DialogFragment() {
                                     // 0. 초기상태, 아무 변화 없음
                                     "" -> {
                                         binding.POA.isEnabled = false
-                                        binding.POA.setText(args.diaryBase.POA)
+                                        binding.POA.setText(args.diaryBase.myDrink?.POA)
                                     }
 
                                     // 1. " " 선택 시, 아무 변화 없음
                                     getString(R.string.spinner_first) -> {
                                         binding.POA.isEnabled = false
-                                        binding.POA.setText(args.diaryBase.POA)
+                                        binding.POA.setText(args.diaryBase.myDrink?.POA)
                                     }
 
                                     // 2. 직접입력 선택 시,
@@ -424,7 +416,7 @@ class DiaryDetailDialog : DialogFragment() {
                 }
             }
             // 리스트 저장이 받는게 끝나면, 스피너 #3 을 동작시키는 코드
-            getVODDoneEvent.observe(viewLifecycleOwner) {
+            getMyDrinkDoneEvent.observe(viewLifecycleOwner) {
                 if (it) {
                     spinnerVODListCall()
                     //스피너
@@ -456,13 +448,13 @@ class DiaryDetailDialog : DialogFragment() {
                                     // 0. 초기상태, 아무 변화 없음
                                     "" -> {
                                         binding.VOD.isEnabled = false
-                                        binding.VOD.setText(args.diaryBase.VOD)
+                                        binding.VOD.setText(args.diaryBase.myDrink?.VOD)
                                     }
 
                                     // 1. " " 선택 시, 아무 변화 없음
                                     getString(R.string.spinner_first) -> {
                                         binding.VOD.isEnabled = false
-                                        binding.VOD.setText(args.diaryBase.VOD)
+                                        binding.VOD.setText(args.diaryBase.myDrink?.VOD)
                                     }
 
                                     // 2. 직접입력 선택 시,
@@ -510,8 +502,14 @@ class DiaryDetailDialog : DialogFragment() {
                     photoUri = args.diaryBase.image
                     with(diaryImageView) {
                         imageTintList = null
-                        diaryImageView.setImageBitmap(decodeSampledBitmapFromInputStream(args.diaryBase.image!!,500,500,requireContext()))
-//                        여기
+                        diaryImageView.setImageBitmap(
+                            decodeSampledBitmapFromInputStream(
+                                args.diaryBase.image!!,
+                                500,
+                                500,
+                                requireContext()
+                            )
+                        )
                     }
                 } catch (e: FileNotFoundException) {
                     // room 에는 등록되었으나, 앨범에서 사진이 삭제되었을 때,
@@ -522,11 +520,11 @@ class DiaryDetailDialog : DialogFragment() {
                 setImageNullState()
             }
             // 주종
-            drinkType.setText(args.diaryBase.drinkType)
+            drinkType.setText(args.diaryBase.myDrink?.drinkType)
             // 도수
-            POA.setText(args.diaryBase.POA.toString())
+            POA.setText(args.diaryBase.myDrink?.POA)
             // 주량
-            VOD.setText(args.diaryBase.VOD.toString())
+            VOD.setText(args.diaryBase.myDrink?.VOD)
 
 
             // 키보드 다음 버튼 시, 포커스 지정 이동 #1
@@ -605,8 +603,6 @@ class DiaryDetailDialog : DialogFragment() {
         intent.type = "image/*"
 //        intent.action = Intent.ACTION_GET_CONTENT // 이걸로 제한해서 열어줘야 함??
         getImageFromGallery.launch(intent)
-
-
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -631,10 +627,17 @@ class DiaryDetailDialog : DialogFragment() {
         values.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
 
         // 저장 경로 설정
+//        values.put(
+//            MediaStore.MediaColumns.RELATIVE_PATH,
+//            "Pictures/${getString(R.string.app_name)}"
+//        )
+
         values.put(
             MediaStore.MediaColumns.RELATIVE_PATH,
             "Pictures/${getString(R.string.app_name)}"
         )
+
+
 
         photoUri =
             requireContext().contentResolver.insert(
@@ -670,6 +673,7 @@ class DiaryDetailDialog : DialogFragment() {
         // 원본 사진은 지정 경로에 저장됨.
         with(binding) {
             diaryImageView.imageTintList = null
+            Log.e("다이어리 다이얼로그","photoUri : $photoUri")
             diaryImageView.setImageBitmap(
                 photoUri?.let {
                     decodeSampledBitmapFromInputStream(
@@ -786,11 +790,35 @@ class DiaryDetailDialog : DialogFragment() {
     // 저장 버튼 터치 시, 데이터를 업데이트하는 함수
     private fun updateData() {
         val newTitle = binding.titleText.text.trim().toString()
-        // 제목이 빈칸이면
+
+        // MyDrink 변수를 다 채우거나, 다 비우기 위한 로직
+        var drinkTypeInt = 0
+        var POAInt = 0
+        var VODInt = 0
+        if (binding.drinkType.text.trim().toString() != "") {
+            drinkTypeInt = 1
+        }
+        if (binding.POA.text.trim().toString() != "") {
+            POAInt = 1
+        }
+        if (binding.VOD.text.trim().toString() != "") {
+            VODInt = 1
+        }
+        val total = drinkTypeInt + POAInt + VODInt
+
+
         if (newTitle == "") {
+            // 제목이 빈칸이면
             Toast.makeText(
                 requireContext(),
                 getString(R.string.empty_title),
+                Toast.LENGTH_SHORT
+            ).show()
+        } else if (!((total == 3) || (total == 0))) {
+            // 주량기록이 완벽하지 않을 경우,(하나도 입력하지 않은 경우는 예외)
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.drink_records_error),
                 Toast.LENGTH_SHORT
             ).show()
         } else {
@@ -802,7 +830,7 @@ class DiaryDetailDialog : DialogFragment() {
     // 반영할 최신 updatedList
     private fun updatedList(): DiaryBase {
         val newImage = photoUri
-//        스피너 추가 시 변경
+//        스피너 추가 시 날짜 변경
         val newDate = MyDate(
             args.diaryBase.date.year,
             args.diaryBase.date.month,
@@ -810,16 +838,17 @@ class DiaryDetailDialog : DialogFragment() {
         )
         val newTitle = binding.titleText.text.trim().toString()
         val newContent = binding.contentText.text.trim().toString()
-        val newDrinkType = binding.drinkType.text.trim().toString()
-        val newPOA = binding.POA.text.trim().toString()
-        val newVOD = binding.VOD.text.trim().toString()
+        val newMyDrink = MyDrink(
+            binding.drinkType.text.trim().toString(),
+            binding.POA.text.trim().toString(),
+            binding.VOD.text.trim().toString()
+        )
         val newImportance = diaryImportanceForUpdate
-        var newBitmap : Bitmap? = null
+        var newBitmap: Bitmap? = null
 
         // photoUri 가 존재하면, bitmap 으로 변환하는 코드
         if (photoUri != null) {
-            newBitmap = decodeSampledBitmapFromInputStream(photoUri!!,50,50,requireContext())
-//            여기 이미지 변경
+            newBitmap = decodeSampledBitmapFromInputStream(photoUri!!, 50, 50, requireContext())
         }
 
         val updateList = DiaryBase(
@@ -828,9 +857,7 @@ class DiaryDetailDialog : DialogFragment() {
             args.diaryBase.calendarDay,
             newTitle,
             newContent,
-            newDrinkType,
-            newPOA,
-            newVOD,
+            newMyDrink,
             newImportance,
             args.diaryBase.calendarDay.toDateInt(),
             newBitmap,

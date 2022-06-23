@@ -30,6 +30,7 @@ object DataBaseModule {
         return Room
             .databaseBuilder(context, Database::class.java, DB_NAME)
             .addTypeConverter(MyDateTypeConverter(gson)) // 'MyDate' converter
+            .addTypeConverter(MyDrinkTypeConverter(gson)) // 'MyDrink' converter
             .addTypeConverter(CalendarDayTypeConverter(gson)) // 'CalendarDay' converter
             .build()
     }

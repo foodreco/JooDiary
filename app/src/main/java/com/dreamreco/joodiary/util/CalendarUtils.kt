@@ -105,7 +105,7 @@ class BoldDecorator(min: CalendarDay, max: CalendarDay) : DayViewDecorator {
 }
 
 // 특정 날짜에 점을 표시하는 Decorator
-class EventDecorator(context: Context, dates: Collection<CalendarDay>) : DayViewDecorator {
+class EventDecoratorForImportantData(context: Context, dates: Collection<CalendarDay>) : DayViewDecorator {
 
     private val mContext = context
     var dates: HashSet<CalendarDay> = HashSet(dates)
@@ -115,12 +115,13 @@ class EventDecorator(context: Context, dates: Collection<CalendarDay>) : DayView
     }
 
     override fun decorate(view: DayViewFacade?) {
-        view?.addSpan(DotSpan(5F, mContext.getColor(R.color.calendar_dot_normal)))
+        view?.addSpan(DotSpan(5F, mContext.getColor(R.color.calendar_dot_important)))
     }
 }
 
 // 특정 날짜에 점을 표시하는 Decorator 2
-class EventDecoratorForImportantData(context: Context, dates: Collection<CalendarDay>) :
+// LineBackgroundSpan 으로 적용되기 때문에, 글자색도 영향 받음
+class EventDecorator(context: Context, dates: Collection<CalendarDay>) :
     DayViewDecorator {
     private val mContext = context
     var dates: HashSet<CalendarDay> = HashSet(dates)
@@ -133,7 +134,6 @@ class EventDecoratorForImportantData(context: Context, dates: Collection<Calenda
         view.addSpan(CustomMultipleDotSpan(5f, mContext))
     }
 }
-
 
 class CustomMultipleDotSpan(private val radius: Float, context: Context) : LineBackgroundSpan {
 
@@ -153,7 +153,7 @@ class CustomMultipleDotSpan(private val radius: Float, context: Context) : LineB
         end: Int,
         lineNum: Int
     ) {
-        paint.color = getColor(mContext, R.color.calendar_dot_important)
+        paint.color = getColor(mContext, R.color.calendar_dot_normal)
         canvas.drawCircle(
             ((left + right) / 2).toFloat(),
             bottom + 25f,

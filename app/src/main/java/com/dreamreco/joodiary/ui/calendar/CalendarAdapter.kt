@@ -117,14 +117,6 @@ class CalenderAdapter(
                     try {
                         with(diaryImage) {
                             imageTintList = null
-//                            setImageBitmap(
-//                                decodeSampledBitmapFromInputStream(
-//                                    item.image!!,
-//                                    50,
-//                                    50,
-//                                    mContext
-//                                )
-//                            )
                             setImageBitmap(
                                 item.bitmapForRecyclerView
                             )
@@ -150,14 +142,10 @@ class CalenderAdapter(
                     )
                 }
 
-                if (item.drinkType != null) {
-                    diaryDrinkType.text = item.drinkType
-                }
-                if (item.POA != null) {
-                    diaryPOA.text = item.POA
-                }
-                if (item.VOD != null) {
-                    diaryVOD.text = item.VOD
+                if (item.myDrink != null) {
+                    diaryDrinkType.text = item.myDrink!!.drinkType
+                    diaryVOD.text = item.myDrink!!.VOD
+                    diaryPOA.text = item.myDrink!!.POA
                 }
 
                 //리싸이클러 길게 터치 시,

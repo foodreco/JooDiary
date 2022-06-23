@@ -23,14 +23,8 @@ class CalendarViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
-    private val _getDrinkTypeDoneEvent = MutableLiveData<Boolean>()
-    val getDrinkTypeDoneEvent: LiveData<Boolean> = _getDrinkTypeDoneEvent
-
-    private val _getPOADoneEvent = MutableLiveData<Boolean>()
-    val getPOADoneEvent: LiveData<Boolean> = _getPOADoneEvent
-
-    private val _getVODDoneEvent = MutableLiveData<Boolean>()
-    val getVODDoneEvent: LiveData<Boolean> = _getVODDoneEvent
+    private val _getMyDrinkDoneEvent = MutableLiveData<Boolean>()
+    val getMyDrinkDoneEvent: LiveData<Boolean> = _getMyDrinkDoneEvent
 
     private val _listDuplication = MutableLiveData<Boolean>()
     val listDuplication: LiveData<Boolean> = _listDuplication
@@ -51,84 +45,129 @@ class CalendarViewModel @Inject constructor(
     val calendarFragmentAdapterBaseData: LiveData<List<CalendarAdapterBase>> =
         _calendarFragmentAdapterBaseData
 
+    private val _dotForCalendar = MutableLiveData<DotForCalendar>()
+    val dotForCalendar: LiveData<DotForCalendar> = _dotForCalendar
+
 
     // spinner 리스트 불러오는 함수 #1
-    fun getOnlyDrinkType(text1: String, text2: String) {
+    fun getMyDrink(text1: String, text2: String) {
         viewModelScope.launch {
-            // DB 로부터 그룹 명만 리스트 형태로 받아
-            val groupNameList = database.getDrinkType().distinct()
-            val jsonList = JSONArray()
-            // "", "직접입력"
-            jsonList.put(text1)
-            jsonList.put(text2)
-            for (i in groupNameList) {
-                if (i.trim() != "") {
-                    jsonList.put(i)
+            // DB 로부터 MyDrink 를 리스트 형태로 받아
+            val myDrinkList = database.getDrinkType().distinct()
+
+            val drinkTypeList = mutableListOf<String>()
+            val VODList = mutableListOf<String>()
+            val POAList = mutableListOf<String>()
+
+            for (each in myDrinkList) {
+                if ((each.drinkType != null) && (each.drinkType != "")) {
+                    drinkTypeList.add(each.drinkType!!)
+                }
+                if ((each.VOD != null) && (each.VOD != "")) {
+                    VODList.add(each.VOD!!)
+                }
+                if ((each.POA != null) && (each.POA != "")) {
+                    POAList.add(each.POA!!)
                 }
             }
-            val saveList = jsonList.toString()
+
+            val arrangedDrinkTypeList = drinkTypeList.distinct()
+            val arrangedVODList = VODList.distinct()
+            val arrangedPOAList = POAList.distinct()
+
+            val jsonListForDrinkType = JSONArray()
+            // "", "직접입력"
+            jsonListForDrinkType.put(text1)
+            jsonListForDrinkType.put(text2)
+
+            val jsonListForVOD = JSONArray()
+            // "", "직접입력"
+            jsonListForVOD.put(text1)
+            jsonListForVOD.put(text2)
+
+            val jsonListForPOA = JSONArray()
+            // "", "직접입력"
+            jsonListForPOA.put(text1)
+            jsonListForPOA.put(text2)
+
+            for (each in arrangedDrinkTypeList) {
+                jsonListForDrinkType.put(each)
+            }
+            for (each in arrangedVODList) {
+                jsonListForVOD.put(each)
+            }
+            for (each in arrangedPOAList) {
+                jsonListForPOA.put(each)
+            }
+
+            val saveListForDrinkType = jsonListForDrinkType.toString()
+            val saveListForVOD = jsonListForVOD.toString()
+            val saveListForPOA = jsonListForPOA.toString()
+
             // SharedPreferences 에 저장
-            MyApplication.prefs.setString("drinkType", saveList)
-            _getDrinkTypeDoneEvent.value = true
+            MyApplication.prefs.setString("drinkType", saveListForDrinkType)
+            MyApplication.prefs.setString("POA", saveListForPOA)
+            MyApplication.prefs.setString("VOD", saveListForVOD)
+
+            _getMyDrinkDoneEvent.value = true
         }
     }
 
-    // spinner 리스트 불러오는 함수 #2
-    fun getOnlyPOA(text1: String, text2: String) {
-        viewModelScope.launch {
-            // DB 로부터 그룹 명만 리스트 형태로 받아
-            val groupNameList = database.getPOA().distinct()
-            val jsonList = JSONArray()
-            // "", "직접입력"
-            jsonList.put(text1)
-            jsonList.put(text2)
-            for (i in groupNameList) {
-                if (i.trim() != "") {
-                    jsonList.put(i)
-                }
-            }
-            val saveList = jsonList.toString()
-            // SharedPreferences 에 저장
-            MyApplication.prefs.setString("POA", saveList)
-            _getPOADoneEvent.value = true
-        }
-    }
-
-    // spinner 리스트 불러오는 함수 #3
-    fun getOnlyVOD(text1: String, text2: String) {
-        viewModelScope.launch {
-            // DB 로부터 그룹 명만 리스트 형태로 받아
-            val groupNameList = database.getVOD().distinct()
-            val jsonList = JSONArray()
-            // "", "직접입력"
-            jsonList.put(text1)
-            jsonList.put(text2)
-            for (i in groupNameList) {
-                if (i.trim() != "") {
-                    jsonList.put(i)
-                }
-            }
-            val saveList = jsonList.toString()
-            // SharedPreferences 에 저장
-            MyApplication.prefs.setString("VOD", saveList)
-            _getVODDoneEvent.value = true
-        }
-    }
+//    // spinner 리스트 불러오는 함수 #2
+//    fun getOnlyPOA(text1: String, text2: String) {
+//        viewModelScope.launch {
+//            // DB 로부터 그룹 명만 리스트 형태로 받아
+//            val groupNameList = database.getPOA().distinct()
+//            val jsonList = JSONArray()
+//            // "", "직접입력"
+//            jsonList.put(text1)
+//            jsonList.put(text2)
+//            for (i in groupNameList) {
+//                if (i.trim() != "") {
+//                    jsonList.put(i)
+//                }
+//            }
+//            val saveList = jsonList.toString()
+//            // SharedPreferences 에 저장
+//            MyApplication.prefs.setString("POA", saveList)
+//            _getPOADoneEvent.value = true
+//        }
+//    }
+//
+//    // spinner 리스트 불러오는 함수 #3
+//    fun getOnlyVOD(text1: String, text2: String) {
+//        viewModelScope.launch {
+//            // DB 로부터 그룹 명만 리스트 형태로 받아
+//            val groupNameList = database.getVOD().distinct()
+//            val jsonList = JSONArray()
+//            // "", "직접입력"
+//            jsonList.put(text1)
+//            jsonList.put(text2)
+//            for (i in groupNameList) {
+//                if (i.trim() != "") {
+//                    jsonList.put(i)
+//                }
+//            }
+//            val saveList = jsonList.toString()
+//            // SharedPreferences 에 저장
+//            MyApplication.prefs.setString("VOD", saveList)
+//            _getVODDoneEvent.value = true
+//        }
+//    }
 
     // 달력에서 선택된 날짜를 가져오는 함수
     fun getRecentDate(): LiveData<CalendarDate> {
         return databaseForCalendarDate.getRecentDate().asLiveData()
     }
 
-
-    // 기록이 있는 모든 날짜를 가져오는 함수
-    fun getNotImportantCalendarDayForDecorator(): LiveData<List<CalendarDay>> {
-        return database.getNotImportantCalendarDayForDecorator().asLiveData()
-    }
-
-    // 기록이 있는 모든 날짜를 가져오는 함수
-    fun getImportantCalendarDayForDecorator(): LiveData<List<CalendarDay>> {
-        return database.getImportantCalendarDayForDecorator().asLiveData()
+    //
+    fun getNotImportantCalendarDayForDecoratorBySuspend() {
+        viewModelScope.launch {
+            val notImportantList = database.getNotImportantCalendarDayForDecoratorBySuspend()
+            val importantList = database.getImportantCalendarDayForDecoratorBySuspend()
+            val insert = DotForCalendar(notImportantList, importantList)
+            _dotForCalendar.value = insert
+        }
     }
 
     fun changeRecentDate(recentDate: CalendarDay) {
@@ -184,9 +223,7 @@ class CalendarViewModel @Inject constructor(
                     newDiaryBase.calendarDay,
                     newDiaryBase.title,
                     newDiaryBase.content,
-                    newDiaryBase.drinkType,
-                    newDiaryBase.POA,
-                    newDiaryBase.VOD,
+                    newDiaryBase.myDrink,
                     newDiaryBase.importance,
                     newDiaryBase.calendarDay.toDateInt(),
                     newDiaryBase.bitmapForRecyclerView,
@@ -236,6 +273,7 @@ class CalendarViewModel @Inject constructor(
         _listDuplication.value = false
     }
 
+    // 특정 날짜의 DiaryBase List 를 중요한 것부터 가져오는 코드
     fun getDiaryBaseFlowInDate(date: MyDate): LiveData<List<DiaryBase>> {
         return database.getDiaryBaseFlowInDate(date).asLiveData()
     }
@@ -289,3 +327,8 @@ class CalendarViewModel @Inject constructor(
 
 
 }
+
+data class DotForCalendar(
+    var notImportantList: List<CalendarDay>,
+    var importantList: List<CalendarDay>
+)

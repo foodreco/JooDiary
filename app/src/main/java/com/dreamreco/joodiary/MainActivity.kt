@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val calendarViewModel by viewModels<CalendarViewModel>()
 
+    // 앱 테마 색상 정하기
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

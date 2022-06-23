@@ -19,9 +19,7 @@ data class DiaryBase(
     var calendarDay : CalendarDay,
     var title : String,
     var content : String?,
-    var drinkType : String?,
-    var POA : String?,
-    var VOD : String?,
+    var myDrink: MyDrink?,
     var importance : Boolean = false,
     var dateForSort : Int = 0,
     var bitmapForRecyclerView : Bitmap?,
@@ -36,6 +34,10 @@ data class MyDate (
     var day : Int
 ) : Parcelable
 
-
-
+@Parcelize
+data class MyDrink (
+    var drinkType : String?,
+    var POA : String?,
+    var VOD : String?
+) : Parcelable
 

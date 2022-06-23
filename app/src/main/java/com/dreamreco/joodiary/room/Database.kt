@@ -16,7 +16,7 @@ import com.dreamreco.joodiary.room.entity.LoadImageSignal
     version = 1,
     exportSchema = false
 )
-@TypeConverters(value = [Converters::class, MyDateTypeConverter::class, CalendarDayTypeConverter::class])
+@TypeConverters(value = [Converters::class, MyDateTypeConverter::class, MyDrinkTypeConverter::class, CalendarDayTypeConverter::class])
 abstract class Database : RoomDatabase() {
 
     abstract val diaryDao: DiaryBaseDao

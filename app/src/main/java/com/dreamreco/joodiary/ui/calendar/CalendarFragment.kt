@@ -16,11 +16,10 @@ import com.dreamreco.joodiary.databinding.FragmentCalendarBinding
 import com.dreamreco.joodiary.room.entity.CalendarDate
 import com.dreamreco.joodiary.room.entity.DiaryBase
 import com.dreamreco.joodiary.room.entity.MyDate
+import com.dreamreco.joodiary.room.entity.MyDrink
 import com.dreamreco.joodiary.util.*
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import com.prolificinteractive.materialcalendarview.OnDateSelectedListener
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -53,19 +52,19 @@ class CalendarFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val calendar = binding.calenderView
 
         with(binding) {
             btnAdd.setOnClickListener {
                 listAdd()
             }
+
+            // selectedDate event 처리 코드
+            // 날짜 선택 시, date 이용
+            calenderView.setOnDateChangedListener { widget, date, selected -> // 선택 시, recentDate 업데이트
+                calendarViewModel.changeRecentDate(date)
+            }
         }
 
-        // selectedDate event 처리 코드
-        // 날짜 선택 시, date 이용
-        calendar.setOnDateChangedListener { widget, date, selected -> // 선택 시, recentDate 업데이트
-            calendarViewModel.changeRecentDate(date)
-        }
 
         // ※ 주의 : CalendarDay month 는 1월이 0 부터 시작함.
         // ex) 2022-06-24 -> 2022-05-24 로 표현됨
@@ -111,21 +110,10 @@ class CalendarFragment : Fragment() {
             calendarFragmentAdapterBaseData.observe(viewLifecycleOwner) {
                 mAdapter.submitList(it)
             }
-
-            //  일반 기록 날짜에 dot 표시를 하는 코드
-            getNotImportantCalendarDayForDecorator().observe(viewLifecycleOwner){ listOfCalendarDay ->
-                if (listOfCalendarDay != emptyList<CalendarDay>()) {
-                    binding.calenderView.addDecorators(EventDecorator(requireContext(), listOfCalendarDay))
-                }
-            }
-
-            // 중요한 기록 날짜에 dot 표시를 하는 코드
-            getImportantCalendarDayForDecorator().observe(viewLifecycleOwner){ listOfImportantCalendarDay ->
-                if (listOfImportantCalendarDay != emptyList<CalendarDay>()) {
-                    binding.calenderView.addDecorators(EventDecoratorForImportantData(requireContext(), listOfImportantCalendarDay))
-                }
-            }
         }
+
+        // calendar 에 dot 를 표시하는 코드
+        setDotDecorate()
 
         // 1. 툴바 관련 코드
         with(binding.calenderToolbar) {
@@ -173,6 +161,48 @@ class CalendarFragment : Fragment() {
         return binding.root
     }
 
+    private fun setDotDecorate() {
+        with(calendarViewModel) {
+            dotForCalendar.observe(viewLifecycleOwner){ list ->
+                basicDecoratorReset()
+                with(binding.calenderView) {
+                    addDecorator(EventDecorator(requireContext(), list.notImportantList))
+                    addDecorator(EventDecoratorForImportantData(requireContext(), list.importantList))
+                }
+            }
+
+//            //  일반 기록 날짜에 dot 표시를 하는 코드
+//            getNotImportantCalendarDayForDecorator().observe(viewLifecycleOwner){ listOfCalendarDay ->
+//                if (listOfCalendarDay != emptyList<CalendarDay>()) {
+//                    binding.calenderView.addDecorator(EventDecorator(requireContext(), listOfCalendarDay))
+//                }
+//            }
+//
+//            // 중요한 기록 날짜에 dot 표시를 하는 코드
+//            getImportantCalendarDayForDecorator().observe(viewLifecycleOwner){ listOfImportantCalendarDay ->
+//                if (listOfImportantCalendarDay != emptyList<CalendarDay>()) {
+//                    binding.calenderView.addDecorator(EventDecoratorForImportantData(requireContext(), listOfImportantCalendarDay))
+//                }
+//            }
+        }
+    }
+
+    private fun basicDecoratorReset() {
+        with(binding.calenderView) {
+            // 데코 전체 삭제
+            removeDecorators()
+
+            // 데코 다시 설정
+            val sundayDecorator = SundayDecorator()
+            val saturdayDecorator = SaturdayDecorator()
+            val todayDecorator = TodayDecorator(requireContext())
+            addDecorators(
+                sundayDecorator,
+                saturdayDecorator,
+                todayDecorator
+            )
+        }
+    }
 
 
     //함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간//함수구간
@@ -182,8 +212,7 @@ class CalendarFragment : Fragment() {
     // 리스트 신규 추가 코드
     private fun listAdd() {
         val date = MyDate(recentDate.date.year, recentDate.date.month, recentDate.date.day)
-        val item = DiaryBase(null, date, recentDate.calendarDate, "", null, null, null, null, false,0,null)
-
+        val item = DiaryBase(null, date, recentDate.calendarDate, "", null, null, false,0,null)
         val action = CalendarFragmentDirections.actionCalenderFragmentToDiaryDetailDialog(
             item
         )
@@ -197,6 +226,7 @@ class CalendarFragment : Fragment() {
 //        dialog.show(childFragmentManager, "DiaryDetailDialog")
     }
 
+    // 캘린더 기본 설정 코드
     private fun setCalender() {
         val startTimeCalendar = Calendar.getInstance()
         val endTimeCalendar = Calendar.getInstance()
@@ -283,5 +313,12 @@ class CalendarFragment : Fragment() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // dot 를 계속 갱신하는 코드
+        // 두가지 리스트를 한 옵저버에 처리해야 하므로, Room 에서 Live 로 바로 가지고 오지 못함
+        calendarViewModel.getNotImportantCalendarDayForDecoratorBySuspend()
     }
 }

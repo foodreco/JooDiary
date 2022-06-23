@@ -7,6 +7,7 @@ import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.dreamreco.joodiary.room.entity.MyDate
+import com.dreamreco.joodiary.room.entity.MyDrink
 import com.google.gson.Gson
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import java.io.ByteArrayOutputStream
@@ -56,6 +57,21 @@ class MyDateTypeConverter(private val gson: Gson) {
     @TypeConverter
     fun jsonToList(value: String): MyDate {
         return gson.fromJson(value, MyDate::class.java)
+    }
+}
+
+// entity 에 data class 를 넣기 위해 필요 #2
+@ProvidedTypeConverter
+class MyDrinkTypeConverter(private val gson: Gson) {
+
+    @TypeConverter
+    fun listToJson(value: MyDrink): String? {
+        return gson.toJson(value)
+    }
+
+    @TypeConverter
+    fun jsonToList(value: String): MyDrink {
+        return gson.fromJson(value, MyDrink::class.java)
     }
 }
 

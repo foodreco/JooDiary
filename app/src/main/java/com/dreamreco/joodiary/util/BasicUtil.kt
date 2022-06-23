@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.util.Log
 import android.view.Window
@@ -53,14 +54,6 @@ fun Button.clearFocusAndHideKeyboard(context: Context) {
     }, 30)
 }
 
-// 필요없음??
-//fun calenderDateToString(date: CalendarDay): String {
-//    val year = date.year
-//    val month = date.month + 1
-//    val day = date.day
-//    return "$year$month$day" //20220405
-//}
-
 const val LOAD_NOTHING = 0
 const val LOAD_IMAGE_FROM_GALLERY = 1
 const val LOAD_IMAGE_FROM_CAMERA = 2
@@ -70,9 +63,8 @@ const val SORT_NORMAL = 0
 const val SORT_IMPORTANCE = 1
 
 
-// Permisisons
+// Permissions
 val GET_DATA_PERMISSIONS = arrayOf(
-    Manifest.permission.CAMERA,
     Manifest.permission.WRITE_EXTERNAL_STORAGE,
     Manifest.permission.READ_EXTERNAL_STORAGE
 )
@@ -150,13 +142,17 @@ fun decodeSampledBitmapFromInputStream(
 
 //        BitmapFactory.decodeStream(fileInputStream, null, this)
 
-        ImageOrientation.modifyOrientation(
+        // 이미지 회전을 본래대로 반영하는 코드
+        val result =  ImageOrientation.modifyOrientation(
             context,
             BitmapFactory.decodeStream(fileInputStream, null, this)!!,
             photoUri
         )
-    }
 
+        fileInputStream.close()
+
+        result
+    }
 }
 
 fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
@@ -244,9 +240,38 @@ fun Int.intToMyMonth(): MyMonth {
     return MyMonth(year, month)
 }
 
+fun MyMonth.toMonthString(): String {
+
+    // 00년으로 표기
+    val year = this.year.toString().substring(2, 4)
+
+    val month = this.month
+    var monthString = ""
+
+    if (month < 10) {
+        monthString = "0$month"
+    } else {
+        monthString = month.toString()
+    }
+
+    return "$year.$monthString"
+}
+
+
 data class MyMonth(
     var year: Int,
     var month: Int,
+)
+
+// 맞춤 차트 그래프 색
+val CUSTOM_CHART_COLORS = arrayListOf<Int>(
+    Color.rgb(0, 205, 62), Color.rgb(0, 144, 205), Color.rgb(0, 112, 64), Color.rgb(0, 205, 164),
+    Color.rgb(0, 94, 152), Color.rgb(9, 0, 197),
+    Color.rgb(0, 113, 0),
+    Color.rgb(0, 100, 54),
+    Color.rgb(0, 168, 0),
+    Color.rgb(0, 147, 97),
+    Color.rgb(97, 24, 219)
 )
 
 
