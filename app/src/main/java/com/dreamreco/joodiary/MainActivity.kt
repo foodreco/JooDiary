@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private val calendarViewModel by viewModels<CalendarViewModel>()
 
     // 앱 테마 색상 정하기
+    // 레이아웃 weight 기준으로 재설계하기
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

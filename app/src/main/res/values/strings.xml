@@ -24,6 +24,7 @@
     <string name="permission_access">권한이 허용되었습니다.</string>
     <string name="permission_denied_gallery">권한이 거부되었습니다.\n갤러리를 이용할 수 없습니다.</string>
     <string name="permission_denied_camera">권한이 거부되었습니다.\n카메라를 이용할 수 없습니다.</string>
+    <string name="permission_denied_backup">권한이 거부되었습니다.\n파일을 내보낼 수 없습니다.</string>
     <string name="exit_callback_toast">뒤로 가기 버튼을 한번 더 누르면 종료됩니다.</string>
     <string name="menu_image_change">이미지 변경</string>
     <string name="changed_apply_confirm">저장을 하셔야 적용됩니다.</string>
@@ -31,4 +32,10 @@
     <string name="list_menu_sort_recent">최근 날짜순</string>
     <string name="list_menu_sort_important">중요 기록만 보기</string>
     <string name="image_load_error">이미지를 불러올 수 없습니다.</string>
+    <string name="statistics_fragment_toolbar_title">음주 성향</string>
+    <string name="setting_fragment_toolbar_title">설정</string>
+    <string name="diary_start_date">%1$d-%2$d-%3$d</string>
+    <string name="empty_recordStartDate">-</string>
+    <string name="numberOfRecordedDate">%1$d일</string>
+
 </resources>

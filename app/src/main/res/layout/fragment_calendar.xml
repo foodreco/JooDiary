@@ -31,6 +31,17 @@
         app:mcv_selectionColor="#2196F3"
         app:mcv_weekDayTextAppearance="@style/CalenderViewWeekCustomText" />
 
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/calenderView"
+        />
+
     <TextView
         android:id="@+id/text_date"
         style="@style/font_mr_line_5dp"
@@ -38,9 +49,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:textSize="12sp"
+        android:layout_marginTop="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/calenderView" />
+        app:layout_constraintTop_toBottomOf="@id/divider" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

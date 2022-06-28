@@ -33,15 +33,12 @@ class ListFragment : Fragment() {
     }
 
 
-    // RecyclerView 스크롤 렉 개선하기
     // 3) 이미지 가로 세로 똑같이 유지하기 => 잘라서 정사각형으로 도출할 수 있게?
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-//        Listfragment 2중 recyclerview x -> 상단 Textview 스와이프, 스와이프 적용 시, RecyclerView SubmitList 변경하는 방식으로...
 
         with(listViewModel) {
 

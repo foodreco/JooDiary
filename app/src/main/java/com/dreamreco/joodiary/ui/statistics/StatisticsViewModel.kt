@@ -19,8 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class StatisticsViewModel @Inject constructor(
     private val database: DiaryBaseDao,
-    private val databaseForCalendarDate: CalendarDateDao,
-    private val databaseForLoadImageSignal: LoadImageSignalDao,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -85,7 +83,7 @@ class StatisticsViewModel @Inject constructor(
 
             // groupDataMap 을 순회하면서 name : 그룹명, numbers : 사람수
             for ((drinkType, times) in drinkTypeDataMap) {
-                val list = DrinkTypePieChartList(drinkType, times.toFloat())
+                val list = DrinkTypePieChartList(drinkType, times.toString())
                 drinkTypeData.add(list)
             }
 
@@ -106,7 +104,8 @@ class StatisticsViewModel @Inject constructor(
                 if ((each.POA == null) || (each.POA.toString() == "")) {
                     continue
                 } else {
-                    if (each.POA!!.toFloat() >= 20) {
+                    if (each.POA!!.toFloat() < 20) {
+                        // 도수가 20도 보다 작으면 저도주
                         lowMyDrinkList.add(each)
                     } else {
                         highMyDrinkList.add(each)
@@ -141,54 +140,8 @@ class StatisticsViewModel @Inject constructor(
 
     fun convertToCombinedChartData(baseList: List<BaseDataForCombinedChartData>) {
         val convertedList = baseList.toCombinedChartData()
-        Log.e("통계뷰모델", "baseList : $baseList")
-        Log.e("통계뷰모델", "convertedList : $convertedList")
         _combinedChartData.value = convertedList
     }
-
-//    private fun List<BaseDataForCombinedChartData>.toCombinedChartData() : List<CombinedChartData> {
-//
-//        val result = arrayListOf<CombinedChartData>() // 결과를 리턴할 리스트
-//        if (this == emptyList<BaseDataForCombinedChartData>()) {
-//            // empty 일 때...
-//        } else {
-//
-//            var baseMonth = this.first().calendarDay.toMyMonth()
-//            var dataVOD = 0f
-//            var drinkTimes = 0f
-//
-//            for (eachDrinkTimes in this) {
-//                // VOD 관련 기록이 없다면, 반복 skip
-//                if (eachDrinkTimes.VOD == "") {
-//                    continue
-//                }
-//
-//                마지막 달 꺼를 어떻게 입력할까?
-//
-//                if (baseMonth != eachDrinkTimes.calendarDay.toMyMonth()) {
-//
-//                    val addList = CombinedChartData(baseMonth, dataVOD, drinkTimes)
-//                    result.add(addList)
-//
-//                    dataVOD = 0f
-//                    drinkTimes = 0f
-//
-//                    baseMonth = eachDrinkTimes.calendarDay.toMyMonth()
-//                    dataVOD += eachDrinkTimes.VOD.toFloat()
-//                    drinkTimes += 1f
-//
-//
-//
-//                } else {
-//
-//                    dataVOD += eachDrinkTimes.VOD.toFloat()
-//                    drinkTimes += 1f
-//
-//                }
-//            }
-//        }
-//        return result
-//    }
 
     private fun List<BaseDataForCombinedChartData>.toCombinedChartData() : List<CombinedChartData> {
 
@@ -247,7 +200,7 @@ class StatisticsViewModel @Inject constructor(
 
 data class DrinkTypePieChartList(
     var drinkType: String,
-    var drinkTimes: Float
+    var drinkTimes: String,
 )
 
 data class CombinedChartData(

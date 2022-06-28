@@ -25,6 +25,10 @@ interface DiaryBaseDao {
     @Query("DELETE FROM diary_base WHERE date = :date AND title =:title")
     suspend fun deleteByTitleAndDate(date: MyDate, title: String)
 
+    // 모든 DiaryBase 를 날짜 내람차순으로 가져오는 함수
+    @Query("SELECT * FROM diary_base ORDER BY dateForSort DESC")
+    suspend fun getAllDiaryBaseByDateDESCForBackUp(): List<DiaryBase>
+
     // 주종을 모두 리스트 형태로 모두 불러오는 코드
     @Query("SELECT myDrink FROM diary_base WHERE myDrink is not null ORDER BY myDrink ASC")
     suspend fun getDrinkType(): List<MyDrink>
@@ -78,6 +82,14 @@ interface DiaryBaseDao {
     // 특정 날짜의 DiaryBase 를 중요한 것부터 가져오는 함수
     @Query("SELECT * FROM diary_base WHERE date = :date ORDER BY importance DESC")
     fun getDiaryBaseFlowInDate(date: MyDate): Flow<List<DiaryBase>>
+
+    // 기록 중 가장 오래된 날짜를 가져오는 함수
+    @Query("SELECT date FROM diary_base ORDER BY dateForSort ASC LIMIT 1")
+    fun getStartDate(): Flow<MyDate>
+
+    // 기록 중 기록 일수만 모두 가져오는 함수
+    @Query("SELECT dateForSort FROM diary_base ORDER BY dateForSort ASC")
+    fun getRecordDate(): Flow<List<Int>>
 
 }
 

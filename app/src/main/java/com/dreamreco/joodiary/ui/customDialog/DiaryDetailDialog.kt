@@ -673,7 +673,6 @@ class DiaryDetailDialog : DialogFragment() {
         // 원본 사진은 지정 경로에 저장됨.
         with(binding) {
             diaryImageView.imageTintList = null
-            Log.e("다이어리 다이얼로그","photoUri : $photoUri")
             diaryImageView.setImageBitmap(
                 photoUri?.let {
                     decodeSampledBitmapFromInputStream(

@@ -3,6 +3,7 @@ package com.dreamreco.joodiary.ui.statistics
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 import kotlin.math.round
+import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
@@ -55,6 +57,11 @@ class StatisticsFragment : Fragment() {
 
         // 가로막대바 유지 코드
         setHorizontalProgressbar()
+
+        // 1. 툴바 관련 코드
+        with(binding.statisticsToolbar) {
+            title = getString(R.string.statistics_fragment_toolbar_title)
+        }
 
         return binding.root
     }
@@ -145,6 +152,9 @@ class StatisticsFragment : Fragment() {
             // 가운데 불투명써클 크기
             transparentCircleRadius = 0f
 
+            // 터치 시 강조 작동
+            isHighlightPerTapEnabled = true
+
             // 차트 범례 표현 여부
             legend.isEnabled = true
             val l = legend
@@ -175,22 +185,26 @@ class StatisticsFragment : Fragment() {
             animateY(1000, com.github.mikephil.charting.animation.Easing.EaseInCubic)
 
             // data set - 데이터 넣어주기
-            // 인수가 많은 집합부터 불러오기(사람수 많은 그룹부터 불러오기)
-            // 데이터 넣기, 조건부로 null 일 때 넣을 리스트 따로 만들기
             val entries = ArrayList<PieEntry>()
             if (drinkTypePieChartList == emptyList<DrinkTypePieChartList>()) {
                 entries.add(PieEntry(100f, "그룹없음"))
             } else {
+                // 여기서 반복을 하니깐, 애니메이션에 렉이 발생한다??
+                // 미리 반복한 결과값을 풀어서 넣어주자?
+                // 소수점 못 없애나??
                 for (list in drinkTypePieChartList) {
-                    entries.add(PieEntry(list.drinkTimes, list.drinkType))
+                    entries.add(PieEntry(list.drinkTimes.toFloat(), list.drinkType))
                 }
             }
+
 
             // 데이터 관련 옵션 정하기
             val dataSet = PieDataSet(entries, "")
             with(dataSet) {
                 // 그래프 사이 간격
                 sliceSpace = 1f
+                // 색깔구분 잘가게 해주자
+                // 갯수 많아지니깐 헷갈림
                 colors = CUSTOM_CHART_COLORS
             }
 
@@ -280,12 +294,14 @@ class StatisticsFragment : Fragment() {
                 xAxisMonth.month.toMonthString()
             months.add(monthToString)
         }
+
         // 만약 month 가 empty 라면 차트 자체를 숨기거나 변경할 것 (visibility 사용해서)
 
         val xAxis = chart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.axisMinimum = 0f
-        xAxis.granularity = 1f
+        xAxis.granularity = 1f // 그래프 확대 시 x 축 최소 간격, data 의 BarEntry X 값 간격과 일치해야 함!
+        xAxis.setDrawLabels(true) // x축 라벨표시여부
         xAxis.valueFormatter = IndexAxisValueFormatter(months)
 
         val data = CombinedData()
@@ -294,8 +310,8 @@ class StatisticsFragment : Fragment() {
         data.setData(generateLineData(applyList))
         data.setValueTypeface(Typeface.DEFAULT_BOLD)
 
-        xAxis.axisMaximum = data.xMax + 0.5f
-        xAxis.axisMinimum = data.xMin - 0.5f
+        xAxis.axisMaximum = data.xMax + 0.5f // x 축 뒤쪽 이격 거리
+        xAxis.axisMinimum = data.xMin - 0.5f // x 축 앞쪽 이격 거리
 
         chart.data = data
         showCombinedChartLayoutProgress(false)
@@ -316,10 +332,10 @@ class StatisticsFragment : Fragment() {
     // Combined Chart 중 바 차트
     private fun generateBarData(applyList: List<CombinedChartData>): BarData? {
         val entries1: ArrayList<BarEntry> = ArrayList()
-        for (index in 1 until applyList.lastIndex + 2) {
-            entries1.add(BarEntry(index + 0f, applyList[index - 1].VOD))
+        for (index in 0 until applyList.lastIndex + 1) {
+            entries1.add(BarEntry(index + 0f, applyList[index].VOD))
         }
-        val set1 = BarDataSet(entries1, "알콜섭취량(ml)")
+        val set1 = BarDataSet(entries1, "주량(ml)")
         set1.color = Color.rgb(60, 220, 78)
         set1.valueTextColor = Color.rgb(60, 220, 78)
         set1.valueTextSize = 10f
@@ -337,8 +353,8 @@ class StatisticsFragment : Fragment() {
     private fun generateLineData(applyList: List<CombinedChartData>): LineData? {
         val d = LineData()
         val entries: ArrayList<Entry> = arrayListOf()
-        for (index in 1 until applyList.lastIndex + 2) {
-            entries.add(Entry(index + 0f, applyList[index - 1].drinkTimes))
+        for (index in 0 until applyList.lastIndex + 1) {
+            entries.add(Entry(index + 0f, applyList[index].drinkTimes))
         }
         val set = LineDataSet(entries, "음주횟수")
         set.color = Color.rgb(74, 101, 114)
@@ -362,12 +378,12 @@ class StatisticsFragment : Fragment() {
     private fun activateHorizontalProgressbar(drinkTypePieChartList: DrinkHorizontalProgressbarList) {
 
         with(binding) {
-            textTotalIn.text = drinkTypePieChartList.lowDrinkTimes.toString()
-            textTotalOut.text = drinkTypePieChartList.highDrinkTimes.toString()
-            textGroupIn.text = drinkTypePieChartList.lowDrinkVOD.toString()
-            textGroupOut.text = drinkTypePieChartList.highDrinkVOD.toString()
-            textRecoIn.text = drinkTypePieChartList.lowDrinkPVOA.toString()
-            textRecoOut.text = drinkTypePieChartList.highDrinkPVOA.toString()
+            textTotalIn.text = drinkTypePieChartList.lowDrinkTimes.roundToInt().toString()
+            textTotalOut.text = drinkTypePieChartList.highDrinkTimes.roundToInt().toString()
+            textGroupIn.text = drinkTypePieChartList.lowDrinkVOD.roundToInt().toString()
+            textGroupOut.text = drinkTypePieChartList.highDrinkVOD.roundToInt().toString()
+            textRecoIn.text = drinkTypePieChartList.lowDrinkPVOA.roundToInt().toString()
+            textRecoOut.text = drinkTypePieChartList.highDrinkPVOA.roundToInt().toString()
 
 
             // 문구 로직 설계하기
