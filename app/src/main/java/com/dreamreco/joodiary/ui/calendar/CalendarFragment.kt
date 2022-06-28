@@ -1,5 +1,6 @@
 package com.dreamreco.joodiary.ui.calendar
 
+import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,12 +12,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.dreamreco.joodiary.MainActivity
+import com.dreamreco.joodiary.MyApplication
 import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.FragmentCalendarBinding
 import com.dreamreco.joodiary.room.entity.CalendarDate
 import com.dreamreco.joodiary.room.entity.DiaryBase
 import com.dreamreco.joodiary.room.entity.MyDate
 import com.dreamreco.joodiary.room.entity.MyDrink
+import com.dreamreco.joodiary.ui.login.ScreenLockActivity
 import com.dreamreco.joodiary.util.*
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -163,11 +167,16 @@ class CalendarFragment : Fragment() {
 
     private fun setDotDecorate() {
         with(calendarViewModel) {
-            dotForCalendar.observe(viewLifecycleOwner){ list ->
+            dotForCalendar.observe(viewLifecycleOwner) { list ->
                 basicDecoratorReset()
                 with(binding.calenderView) {
                     addDecorator(EventDecorator(requireContext(), list.notImportantList))
-                    addDecorator(EventDecoratorForImportantData(requireContext(), list.importantList))
+                    addDecorator(
+                        EventDecoratorForImportantData(
+                            requireContext(),
+                            list.importantList
+                        )
+                    )
                 }
             }
 
@@ -212,7 +221,7 @@ class CalendarFragment : Fragment() {
     // 리스트 신규 추가 코드
     private fun listAdd() {
         val date = MyDate(recentDate.date.year, recentDate.date.month, recentDate.date.day)
-        val item = DiaryBase(null, date, recentDate.calendarDate, "", null, null, false,0,null)
+        val item = DiaryBase(null, date, recentDate.calendarDate, "", null, null, false, 0, null)
         val action = CalendarFragmentDirections.actionCalenderFragmentToDiaryDetailDialog(
             item
         )
@@ -308,7 +317,7 @@ class CalendarFragment : Fragment() {
                     ).show()
                 } else {
                     //액티비티 종료
-                    requireActivity().finishAndRemoveTask()
+                    requireActivity().finishAffinity()
                 }
             }
         }

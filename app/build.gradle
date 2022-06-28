@@ -102,4 +102,7 @@ dependencies {
     // exifinterface(이미지 회전)
     implementation "androidx.exifinterface:exifinterface:1.3.3"
 
+    // Biometric
+    implementation "androidx.biometric:biometric-ktx:1.2.0-alpha04"
+
 }

@@ -62,6 +62,18 @@ const val IMAGE_DELETE = 3
 const val SORT_NORMAL = 0
 const val SORT_IMPORTANCE = 1
 
+// 보안관련
+const val LOGIN_TYPE = "login_type"
+const val LOGIN_WITH_BIO = "login_with_bio"
+const val LOGIN_WITH_PASSWORD = "login_with_password"
+const val LOGIN_WITH_NOTHING = "login_with_nothing"
+// 로그인 상태
+const val LOGIN_STATE = "login_state"
+const val LOGIN_CLEAR = "login_clear"
+const val LOGIN_NOT_CONFIRM = "login_not_confirm"
+const val KEY_NAME = "key_name"
+
+
 
 // Permissions
 val GET_DATA_PERMISSIONS = arrayOf(
