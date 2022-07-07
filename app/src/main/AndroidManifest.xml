@@ -36,7 +36,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.login.ScreenLockActivity"/>
+        <activity android:name=".ui.login.BioScreenLockActivity"
+            android:theme="@style/SplashTheme"/>
+        <activity android:name=".ui.login.PasswordScreenLockActivity"
+            android:theme="@style/SplashTheme"/>
+        <receiver android:name=".ui.login.ScreenReceiverWithBio"/>
+        <receiver android:name=".ui.login.ScreenReceiverWithPassword"/>
+        <service android:name=".ui.login.ScreenService"/>
     </application>
 
 </manifest>

@@ -17,6 +17,7 @@ import com.dreamreco.joodiary.util.SORT_IMPORTANCE
 import com.dreamreco.joodiary.util.SORT_NORMAL
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class ListFragment : Fragment() {
 
@@ -98,7 +99,7 @@ class ListFragment : Fragment() {
         with(binding) {
             with(listFragmentRecyclerView) {
                 adapter = mAdapter
-                setHasFixedSize(true)
+//                setHasFixedSize(true)
                 setItemViewCacheSize(13)
             }
 
@@ -111,5 +112,8 @@ class ListFragment : Fragment() {
         }
     }
 
-
+    override fun onResume() {
+        super.onResume()
+        Log.e("리스트 프레그먼트","onResume 작동")
+    }
 }

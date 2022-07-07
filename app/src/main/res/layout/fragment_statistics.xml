@@ -15,11 +15,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar"/>
+        app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/statistics_toolbar">
@@ -46,7 +47,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    android:background="?attr/selectableItemBackground"
                     android:padding="14dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -54,68 +54,83 @@
 
                     <TextView
                         android:id="@+id/text_tendency"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="start"
-                        android:text="# 사용자님의 성향"
+                        android:text="# 나의 성향"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/text_duration"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/text_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="(최근 3개월 기준)"
+                        app:layout_constraintBottom_toBottomOf="@id/text_tendency"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/text_tendency" />
 
                     <TextView
                         android:id="@+id/summary_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="16dp"
                         android:gravity="center"
-                        android:text="'술을 즐기는 음주가'"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/text_tendency" />
 
                     <TextView
-                        android:id="@+id/text_callType_tendency"
+                        android:id="@+id/text_average_frequency"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="12dp"
-                        android:text="전체 발수신 성향"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
+                        android:text="-"
                         android:textColor="@color/black"
                         android:textSize="16sp"
+                        app:layout_constraintEnd_toStartOf="@id/up_down_frequency"
                         app:layout_constraintStart_toEndOf="@+id/img_for_all"
                         app:layout_constraintTop_toBottomOf="@id/summary_text" />
 
                     <TextView
-                        android:id="@+id/text_callType_tendency_reco"
+                        android:id="@+id/text_average_PAOD"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
                         android:layout_marginTop="4dp"
-                        android:text="알림 발수신 성향"
+                        android:text="-"
                         android:textColor="@color/black"
                         android:textSize="16sp"
-                        app:layout_constraintStart_toStartOf="@+id/text_callType_tendency"
-                        app:layout_constraintTop_toBottomOf="@+id/text_callType_tendency_group" />
+                        app:layout_constraintEnd_toStartOf="@id/up_down_PAOD"
+                        app:layout_constraintStart_toEndOf="@id/img_for_alarm"
+                        app:layout_constraintTop_toBottomOf="@+id/text_average_VOD" />
 
                     <TextView
-                        android:id="@+id/text_callType_tendency_group"
+                        android:id="@+id/text_average_VOD"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
                         android:layout_marginTop="4dp"
-                        android:text="그룹 발수신 성향"
+
+                        android:text="-"
                         android:textColor="@color/black"
                         android:textSize="16sp"
-                        app:layout_constraintStart_toStartOf="@+id/text_callType_tendency"
-                        app:layout_constraintTop_toBottomOf="@+id/text_callType_tendency" />
+                        app:layout_constraintEnd_toStartOf="@id/up_down_VOD"
+                        app:layout_constraintStart_toEndOf="@id/img_for_group"
+                        app:layout_constraintTop_toBottomOf="@+id/text_average_frequency" />
 
                     <ProgressBar
                         android:id="@+id/progressBar_tendency"
                         style="?android:attr/progressBarStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toTopOf="@id/tendency_divider"
                         app:layout_constraintEnd_toEndOf="parent" />
 
                     <TextView
@@ -125,7 +140,7 @@
                         android:text="평균 빈도"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/text_callType_tendency" />
+                        app:layout_constraintTop_toTopOf="@+id/text_average_frequency" />
 
                     <TextView
                         android:id="@+id/textView10"
@@ -134,46 +149,230 @@
                         android:text="평균 주량"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/text_callType_tendency_group" />
+                        app:layout_constraintTop_toTopOf="@+id/text_average_VOD" />
 
                     <TextView
                         android:id="@+id/textView5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="최대 주량"
+                        android:text="평균 알콜섭취량"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/text_callType_tendency_reco" />
+                        app:layout_constraintTop_toTopOf="@+id/text_average_PAOD" />
 
                     <ImageView
                         android:id="@+id/img_for_all"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
                         android:src="@drawable/ic_sort"
                         app:layout_constraintBottom_toBottomOf="@+id/textView3"
-                        app:layout_constraintStart_toEndOf="@+id/textView3"
+                        app:layout_constraintStart_toStartOf="@+id/img_for_alarm"
                         app:layout_constraintTop_toTopOf="@+id/textView3" />
 
                     <ImageView
                         android:id="@+id/img_for_group"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
                         android:src="@drawable/ic_sort"
                         app:layout_constraintBottom_toBottomOf="@+id/textView10"
-                        app:layout_constraintStart_toEndOf="@+id/textView10"
+                        app:layout_constraintStart_toStartOf="@+id/img_for_alarm"
                         app:layout_constraintTop_toTopOf="@+id/textView10" />
 
                     <ImageView
                         android:id="@+id/img_for_alarm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
+                        android:layout_marginStart="8dp"
                         android:src="@drawable/ic_sort"
                         app:layout_constraintBottom_toBottomOf="@+id/textView5"
                         app:layout_constraintStart_toEndOf="@+id/textView5"
                         app:layout_constraintTop_toTopOf="@+id/textView5" />
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:id="@+id/tendency_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/textView5" />
+
+                    <TextView
+                        android:id="@+id/tendency_view_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:text="전체 기간"
+                        android:textSize="16sp"
+                        app:drawableRightCompat="@drawable/ic_arrow_down"
+                        app:layout_constraintBottom_toTopOf="@id/tendency_view_all_layout"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tendency_divider" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/tendency_view_all_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tendency_view_all">
+
+                        <TextView
+                            android:id="@+id/summary_text2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:textSize="16sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/text_average_frequency2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="16dp"
+                            android:text="-"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toEndOf="@+id/img_for_alarm2"
+                            app:layout_constraintTop_toBottomOf="@id/summary_text2" />
+
+                        <TextView
+                            android:id="@+id/text_average_PAOD2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="-"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="@+id/text_average_frequency2"
+                            app:layout_constraintTop_toBottomOf="@+id/text_average_VOD2" />
+
+                        <TextView
+                            android:id="@+id/text_average_VOD2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="-"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="@+id/text_average_frequency2"
+                            app:layout_constraintTop_toBottomOf="@+id/text_average_frequency2" />
+
+                        <TextView
+                            android:id="@+id/textView32"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="평균 빈도"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/text_average_frequency2" />
+
+                        <TextView
+                            android:id="@+id/textView102"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="평균 주량"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/text_average_VOD2" />
+
+                        <TextView
+                            android:id="@+id/textView52"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="평균 알콜섭취량"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/text_average_PAOD2" />
+
+                        <ImageView
+                            android:id="@+id/img_for_all2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_sort"
+                            app:layout_constraintBottom_toBottomOf="@+id/textView32"
+                            app:layout_constraintStart_toStartOf="@+id/img_for_alarm2"
+                            app:layout_constraintTop_toTopOf="@+id/textView32" />
+
+                        <ImageView
+                            android:id="@+id/img_for_group2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_sort"
+                            app:layout_constraintBottom_toBottomOf="@+id/textView102"
+                            app:layout_constraintStart_toStartOf="@+id/img_for_alarm2"
+                            app:layout_constraintTop_toTopOf="@+id/textView102" />
+
+                        <ImageView
+                            android:id="@+id/img_for_alarm2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:src="@drawable/ic_sort"
+                            app:layout_constraintBottom_toBottomOf="@+id/textView52"
+                            app:layout_constraintStart_toEndOf="@+id/textView52"
+                            app:layout_constraintTop_toTopOf="@+id/textView52" />
+
+                        <com.google.android.material.divider.MaterialDivider
+                            android:id="@+id/tendency_divider2"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/textView52" />
+
+                        <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="※ 알콜섭취량 : 주량 × 도수"
+                            app:layout_constraintStart_toStartOf="@+id/textView52"
+                            app:layout_constraintTop_toBottomOf="@+id/tendency_divider2" />
+
+                        <TextView
+                            android:id="@+id/textView22"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="    소주 1병당 알콜함유량 : 61.2mL (17도 기준)"
+                            app:layout_constraintStart_toStartOf="@+id/textView52"
+                            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <ImageView
+                        android:id="@+id/up_down_frequency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="@+id/text_average_frequency"
+                        app:layout_constraintStart_toEndOf="@+id/text_average_frequency"
+                        app:layout_constraintTop_toTopOf="@+id/text_average_frequency" />
+
+                    <ImageView
+                        android:id="@+id/up_down_VOD"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="@+id/text_average_VOD"
+                        app:layout_constraintStart_toEndOf="@+id/text_average_VOD"
+                        app:layout_constraintTop_toTopOf="@+id/text_average_VOD" />
+
+                    <ImageView
+                        android:id="@+id/up_down_PAOD"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="@+id/text_average_PAOD"
+                        app:layout_constraintStart_toEndOf="@+id/text_average_PAOD"
+                        app:layout_constraintTop_toTopOf="@+id/text_average_PAOD" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
@@ -210,7 +409,7 @@
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/drinkType_pie_chart"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
+                        android:layout_height="300dp"
                         android:layout_marginTop="16dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -224,6 +423,7 @@
                         android:layout_marginTop="16dp"
                         android:orientation="horizontal"
                         android:weightSum="10"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/drinkType_pie_chart">
@@ -231,7 +431,7 @@
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_weight="1">
+                            android:layout_weight="2">
 
                             <TextView
                                 android:id="@+id/emptyText"
@@ -263,7 +463,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:gravity="center"
-                                android:text="총량"
+                                android:text="주량(mL)"
                                 app:layout_constraintBottom_toTopOf="@id/textView19"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -275,7 +475,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:gravity="center"
-                                android:text="알콜"
+                                android:text="알콜(mL)"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -289,11 +489,11 @@
                             android:layout_weight="2">
 
                             <TextView
-                                android:id="@+id/textView2"
+                                android:id="@+id/progressbar_target_textView"
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:gravity="center"
-                                android:text="저도주"
+                                android:textStyle="bold"
                                 app:layout_constraintBottom_toTopOf="@id/text_total_in"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -304,12 +504,12 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_marginTop="4dp"
-                                android:gravity="end"
-                                android:text="TextView"
+                                android:gravity="center"
+                                android:textStyle="bold"
                                 app:layout_constraintBottom_toTopOf="@id/text_group_in"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                                app:layout_constraintTop_toBottomOf="@+id/progressbar_target_textView" />
 
 
                             <TextView
@@ -317,8 +517,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_marginTop="4dp"
-                                android:gravity="end"
-                                android:text="TextView"
+                                android:gravity="center"
+                                android:textStyle="bold"
                                 app:layout_constraintBottom_toTopOf="@id/text_reco_in"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -329,8 +529,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_marginTop="4dp"
-                                android:gravity="end"
-                                android:text="TextView"
+                                android:gravity="center"
+                                android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -341,7 +541,7 @@
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_weight="5">
+                            android:layout_weight="4">
 
                             <TextView
                                 android:id="@+id/emptyText2"
@@ -417,32 +617,31 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:gravity="center"
-                                android:text="고도주"
+                                android:text="전체"
                                 app:layout_constraintBottom_toTopOf="@id/text_total_out"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
+
 
                             <TextView
                                 android:id="@+id/text_total_out"
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_marginTop="4dp"
-                                android:gravity="end"
-                                android:text="TextView"
+                                android:gravity="center"
                                 app:layout_constraintBottom_toTopOf="@id/text_group_out"
                                 app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/textView9" />
-
 
                             <TextView
                                 android:id="@+id/text_group_out"
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_marginTop="4dp"
-                                android:gravity="end"
-                                android:text="TextView"
+                                android:gravity="center"
                                 app:layout_constraintBottom_toTopOf="@id/text_reco_out"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -453,60 +652,14 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_marginTop="4dp"
-                                android:gravity="end"
-                                android:text="TextView"
+                                android:gravity="center"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/text_group_out" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
-
                     </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/text_callType_review"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="16dp"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/materialDivider" />
-
-                    <TextView
-                        android:id="@+id/text_callType_review2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="8dp"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/text_callType_review" />
-
-                    <TextView
-                        android:id="@+id/text_callType_review3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="8dp"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/text_callType_review2" />
-
-                    <TextView
-                        android:id="@+id/text_callType_review4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="8dp"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/text_callType_review3" />
 
                     <ProgressBar
                         android:id="@+id/progressbar_for_PieChart"
@@ -514,16 +667,6 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:id="@+id/materialDivider"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="16dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/progress_horizontal_layout" />
-
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -536,10 +679,10 @@
                 android:layout_margin="4dp"
                 android:layout_marginBottom="8dp"
                 app:cardCornerRadius="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView_for_progress_status"
-                app:layout_constraintBottom_toBottomOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/cardView_for_progress_status">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/combined_chart_layout"
@@ -561,7 +704,7 @@
                         android:id="@+id/duration_name_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="# 기간별 주량을 확인해보세요."
+                        android:text="# 기간별 주량"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
@@ -591,31 +734,41 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="16dp"
-                        android:text="ㆍ주량 경향"
+                        android:text="ㆍ횟수가 가장 많은 달 :"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/materialDivider2" />
 
                     <TextView
-                        android:id="@+id/text_com_review2"
+                        android:id="@+id/text_com_review_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="4dp"
-                        android:text="ㆍ알콜 섭취량 경향"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/text_com_review" />
 
                     <TextView
-                        android:id="@+id/text_com_review3"
+                        android:id="@+id/text_com_review2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="16dp"
+                        android:text="ㆍ알콜 섭취량이 가장 많은 달 :"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/text_com_review_sub" />
+
+                    <TextView
+                        android:id="@+id/text_com_review2_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="4dp"
-                        android:text="ㆍ빈도 경향"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"

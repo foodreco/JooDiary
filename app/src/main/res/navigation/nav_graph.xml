@@ -26,7 +26,11 @@
         android:id="@+id/settingFragment"
         android:name="com.dreamreco.joodiary.ui.setting.SettingFragment"
         android:label="fragment_setting"
-        tools:layout="@layout/fragment_setting" />
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_settingFragment_to_passwordSettingDialog"
+            app:destination="@id/passwordSettingDialog" />
+    </fragment>
     <fragment
         android:id="@+id/statisticsFragment"
         android:name="com.dreamreco.joodiary.ui.statistics.StatisticsFragment"
@@ -53,5 +57,12 @@
             android:name="uriString"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/passwordSettingDialog"
+        android:name="com.dreamreco.joodiary.ui.customDialog.PasswordSettingDialog"
+        android:label="password_setting"
+        tools:layout="@layout/password_setting_dialog">
+    </fragment>
+
 
 </navigation>

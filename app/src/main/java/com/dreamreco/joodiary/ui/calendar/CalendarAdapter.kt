@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.ImageDecoder
 import android.os.Build
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -128,7 +129,7 @@ class CalenderAdapter(
                             ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.gray))
                         diaryImage.setImageDrawable(
                             ContextCompat.getDrawable(
-                                mContext, R.drawable.ic_add_photo_52
+                                mContext, R.drawable.ic_image
                             )
                         )
                     }
@@ -137,7 +138,7 @@ class CalenderAdapter(
                         ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.gray))
                     diaryImage.setImageDrawable(
                         ContextCompat.getDrawable(
-                            mContext, R.drawable.ic_add_photo_52
+                            mContext, R.drawable.ic_image
                         )
                     )
                 }
@@ -146,13 +147,23 @@ class CalenderAdapter(
                     diaryDrinkType.text = item.myDrink!!.drinkType
                     diaryVOD.text = item.myDrink!!.VOD
                     diaryPOA.text = item.myDrink!!.POA
+                } else {
+                    diaryDrinkType.text = ""
+                    diaryVOD.text = ""
+                    diaryPOA.text = ""
                 }
 
-                //리싸이클러 길게 터치 시,
-                recyclerViewChildLayout.setOnLongClickListener {
-                    Toast.makeText(mContext, "Long~~Touch!", Toast.LENGTH_SHORT).show()
-                    return@setOnLongClickListener true
+                if (item.importance) {
+                    diaryBaseImportance.visibility = View.VISIBLE
+                } else {
+                    diaryBaseImportance.visibility = View.INVISIBLE
                 }
+
+//                //리싸이클러 길게 터치 시,
+//                recyclerViewChildLayout.setOnLongClickListener {
+//                    Toast.makeText(mContext, "Long~~Touch!", Toast.LENGTH_SHORT).show()
+//                    return@setOnLongClickListener true
+//                }
 
                 //리싸이클러 터치 시, 해당 ContactBase 정보를 bundle 로 넘기고 updateDialog show
                 recyclerViewChildLayout.setOnClickListener {

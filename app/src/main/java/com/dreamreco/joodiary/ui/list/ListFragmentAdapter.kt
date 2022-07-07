@@ -6,6 +6,7 @@ import android.graphics.ImageDecoder
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -146,7 +147,7 @@ class ListFragmentAdapter(
                             ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.gray))
                         diaryImage.setImageDrawable(
                             ContextCompat.getDrawable(
-                                mContext, R.drawable.ic_add_photo_52
+                                mContext, R.drawable.ic_image
                             )
                         )
                     }
@@ -155,22 +156,27 @@ class ListFragmentAdapter(
                         ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.gray))
                     diaryImage.setImageDrawable(
                         ContextCompat.getDrawable(
-                            mContext, R.drawable.ic_add_photo_52
+                            mContext, R.drawable.ic_image
                         )
                     )
                 }
 
-
                 if (item.myDrink != null) {
                     diaryDrinkType.text = item.myDrink!!.drinkType
-                    diaryVOD.text = item.myDrink!!.VOD
-                    diaryPOA.text = item.myDrink!!.POA
+                } else {
+                    diaryDrinkType.text = ""
                 }
 
-                //리싸이클러 길게 터치 시,
-                recyclerViewChildLayout.setOnLongClickListener {
-                    return@setOnLongClickListener true
+                if (item.importance) {
+                    diaryBaseImportance.visibility = View.VISIBLE
+                } else {
+                    diaryBaseImportance.visibility = View.INVISIBLE
                 }
+
+//                //리싸이클러 길게 터치 시,
+//                recyclerViewChildLayout.setOnLongClickListener {
+//                    return@setOnLongClickListener true
+//                }
 
                 //리싸이클러 터치 시, 해당 ContactBase 정보를 bundle 로 넘기고 updateDialog show
                 recyclerViewChildLayout.setOnClickListener {
@@ -254,7 +260,7 @@ sealed class ListFragmentAdapterBase {
     ) : ListFragmentAdapterBase() {
 
         companion object {
-            const val VIEW_TYPE = R.layout.calendar_child
+            const val VIEW_TYPE = R.layout.list_fragment_child
         }
     }
 

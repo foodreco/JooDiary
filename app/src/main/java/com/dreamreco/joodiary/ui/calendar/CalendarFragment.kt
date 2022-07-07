@@ -1,6 +1,5 @@
 package com.dreamreco.joodiary.ui.calendar
 
-import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,15 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.dreamreco.joodiary.MainActivity
 import com.dreamreco.joodiary.MyApplication
 import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.FragmentCalendarBinding
 import com.dreamreco.joodiary.room.entity.CalendarDate
 import com.dreamreco.joodiary.room.entity.DiaryBase
 import com.dreamreco.joodiary.room.entity.MyDate
-import com.dreamreco.joodiary.room.entity.MyDrink
-import com.dreamreco.joodiary.ui.login.ScreenLockActivity
 import com.dreamreco.joodiary.util.*
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -67,6 +63,7 @@ class CalendarFragment : Fragment() {
             calenderView.setOnDateChangedListener { widget, date, selected -> // 선택 시, recentDate 업데이트
                 calendarViewModel.changeRecentDate(date)
             }
+
         }
 
 
@@ -249,21 +246,43 @@ class CalendarFragment : Fragment() {
         // 현재 시간 +3 개월
         endTimeCalendar.set(Calendar.MONTH, currentMonth + 3)
 
-        binding.calenderView.state().edit()
-            // 맨 앞자리 요일 설정
-            .setFirstDayOfWeek(Calendar.SUNDAY)
-            // 최소 표시 일자 (현재시간 -3년)
-            .setMinimumDate(CalendarDay.from(currentYear - 1, currentMonth, 1))
-            // 최대 표시 일자 (현재시간 +3개월)
-            .setMaximumDate(
-                CalendarDay.from(
-                    currentYear,
-                    currentMonth + 3,
-                    endTimeCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        with(binding) {
+            with(calenderView) {
+                // 캘린더 테마 설정
+                when (MyApplication.prefs.getString(THEME_TYPE, THEME_BASIC)) {
+                    THEME_BASIC -> {
+                        setDateTextAppearance(R.style.CalenderViewDateCustomText)
+                        setHeaderTextAppearance(R.style.CalendarWidgetHeader)
+                        setWeekDayTextAppearance(R.style.CalenderViewWeekCustomText)
+                    }
+                    THEME_1 -> {
+                        setDateTextAppearance(R.style.CalenderViewDateCustomTextTheme1)
+                        setHeaderTextAppearance(R.style.CalendarWidgetHeaderTheme1)
+                        setWeekDayTextAppearance(R.style.CalenderViewWeekCustomTextTheme1)
+                    }
+                    THEME_2 -> {
+                        setDateTextAppearance(R.style.CalenderViewDateCustomTextTheme2)
+                        setHeaderTextAppearance(R.style.CalendarWidgetHeaderTheme2)
+                        setWeekDayTextAppearance(R.style.CalenderViewWeekCustomTextTheme2)
+                    }
+                }
+            }
+
+            calenderView.state().edit()
+                // 맨 앞자리 요일 설정
+                .setFirstDayOfWeek(Calendar.SUNDAY)
+                // 최소 표시 일자 (현재시간 -3년)
+                .setMinimumDate(CalendarDay.from(currentYear - 1, currentMonth, 1))
+                // 최대 표시 일자 (현재시간 +3개월)
+                .setMaximumDate(
+                    CalendarDay.from(
+                        currentYear,
+                        currentMonth + 3,
+                        endTimeCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+                    )
                 )
-            )
-            .setCalendarDisplayMode(CalendarMode.MONTHS)
-            .commit()
+                .setCalendarDisplayMode(CalendarMode.MONTHS)
+                .commit()
 
 //        val stCalendarDay = CalendarDay.from(currentYear-1, currentMonth, currentDate)
 //        val enCalendarDay = CalendarDay.from(
@@ -272,20 +291,21 @@ class CalendarFragment : Fragment() {
 //            endTimeCalendar.get(Calendar.DATE)
 //        )
 
-        // 꾸밈 표시 설정
-        val sundayDecorator = SundayDecorator()
-        val saturdayDecorator = SaturdayDecorator()
+            // 꾸밈 표시 설정
+            val sundayDecorator = SundayDecorator()
+            val saturdayDecorator = SaturdayDecorator()
 //        val minMaxDecorator = MinMaxDecorator(stCalendarDay, enCalendarDay)
 //        val boldDecorator = BoldDecorator(stCalendarDay, enCalendarDay)
-        val todayDecorator = TodayDecorator(requireContext())
+            val todayDecorator = TodayDecorator(requireContext())
 
-        binding.calenderView.addDecorators(
-            sundayDecorator,
-            saturdayDecorator,
+            calenderView.addDecorators(
+                sundayDecorator,
+                saturdayDecorator,
 //            boldDecorator,
 //            minMaxDecorator,
-            todayDecorator
-        )
+                todayDecorator
+            )
+        }
     }
 
     private fun setRecyclerView() {

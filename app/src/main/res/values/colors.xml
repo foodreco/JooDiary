@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FD0000</color>
+    <color name="blue">#3F51B5</color>
     <color name="yellow">#FFE500</color>
     <color name="gray">#8E8E8E</color>
 
@@ -21,14 +22,45 @@
     <color name="menu_icon_tint_color">#000000</color>
     <color name="important_color">#4b178b</color>
     <color name="not_important_color">#000000</color>
-    <color name="roundCornerProgressBar_color_1">#FD0000</color>
-    <color name="roundCornerProgressBar_color_2">#FFE500</color>
+    <color name="roundCornerProgressBar_color_1">#DADADA</color>
+    <color name="roundCornerProgressBar_color_2">#3F51B5</color>
     <color name="pieChart_center_text">#000000</color>
-    <color name="pieChart_no_data_text_color">#000000</color>
+    <color name="pieChart_no_data_text_color">#4b178b</color>
     <!--캘린더 색-->
     <color name="calendar_dot_normal">#FF000000</color>
     <color name="calendar_dot_important">#FD0000</color>
     <color name="calendar_today">#FF018786</color>
 
+
+
+    <!--테스트 색상들-->
+    <color name="hau_white_green">#F9FFF9</color>
+    <color name="hau_green">#00CD3E</color> 0,205,62
+    <color name="hau_green_translucence">#8FF1AD</color>
+    <color name="hau_text_color">#00a263</color>
+    <color name="hau_status_bar_color">#007040</color>0,112,64
+    <color name="hau_bright_green">#91e295</color>
+    <color name="hau_emerald">#00cda4</color>0,205,164
+    <color name="hau_blue">#3d00cd</color>
+    <color name="hau_bright_blue">#0090cd</color> 0,144,205
+    <color name="hau_dark_green">#4A6572</color> 74,101,114
+    <color name="hau_black">#232F34</color>35,47,52
+    <color name="ANALOGOUS_color_1">#005e98</color>0,94,152
+    <color name="ANALOGOUS_color_2">#0900c5</color>9,0,197
+    <color name="ANALOGOUS_color_3">#6118db</color>97,24,219
+    <color name="ANALOGOUS_color_4">#0090cd</color>0,144,205
+    <color name="ANALOGOUS_color_5">#007100</color>0,113,0
+    <color name="ANALOGOUS_color_6">#006436</color>0,100,54
+    <color name="ANALOGOUS_color_7">#00a800</color>0,168,0
+    <color name="ANALOGOUS_color_8">#009361</color>0,147,97
+    <color name="ANALOGOUS_color_9">#005e98</color>0,94,152
+    <!--테스트 색상 2-->
+    <color name="sound_white_yellow">#FFFFFFFF</color>
+    <color name="sound_yellow">#f1c40f</color>
+    <color name="sound_yellow_orange">#f1530f</color>
+    <color name="sound_yellow_green">#adf10f</color>
+    <color name="sound_bright_yellow">#faeaaf</color>
+    <color name="sound_status_bar_color">#FFFFFFFF</color>
+    <color name="sound_text_color">#341f00</color>
 
 </resources>

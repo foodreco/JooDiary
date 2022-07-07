@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -45,6 +46,9 @@ class BackUpLoadingDialog : DialogFragment() {
     private var backUpText = ""
     private var _saveFileUri = MutableLiveData<Uri?>(null)
     private var saveFileUri : Uri? = null
+
+    // 뒤로가기 관련 변수
+    private var cancelState = 0
 
     // Dialog 배경 투명하게 하는 코드??
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -119,9 +123,21 @@ class BackUpLoadingDialog : DialogFragment() {
         fileOutputStream.close()
         pfd.close()
 
-        Toast.makeText(requireContext(),"백업이 완료되었습니다.",Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.backup_completed),Toast.LENGTH_SHORT).show()
 
         // write 가 완료되면 dialog 종료
         dismiss()
     }
+
+    override fun onResume() {
+        super.onResume()
+        cancelState += 1
+        if ((cancelState == 2) && (saveFileUri == null)) {
+            // 두번째 resume + 저장 uri 가 없다면
+            // 유저가 도중에 뒤로가기 한 상황
+            Toast.makeText(requireContext(),getString(R.string.backup_canceled),Toast.LENGTH_SHORT).show()
+            dismiss()
+        }
+    }
+
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><!--<layer-list xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--    <item>-->
+<!--        <shape android:shape="rectangle">-->
+<!--            <stroke android:width="0.5dp" android:color="@color/gray"/>-->
+<!--            <solid android:color="@color/white"/>-->
+<!--        </shape>-->
+<!--        <ripple android:color="#A0A0A0"/>-->
+<!--    </item>-->
+<!--</layer-list>-->
+
+<!--ripple : 터치 효과 부여-->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/joo_dark">
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="0.5dp"
+                android:color="@color/gray" />
+            <solid android:color="@color/white" />
+        </shape>
+    </item>
+</ripple>

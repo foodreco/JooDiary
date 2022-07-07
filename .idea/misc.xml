@@ -6,15 +6,23 @@
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/back_up_loading_dialog.xml" value="0.2785" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/ic_add_photo.xml" value="0.255" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/ic_add_photo_52.xml" value="0.255" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/ic_arrow_up.xml" value="0.2495" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/ic_backup.xml" value="0.2785" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/ic_close.xml" value="0.255" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/ic_horizontal_rule.xml" value="0.2495" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/ic_hypen.xml" value="0.2495" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/ic_image.xml" value="0.255" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/style_only_radius_10.xml" value="0.24" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/textview_stroke.xml" value="0.2785" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/drawable/transparent_calendar_element.xml" value="0.24" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/font/custom_font.xml" value="0.3963541666666667" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/font/custom_font_theme1.xml" value="0.3963541666666667" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/font/custom_font_theme2.xml" value="0.3963541666666667" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/font/font.xml" value="0.3953125" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/font/test.xml" value="0.3453703703703704" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/activity_bio_screen_lock.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/activity_main.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/activity_password_screen_lock.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/activity_screen_lock.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/activity_splash.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/back_up_loading_dialog.xml" value="0.33" />
@@ -30,13 +38,15 @@
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/fragment_calendar_test.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/fragment_list.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/fragment_main.xml" value="0.36614583333333334" />
-        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/fragment_setting.xml" value="0.5" />
-        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/fragment_statistics.xml" value="0.46007853403141363" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/fragment_setting.xml" value="0.33" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/fragment_statistics.xml" value="0.33" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/fragment_statistics_test.xml" value="0.33" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/full_image_dialog.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/get_image_dialog.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/list_fragment_child.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/list_fragment_empty_header.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/pager_child.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/password_setting_dialog.xml" value="0.33" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/layout/spinner_item.xml" value="0.3651041666666667" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/menu/bottom_dialog_menu.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/AndroidStudioProjects/JooDiary/app/src/main/res/menu/bottom_menu.xml" value="0.36614583333333334" />

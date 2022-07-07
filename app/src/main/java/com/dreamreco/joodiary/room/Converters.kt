@@ -65,12 +65,12 @@ class MyDateTypeConverter(private val gson: Gson) {
 class MyDrinkTypeConverter(private val gson: Gson) {
 
     @TypeConverter
-    fun listToJson(value: MyDrink): String? {
+    fun listToJson(value : MyDrink?): String? {
         return gson.toJson(value)
     }
 
     @TypeConverter
-    fun jsonToList(value: String): MyDrink {
+    fun jsonToList(value: String?): MyDrink? {
         return gson.fromJson(value, MyDrink::class.java)
     }
 }

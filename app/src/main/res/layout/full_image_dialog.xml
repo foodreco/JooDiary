@@ -18,13 +18,13 @@
 
         <TextView
             android:id="@+id/menu_image_change"
-            style="@style/font_mr_line_5dp"
-            android:textColor="@color/white"
-            android:text="이미지 변경"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
+            android:gravity="center"
             android:layout_marginEnd="16dp"
+            android:text="이미지 변경"
+            android:textColor="@color/white"
             android:textSize="14sp" />
 
     </androidx.appcompat.widget.Toolbar>
@@ -44,12 +44,12 @@
         <ImageButton
             android:id="@+id/btn_bottom_toolbar_delete"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
             android:backgroundTint="@color/black"
             android:src="@drawable/ic_delete"
-            tools:visibility="visible"
-            app:tint="@color/white" />
+            app:tint="@color/white"
+            tools:visibility="visible" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -66,7 +66,7 @@
             android:id="@+id/diaryImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/black"/>
+            android:background="@color/black" />
 
 
     </LinearLayout>

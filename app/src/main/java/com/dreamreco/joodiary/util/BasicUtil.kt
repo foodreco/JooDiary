@@ -1,13 +1,12 @@
 package com.dreamreco.joodiary.util
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
-import android.util.Log
 import android.view.Window
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
@@ -19,8 +18,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.dreamreco.joodiary.room.entity.DiaryBase
+import com.dreamreco.joodiary.room.entity.MyDate
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import java.io.InputStream
+import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
 
 
 fun EditText.setFocusAndShowKeyboard(context: Context) {
@@ -67,12 +69,28 @@ const val LOGIN_TYPE = "login_type"
 const val LOGIN_WITH_BIO = "login_with_bio"
 const val LOGIN_WITH_PASSWORD = "login_with_password"
 const val LOGIN_WITH_NOTHING = "login_with_nothing"
+// 테마 관련
+const val THEME_TYPE = "theme_type"
+const val THEME_1 = "theme1"
+const val THEME_2 = "theme2"
+const val THEME_BASIC = "theme_basic"
 // 로그인 상태
 const val LOGIN_STATE = "login_state"
 const val LOGIN_CLEAR = "login_clear"
 const val LOGIN_NOT_CONFIRM = "login_not_confirm"
 const val KEY_NAME = "key_name"
 
+// 비밀번호
+const val PASSWORD_KEY = "password_key"
+const val NO_REGISTERED_PASSWORD = "empty"
+
+//경향 관련
+const val ALCOHOL_PER_SOJU = 61.2
+const val GRADE1 = "절주 : 술을 절제하는 사람"
+const val GRADE2 = "애주가 : 술을 사랑하는 사람"
+const val GRADE3 = "술고래 : 주량이 많은 사람"
+const val GRADE4 = "술꾼 : 프로의 경지에 이른 사람"
+const val GRADE5 = "열반 : 술로 도를 터득한 사람"
 
 
 // Permissions
@@ -193,10 +211,10 @@ fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeig
 
 
 // CalendarDay 를 Int 로 변환하는 함수
+// dateForSort 변환용
+// yyyymmdd
 fun CalendarDay.toDateInt(): Int {
-
     val year = this.year.toString()
-
     val month = this.month + 1
     var monthString = ""
 
@@ -214,23 +232,13 @@ fun CalendarDay.toDateInt(): Int {
     } else {
         dayString = day.toString()
     }
-
     return (year + monthString + dayString).toInt()
 }
 
-fun CalendarDay.toMyMonth(): MyMonth {
-    val year = this.year
-    val month = this.month + 1
-    return MyMonth(year, month)
-}
-
-fun DiaryBase.toMonthInt(): Int {
-
-    val year = this.date.year.toString()
-
-    val month = this.date.month
+fun intToDateInt(year: Int, month: Int, day: Int): Int {
+    val thisYear = year.toString()
     var monthString = ""
-
+    var dayString = ""
 
     if (month < 10) {
         monthString = "0$month"
@@ -238,18 +246,51 @@ fun DiaryBase.toMonthInt(): Int {
         monthString = month.toString()
     }
 
-    return (year + monthString).toInt()
+    if (day < 10) {
+        dayString = "0$day"
+    } else {
+        dayString = day.toString()
+    }
+    return (thisYear + monthString + dayString).toInt()
 }
 
-fun Int.intToMyMonth(): MyMonth {
 
-    val stringInt = this.toString()
-
-    val year = stringInt.substring(0, 4).toInt()
-
-    val month = stringInt.substring(4, 6).toInt()
-
+fun CalendarDay.toMyMonth(): MyMonth {
+    val year = this.year
+    val month = this.month + 1
     return MyMonth(year, month)
+}
+
+fun CalendarDay.toRecent3Months(): Int {
+    var year = this.year
+    var month = this.month + 1
+    var monthString = ""
+
+    val day = this.day
+    var dayString = ""
+
+    // 3개월 전까지 dateForSort 계산
+    month -= 3
+
+    if (month == 0) {
+        monthString = "12"
+        year -= 1
+    } else if (month == -1) {
+        monthString = "11"
+        year -= 1
+    } else if (month == -2) {
+        monthString = "10"
+        year -= 1
+    } else {
+        monthString = "0$month"
+    }
+
+    if (day < 10) {
+        dayString = "0$day"
+    } else {
+        dayString = day.toString()
+    }
+    return (year.toString() + monthString + dayString).toInt()
 }
 
 fun MyMonth.toMonthString(): String {
@@ -268,6 +309,23 @@ fun MyMonth.toMonthString(): String {
 
     return "$year.$monthString"
 }
+
+
+// 두 일자 사이의 날짜 수를 계산하는 함수
+// 적용 일자는 yyyymmdd 방식으로 표현된 String 이어야 함
+// dateForSort 적용
+@SuppressLint("SimpleDateFormat")
+fun calculateDuration(startDate: String, endDate: String) : Int {
+    val sdf = SimpleDateFormat("yyyyMMdd")
+
+    val startDateValue = sdf.parse(startDate)
+    val endDateValue = sdf.parse(endDate)
+
+    val diff: Long = endDateValue!!.time - startDateValue!!.time
+
+    return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS).toInt()+1
+}
+
 
 
 data class MyMonth(

@@ -42,19 +42,37 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/diary_title"
+                <LinearLayout
+                    android:weightSum="10"
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:lines="1"
-                    android:text="일기 제목"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/diary_image"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_weight="9"
+                        android:id="@+id/diary_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:layout_marginStart="8dp"
+                        android:lines="1"
+                        android:text="일기 제목"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@+id/diary_image"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/diaryBase_importance"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_star"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        app:tint="@color/important_color" />
+
+                </LinearLayout>
+
 
 
                 <LinearLayout

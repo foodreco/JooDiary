@@ -2,7 +2,7 @@ package com.dreamreco.joodiary.ui.customDialog
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -13,15 +13,17 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -35,14 +37,18 @@ import com.dreamreco.joodiary.room.entity.MyDate
 import com.dreamreco.joodiary.room.entity.MyDrink
 import com.dreamreco.joodiary.ui.calendar.CalendarViewModel
 import com.dreamreco.joodiary.util.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.prolificinteractive.materialcalendarview.CalendarDay
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONArray
 import java.io.FileNotFoundException
 import java.text.SimpleDateFormat
+import java.util.*
 
 
 @AndroidEntryPoint
 class DiaryDetailDialog : DialogFragment() {
+
 
     private val calendarViewModel by viewModels<CalendarViewModel>()
     private val binding by lazy { DiaryDetailDialogBinding.inflate(layoutInflater) }
@@ -61,13 +67,19 @@ class DiaryDetailDialog : DialogFragment() {
     // update 변수 역할도 함
     private var photoUri: Uri? = null
 
+    // 날짜 변경 관련 변수 설정
+    private var updatedYear : Int = 0
+    private var updatedMonth : Int = 0
+    private var updatedDay : Int = 0
 
-//    // Dialog 배경 투명하게 하는 코드??
-//    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-//        val dialog = super.onCreateDialog(savedInstanceState)
-//        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-//        return dialog
-//    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // 날짜 변경 관련 변수 설정
+        updatedYear = args.diaryBase.date.year
+        updatedMonth = args.diaryBase.date.month
+        updatedDay  = args.diaryBase.date.day
+    }
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreateView(
@@ -91,6 +103,8 @@ class DiaryDetailDialog : DialogFragment() {
             diaryImageView.setOnClickListener {
                 // 만약 이미지가 존재하지 않으면,
                 if (photoUri == null) {
+                    // 키보드 올라가 있다면 내리고,
+                    titleText.clearFocusAndHideKeyboard(requireContext())
                     // 바로 이미지 가져오기 작동
                     takeImage()
                 } else {
@@ -156,7 +170,6 @@ class DiaryDetailDialog : DialogFragment() {
             }
         }
 
-//        3) 툴바 타이틀 날짜로 해서 중간으로 정렬 (스피너로 날짜 변경가능 [insertOrUpdateData 로직 바꿔야함]/ 기존 데이터의 경우 날짜 수정 가능)
 //        4) 주종, 도수, 주량 부분 감싸기 extendedLayout 또는 내용 아래로 내리기
 
 
@@ -169,6 +182,23 @@ class DiaryDetailDialog : DialogFragment() {
                 args.diaryBase.date.month,
                 args.diaryBase.date.day
             )
+
+            updatedYear = args.diaryBase.date.year
+            updatedMonth = args.diaryBase.date.month
+            updatedDay = args.diaryBase.date.day
+
+            // 툴바 날짜 터치 시, 변경
+            toolbarTitleTextView.setOnClickListener {
+                val datePickerDialog = DatePickerDialog(requireContext(), { _, year, month, day ->
+                    // 캘린더 날짜 선택 후 확인 시,
+                    toolbarTitleTextView.text = getString(R.string.diary_date, year, month+1, day)
+                    updatedYear = year
+                    updatedMonth = month+1
+                    updatedDay = day
+                }, args.diaryBase.date.year, args.diaryBase.date.month-1, args.diaryBase.date.day)
+                datePickerDialog.show()
+            }
+
             with(dialogToolbar) {
 
                 // X 터치 시 이전으로 돌아가는 코드
@@ -761,6 +791,7 @@ class DiaryDetailDialog : DialogFragment() {
 
     // SharedPreferences 로부터 요소를 불러와서 spinner 에 추가하는 함수
     private fun spinnerDrinkTypeListCall() {
+        spinnerDrinkTypeList.clear()
         val lastList = MyApplication.prefs.getString("drinkType", "None")
         val arrJson = JSONArray(lastList)
         for (i in 0 until arrJson.length()) {
@@ -770,6 +801,7 @@ class DiaryDetailDialog : DialogFragment() {
 
     // SharedPreferences 로부터 요소를 불러와서 spinner 에 추가하는 함수
     private fun spinnerPOAListCall() {
+        spinnerPOAList.clear()
         val lastList = MyApplication.prefs.getString("POA", "None")
         val arrJson = JSONArray(lastList)
         for (i in 0 until arrJson.length()) {
@@ -779,6 +811,7 @@ class DiaryDetailDialog : DialogFragment() {
 
     // SharedPreferences 로부터 요소를 불러와서 spinner 에 추가하는 함수
     private fun spinnerVODListCall() {
+        spinnerVODList.clear()
         val lastList = MyApplication.prefs.getString("VOD", "None")
         val arrJson = JSONArray(lastList)
         for (i in 0 until arrJson.length()) {
@@ -820,6 +853,14 @@ class DiaryDetailDialog : DialogFragment() {
                 getString(R.string.drink_records_error),
                 Toast.LENGTH_SHORT
             ).show()
+        } else if ( total == 3 ) {
+            // 주량 기록을 다 채웠는데,
+            // drinkType 이 "데이터 없음" 일 때,
+            if (updatedList().myDrink?.drinkType == getString(R.string.get_empty_DrinkTypePieChartList)) {
+                Toast.makeText(requireContext(), getString(R.string.change_drinkType_string),Toast.LENGTH_SHORT).show()
+            } else {
+                calendarViewModel.insertOrUpdateData(updatedList(), args.diaryBase)
+            }
         } else {
             // 빈칸이 아닐 때, DB update 진행
             calendarViewModel.insertOrUpdateData(updatedList(), args.diaryBase)
@@ -829,19 +870,25 @@ class DiaryDetailDialog : DialogFragment() {
     // 반영할 최신 updatedList
     private fun updatedList(): DiaryBase {
         val newImage = photoUri
-//        스피너 추가 시 날짜 변경
         val newDate = MyDate(
-            args.diaryBase.date.year,
-            args.diaryBase.date.month,
-            args.diaryBase.date.day
+            updatedYear,
+            updatedMonth,
+            updatedDay
         )
+
         val newTitle = binding.titleText.text.trim().toString()
         val newContent = binding.contentText.text.trim().toString()
-        val newMyDrink = MyDrink(
+        var newMyDrink : MyDrink? = MyDrink(
             binding.drinkType.text.trim().toString(),
             binding.POA.text.trim().toString(),
             binding.VOD.text.trim().toString()
         )
+
+        // 반약 빈칸이면 MyDrink null 처리됨
+        if (binding.drinkType.text.trim().toString() == "") {
+            newMyDrink = null
+        }
+
         val newImportance = diaryImportanceForUpdate
         var newBitmap: Bitmap? = null
 
@@ -853,12 +900,12 @@ class DiaryDetailDialog : DialogFragment() {
         val updateList = DiaryBase(
             newImage,
             newDate,
-            args.diaryBase.calendarDay,
+            CalendarDay.from(updatedYear,updatedMonth-1,updatedDay),
             newTitle,
             newContent,
             newMyDrink,
             newImportance,
-            args.diaryBase.calendarDay.toDateInt(),
+            intToDateInt(updatedYear,updatedMonth,updatedDay),
             newBitmap,
             args.diaryBase.id
         )
@@ -867,7 +914,7 @@ class DiaryDetailDialog : DialogFragment() {
 
 
     private fun deleteData() {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setPositiveButton(getString(R.string.positive_button)) { _, _ ->
             // 해당 데이터 삭제 코드
             val deleteDate = MyDate(

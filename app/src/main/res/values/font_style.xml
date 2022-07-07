@@ -1,25 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Custom font 적용 -->
-    <style name="customTextViewFontStyle" parent="@android:style/Widget.DeviceDefault.TextView">
-        <item name="android:fontFamily">@font/custom_font</item>
-        <item name="android:lineSpacingExtra">5dp</item>
-    </style>
+<!--    &lt;!&ndash; Custom font 적용 : 기본테마 &ndash;&gt;-->
+<!--    <style name="customTextViewFontStyle" parent="@android:style/Widget.DeviceDefault.TextView">-->
+<!--        <item name="android:fontFamily">@font/custom_font</item>-->
+<!--        <item name="android:lineSpacingExtra">5dp</item>-->
+<!--    </style>-->
 
-    <style name="customButtonFontStyle" parent="@android:style/Widget.DeviceDefault.Button.Borderless">
-        <item name="android:fontFamily">@font/custom_font</item>
-    </style>
+<!--    <style name="customButtonFontStyle" parent="@android:style/Widget.DeviceDefault.Button.Borderless">-->
+<!--        <item name="android:fontFamily">@font/custom_font</item>-->
+<!--    </style>-->
 
-    <style name="customEditTextFontStyle" parent="@android:style/Widget.DeviceDefault.EditText">
-        <item name="android:fontFamily">@font/custom_font</item>
-        <item name="android:lineSpacingExtra">5dp</item>
-    </style>
+<!--    <style name="customEditTextFontStyle" parent="@android:style/Widget.Material.Light.EditText">-->
+<!--        <item name="android:fontFamily">@font/custom_font</item>-->
+<!--        <item name="android:lineSpacingExtra">5dp</item>-->
+<!--    </style>-->
 
-    <style name="customRadioButtonFontStyle" parent="@android:style/Widget.DeviceDefault.CompoundButton.RadioButton">
-        <item name="android:fontFamily">@font/custom_font</item>
-    </style>
+<!--    <style name="customRadioButtonFontStyle" parent="@android:style/Widget.DeviceDefault.CompoundButton.RadioButton">-->
+<!--        <item name="android:fontFamily">@font/custom_font</item>-->
+<!--    </style>-->
 
-    <style name="customCheckboxFontStyle" parent="@android:style/Widget.DeviceDefault.CompoundButton.CheckBox">
-        <item name="android:fontFamily">@font/custom_font</item>
-    </style>
+<!--    <style name="customCheckboxFontStyle" parent="@android:style/Widget.DeviceDefault.CompoundButton.CheckBox">-->
+<!--        <item name="android:fontFamily">@font/custom_font</item>-->
+<!--    </style>-->
+
+<!--    <style name="customAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">-->
+<!--        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>-->
+<!--        <item name="materialAlertDialogBodyTextStyle">@style/BodyTextAppearance.MaterialComponents.Body2</item>-->
+<!--        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>-->
+<!--        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>-->
+<!--    </style>-->
+<!--    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">-->
+<!--        <item name="android:fontFamily">@font/custom_font</item>-->
+<!--    </style>-->
+<!--    <style name="BodyTextAppearance.MaterialComponents.Body2" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">-->
+<!--        <item name="fontFamily">@font/custom_font</item>-->
+<!--    </style>-->
+<!--    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">-->
+<!--        <item name="fontFamily">@font/custom_font</item>-->
+<!--    </style>-->
+
+
+<!--    &lt;!&ndash; Custom font 적용 : 테마 1&ndash;&gt;-->
+<!--    <style name="customTextViewFontStyleTheme1" parent="@android:style/Widget.DeviceDefault.TextView">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--        <item name="android:lineSpacingExtra">5dp</item>-->
+<!--    </style>-->
+
+<!--    <style name="customButtonFontStyleTheme1" parent="@android:style/Widget.DeviceDefault.Button.Borderless">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--    </style>-->
+
+<!--    <style name="customEditTextFontStyleTheme1" parent="@android:style/Widget.Material.Light.EditText">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--        <item name="android:lineSpacingExtra">5dp</item>-->
+<!--    </style>-->
+
+<!--    <style name="customRadioButtonFontStyleTheme1" parent="@android:style/Widget.DeviceDefault.CompoundButton.RadioButton">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--    </style>-->
+
+<!--    <style name="customCheckboxFontStyleTheme1" parent="@android:style/Widget.DeviceDefault.CompoundButton.CheckBox">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--    </style>-->
+
+<!--    <style name="customAlertDialogTheme1" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">-->
+<!--        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.TextTheme1</item>-->
+<!--        <item name="materialAlertDialogBodyTextStyle">@style/BodyTextAppearance.MaterialComponents.Body2Theme1</item>-->
+<!--        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.ButtonTheme1</item>-->
+<!--        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.ButtonTheme1</item>-->
+<!--    </style>-->
+<!--    <style name="MaterialAlertDialog.App.Title.TextTheme1" parent="MaterialAlertDialog.MaterialComponents.Title.Text">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--    </style>-->
+<!--    <style name="BodyTextAppearance.MaterialComponents.Body2Theme1" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">-->
+<!--        <item name="fontFamily">@font/custom_font_theme1</item>-->
+<!--    </style>-->
+<!--    <style name="Widget.App.ButtonTheme1" parent="Widget.MaterialComponents.Button.TextButton.Dialog">-->
+<!--        <item name="fontFamily">@font/custom_font_theme1</item>-->
+<!--    </style>-->
+<!--    &lt;!&ndash; region TextInputLayout & TextInputEditText styles &ndash;&gt;-->
+<!--    <style name="TextInputEditText.OutlinedBox.CustomFontTheme1" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox.Dense">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--    </style>-->
+
+<!--    <style name="TextInputLayoutHintTextTheme1" parent="TextAppearance.Design.Hint">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--    </style>-->
+
+<!--    <style name="TextInputLayoutHelperTextTheme1" parent="TextAppearance.Design.HelperText">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--    </style>-->
+
+<!--    <style name="TextInputLayoutErrorTextTheme1" parent="TextAppearance.Design.Error">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--    </style>-->
+
+
+
+<!--    &lt;!&ndash; Custom font 적용 : 테마 2&ndash;&gt;-->
+<!--    <style name="customTextViewFontStyleTheme2" parent="@android:style/Widget.DeviceDefault.TextView">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme2</item>-->
+<!--        <item name="android:lineSpacingExtra">5dp</item>-->
+<!--    </style>-->
+
+<!--    <style name="customButtonFontStyleTheme2" parent="@android:style/Widget.DeviceDefault.Button.Borderless">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme2</item>-->
+<!--    </style>-->
+
+<!--    <style name="customEditTextFontStyleTheme2" parent="@android:style/Widget.Material.Light.EditText">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme2</item>-->
+<!--        <item name="android:lineSpacingExtra">5dp</item>-->
+<!--    </style>-->
+
+<!--    <style name="customRadioButtonFontStyleTheme2" parent="@android:style/Widget.DeviceDefault.CompoundButton.RadioButton">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme2</item>-->
+<!--    </style>-->
+
+<!--    <style name="customCheckboxFontStyleTheme2" parent="@android:style/Widget.DeviceDefault.CompoundButton.CheckBox">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme2</item>-->
+<!--    </style>-->
+
+<!--    <style name="customAlertDialogTheme2" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">-->
+<!--        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.TextTheme2</item>-->
+<!--        <item name="materialAlertDialogBodyTextStyle">@style/BodyTextAppearance.MaterialComponents.Body2Theme2</item>-->
+<!--        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.ButtonTheme2</item>-->
+<!--        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.ButtonTheme2</item>-->
+<!--    </style>-->
+<!--    <style name="MaterialAlertDialog.App.Title.TextTheme2" parent="MaterialAlertDialog.MaterialComponents.Title.Text">-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme2</item>-->
+<!--    </style>-->
+<!--    <style name="BodyTextAppearance.MaterialComponents.Body2Theme2" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">-->
+<!--        <item name="fontFamily">@font/custom_font_theme2</item>-->
+<!--    </style>-->
+<!--    <style name="Widget.App.ButtonTheme2" parent="Widget.MaterialComponents.Button.TextButton.Dialog">-->
+<!--        <item name="fontFamily">@font/custom_font_theme2</item>-->
+<!--    </style>-->
+
 </resources>

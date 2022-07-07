@@ -1,6 +1,7 @@
 package com.dreamreco.joodiary.ui.calendar
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.dreamreco.joodiary.MyApplication
 import com.dreamreco.joodiary.room.dao.CalendarDateDao
@@ -54,7 +55,6 @@ class CalendarViewModel @Inject constructor(
         viewModelScope.launch {
             // DB 로부터 MyDrink 를 리스트 형태로 받아
             val myDrinkList = database.getDrinkType().distinct()
-
             val drinkTypeList = mutableListOf<String>()
             val VODList = mutableListOf<String>()
             val POAList = mutableListOf<String>()

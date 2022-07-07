@@ -2,19 +2,19 @@ package com.dreamreco.joodiary.ui.statistics
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import com.dreamreco.joodiary.room.dao.BaseDataForCombinedChartData
-import com.dreamreco.joodiary.room.dao.CalendarDateDao
 import com.dreamreco.joodiary.room.dao.DiaryBaseDao
-import com.dreamreco.joodiary.room.dao.LoadImageSignalDao
+import com.dreamreco.joodiary.room.entity.CalendarDate
+import com.dreamreco.joodiary.room.entity.MyDate
 import com.dreamreco.joodiary.room.entity.MyDrink
-import com.dreamreco.joodiary.util.MyMonth
-import com.dreamreco.joodiary.util.toMyMonth
+import com.dreamreco.joodiary.util.*
+import com.prolificinteractive.materialcalendarview.CalendarDay
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
+
 
 @HiltViewModel
 class StatisticsViewModel @Inject constructor(
@@ -29,11 +29,63 @@ class StatisticsViewModel @Inject constructor(
     val combinedChartData: LiveData<List<CombinedChartData>> = _combinedChartData
 
     private val _horizontalProgressbarData = MutableLiveData<DrinkHorizontalProgressbarList?>()
-    val horizontalProgressbarData: LiveData<DrinkHorizontalProgressbarList?> = _horizontalProgressbarData
+    val horizontalProgressbarData: LiveData<DrinkHorizontalProgressbarList?> =
+        _horizontalProgressbarData
+
+    private val _drinkTendencyResult = MutableLiveData<DrinkTendency?>()
+    val drinkTendencyResult: LiveData<DrinkTendency?> = _drinkTendencyResult
+
+    private val _drinkRecent3MonthsTendencyResult = MutableLiveData<DrinkTendency?>()
+    val drinkRecent3MonthsTendencyResult: LiveData<DrinkTendency?> = _drinkRecent3MonthsTendencyResult
 
 
     fun getMyDrinkListFlow(): LiveData<List<MyDrink>> {
         return database.getAllMyDrink().asLiveData()
+    }
+
+    fun getProgressBarBaseData(targetDrinkType : String){
+        viewModelScope.launch {
+            val allBaseDate : List<MyDrink> = database.getAllMyDrinkBySuspend()
+
+            if (allBaseDate == emptyList<MyDrink>()) {
+                _horizontalProgressbarData.postValue(null)
+            } else {
+
+                var allDrinkTimes: Float = 0f
+                var allDrinkVOD: Float = 0f
+                var allDrinkPVOA: Float = 0f
+
+                var targetDrinkTimes: Float = 0f
+                var targetDrinkVOD: Float = 0f
+                var targetDrinkPVOA: Float = 0f
+
+                for (each in allBaseDate) {
+
+                    // 전체 데이터 도출 코드
+                    allDrinkTimes += 1f
+                    allDrinkVOD += each.VOD!!.toFloat()
+                    allDrinkPVOA += (each.VOD!!.toFloat() * each.POA!!.toFloat() / 100)
+
+                    // 타겟 데이터 토출 코드
+                    if (each.drinkType == targetDrinkType) {
+                        targetDrinkTimes += 1f
+                        targetDrinkVOD += each.VOD!!.toFloat()
+                        targetDrinkPVOA += (each.VOD!!.toFloat() * each.POA!!.toFloat() / 100)
+                    }
+                }
+
+                val result = DrinkHorizontalProgressbarList(
+                    allDrinkTimes,
+                    targetDrinkTimes,
+                    allDrinkVOD,
+                    targetDrinkVOD,
+                    allDrinkPVOA,
+                    targetDrinkPVOA,
+                    targetDrinkType
+                )
+                _horizontalProgressbarData.postValue(result)
+            }
+        }
     }
 
     fun getBaseDataForCombinedChartData(): LiveData<List<BaseDataForCombinedChartData>> {
@@ -81,122 +133,354 @@ class StatisticsViewModel @Inject constructor(
                 }
             }
 
-            // groupDataMap 을 순회하면서 name : 그룹명, numbers : 사람수
+            // groupDataMap 을 순회하면서 주종과 횟수를 모음
             for ((drinkType, times) in drinkTypeDataMap) {
                 val list = DrinkTypePieChartList(drinkType, times.toString())
                 drinkTypeData.add(list)
             }
 
-            // 사람수가 많은 그룹부터 정렬하여 최종 출력한다.
+            // 음주 횟수가 많은 주종부터 정렬하여 최종 출력한다.
             val result = drinkTypeData.sortedByDescending { it.drinkTimes.toInt() }
             _drinkTypeChartData.postValue(result)
         }
     }
 
-    fun makeHorizontalProgressbarList(myDrinkList: List<MyDrink>) {
-        if (myDrinkList == emptyList<MyDrink>()) {
-            _horizontalProgressbarData.postValue(null)
-        } else {
-            val lowMyDrinkList = mutableListOf<MyDrink>()
-            val highMyDrinkList = mutableListOf<MyDrink>()
-
-            for (each in myDrinkList) {
-                if ((each.POA == null) || (each.POA.toString() == "")) {
-                    continue
-                } else {
-                    if (each.POA!!.toFloat() < 20) {
-                        // 도수가 20도 보다 작으면 저도주
-                        lowMyDrinkList.add(each)
-                    } else {
-                        highMyDrinkList.add(each)
-                    }
-                }
-            }
-            var lowDrinkTimes: Float = 0f
-            var highDrinkTimes: Float = 0f
-            var lowDrinkVOD: Float = 0f
-            var highDrinkVOD: Float = 0f
-            var lowDrinkPVOA: Float = 0f
-            var highDrinkPVOA: Float = 0f
-
-            for (each in lowMyDrinkList) {
-                lowDrinkTimes += 1f
-                lowDrinkVOD += each.VOD!!.toFloat()
-                lowDrinkPVOA += (each.VOD!!.toFloat() * each.POA!!.toFloat() / 100)
-            }
-
-            for (each in highMyDrinkList) {
-                highDrinkTimes += 1f
-                highDrinkVOD += each.VOD!!.toFloat()
-                highDrinkPVOA += (each.VOD!!.toFloat() * each.POA!!.toFloat() / 100)
-            }
-
-            val result = DrinkHorizontalProgressbarList(
-                lowDrinkTimes, highDrinkTimes, lowDrinkVOD, highDrinkVOD, lowDrinkPVOA, highDrinkPVOA
-            )
-            _horizontalProgressbarData.postValue(result)
-        }
-    }
-
     fun convertToCombinedChartData(baseList: List<BaseDataForCombinedChartData>) {
-        val convertedList = baseList.toCombinedChartData()
-        _combinedChartData.value = convertedList
-    }
+        viewModelScope.launch {
+            val result = arrayListOf<CombinedChartData>() // 결과를 리턴할 리스트
 
-    private fun List<BaseDataForCombinedChartData>.toCombinedChartData() : List<CombinedChartData> {
-
-        val result = arrayListOf<CombinedChartData>() // 결과를 리턴할 리스트
-
-        if (this == emptyList<BaseDataForCombinedChartData>()) {
             // empty 일 때...
-        } else {
+            if (baseList == emptyList<BaseDataForCombinedChartData>()) {
+                _combinedChartData.value = result
+            } else {
+                val dataPAODMap = mutableMapOf<MyMonth, Float>()
+                val drinkTimesMap = mutableMapOf<MyMonth, Float>()
 
-            val dataVODMap = mutableMapOf<MyMonth, Float>()
-            val drinkTimesMap = mutableMapOf<MyMonth, Float>()
+                for (eachDrinkTimes in baseList) {
+                    // VOD 관련 기록이 없다면, 반복 skip
+                    if ((eachDrinkTimes.myDrink?.VOD == null) || eachDrinkTimes.myDrink?.VOD == "") {
+                        continue
+                    }
 
-            for (eachDrinkTimes in this) {
-                // VOD 관련 기록이 없다면, 반복 skip
-                if ((eachDrinkTimes.myDrink.VOD == null)||eachDrinkTimes.myDrink.VOD == "") {
-                    continue
+                    if (dataPAODMap.contains(eachDrinkTimes.calendarDay.toMyMonth())) {
+                        val preValue = dataPAODMap[eachDrinkTimes.calendarDay.toMyMonth()]
+                        if (preValue != null) {
+                            // 기존 값이 있으면 추가 주량을 더하고,
+                            dataPAODMap[eachDrinkTimes.calendarDay.toMyMonth()] =
+                                preValue + ((eachDrinkTimes.myDrink?.VOD!!.toFloat())*(eachDrinkTimes.myDrink?.POA!!.toFloat()))/100
+                        }
+                    } else {
+                        // 없으면 해당 값으로 시작한다.
+                        dataPAODMap[eachDrinkTimes.calendarDay.toMyMonth()] =
+                            ((eachDrinkTimes.myDrink?.VOD!!.toFloat())*(eachDrinkTimes.myDrink?.POA!!.toFloat()))/100
+                    }
+
+                    if (drinkTimesMap.contains(eachDrinkTimes.calendarDay.toMyMonth())) {
+                        val preValue = drinkTimesMap[eachDrinkTimes.calendarDay.toMyMonth()]
+                        if (preValue != null) {
+                            // 기존 값이 있으면 1을 더하고
+                            drinkTimesMap[eachDrinkTimes.calendarDay.toMyMonth()] = preValue + 1f
+                        }
+                    } else {
+                        // 없으면 1로 시작한다.
+                        drinkTimesMap[eachDrinkTimes.calendarDay.toMyMonth()] = 1f
+                    }
                 }
 
-                if (dataVODMap.contains(eachDrinkTimes.calendarDay.toMyMonth())) {
-                    val preValue = dataVODMap[eachDrinkTimes.calendarDay.toMyMonth()]
-                    if (preValue != null) {
-                        // 기존 값이 있으면 1을 더하고
-                        dataVODMap[eachDrinkTimes.calendarDay.toMyMonth()] = preValue + eachDrinkTimes.myDrink.VOD!!.toFloat()
+                for ((myMonth, dataPAOD) in dataPAODMap) {
+                    val drinkTimes = drinkTimesMap[myMonth]
+                    val addList = drinkTimes?.let { CombinedChartData(myMonth, dataPAOD, it) }
+                    if (addList != null) {
+                        result.add(addList)
                     }
-                } else {
-                    // 없으면 1로 시작한다.
-                    dataVODMap[eachDrinkTimes.calendarDay.toMyMonth()] = eachDrinkTimes.myDrink.VOD!!.toFloat()
-                }
-
-                if (drinkTimesMap.contains(eachDrinkTimes.calendarDay.toMyMonth())) {
-                    val preValue = drinkTimesMap[eachDrinkTimes.calendarDay.toMyMonth()]
-                    if (preValue != null) {
-                        // 기존 값이 있으면 1을 더하고
-                        drinkTimesMap[eachDrinkTimes.calendarDay.toMyMonth()] = preValue + 1f
-                    }
-                } else {
-                    // 없으면 1로 시작한다.
-                    drinkTimesMap[eachDrinkTimes.calendarDay.toMyMonth()] = 1f
                 }
             }
+            _combinedChartData.value = result
+        }
+    }
 
 
-            for ((myMonth, dataVOD) in dataVODMap) {
-                val drinkTimes = drinkTimesMap[myMonth]
-                val addList = drinkTimes?.let { CombinedChartData(myMonth, dataVOD, it) }
-                if (addList != null) {
-                    result.add(addList)
+    // 성향 기준 데이터를 업데이트하는 함수
+    fun getTendencyBaseData() {
+        viewModelScope.launch {
+            //1. MyDrink 가 존재하는 날짜 수
+            val myDrinkExistedDate = database.getMyDrinkExistedDate().distinct().count()
+            Log.e("스테틱 뷰모델","전체 : $myDrinkExistedDate")
+            // MyDrink 가 존재하는 날짜 수가 0개라면 데이터 부족으로 null 반환
+            if (myDrinkExistedDate == 0) {
+                _drinkTendencyResult.value = null
+            } else {
+                //3. 모든 주량 리스트
+                //날짜순으로 정렬된 리스트를 가져와야 함
+                val allVODListBase: List<AllVODListBase> = database.getAllVODByDateForSort()
+                val allVODList = mutableListOf<AllVODList>()
+
+                for (each in allVODListBase) {
+                    if (each.myDrink != null) {
+                        val addList = AllVODList(
+                            each.dateForSort,
+                            each.myDrink!!.VOD!!.toFloat(),
+                            each.myDrink!!.POA!!.toFloat()
+                        )
+                        allVODList.add(addList)
+                    } else {
+                        continue
+                    }
                 }
+
+                // 맵 : 키-dateForSort, 값-VOD
+                // 일자별 주량 합계(한 날짜에 복수 기록이 있을 경우 통합하는 코드)
+                val VODWithDateForSort = mutableMapOf<Int, Float>()
+
+                // 일자별 알콜 섭취량 합계(한 날짜에 복수 기록이 있을 경우 통합하는 코드)
+                val PAODWithDateForSort = mutableMapOf<Int, Float>()
+
+                for (each in allVODList) {
+                    if (VODWithDateForSort.contains(each.dateForSort)) {
+                        val preValue = VODWithDateForSort[each.dateForSort]
+                        if (preValue != null) {
+                            // 기존 값이 있으면 1을 더하고
+                            VODWithDateForSort[each.dateForSort] = preValue + each.VOD
+                        }
+                    } else {
+                        // 없으면 추가한다.
+                        VODWithDateForSort[each.dateForSort] = each.VOD
+                    }
+
+                    if (PAODWithDateForSort.contains(each.dateForSort)) {
+                        val preValue = PAODWithDateForSort[each.dateForSort]
+                        if (preValue != null) {
+                            // 기존 값이 있으면 1을 더하고
+                            PAODWithDateForSort[each.dateForSort] = preValue + (each.VOD*each.POA)/100
+                        }
+                    } else {
+                        // 없으면 추가한다.
+                        PAODWithDateForSort[each.dateForSort] = (each.VOD*each.POA)/100
+                    }
+
+                }
+
+                //3-1. 총 평균 주량
+                var totalVOD = 0f
+                var totalMonthNumber = 0
+                var baseMonth = ""
+
+                //3-2. 총 평균 알콜섭취량
+                var totalPAOD = 0f
+
+
+                for ((dateForSort, VOD) in VODWithDateForSort) {
+                    totalVOD += VOD
+                    val month = dateForSort.toString().substring(0, 6)
+                    if (baseMonth != month) {
+                        baseMonth = month
+                        totalMonthNumber += 1
+                    }
+                }
+
+                for ((dateForSort, PAOD) in PAODWithDateForSort) {
+                    totalPAOD += PAOD
+                }
+
+
+                // 월 평균 빈도
+                val drinkFrequencyDayNumber: Int = kotlin.math.ceil(myDrinkExistedDate.toDouble() / totalMonthNumber.toDouble())
+                    .toInt()
+
+                // 총 평균 주량
+                val averageVOD = (totalVOD / myDrinkExistedDate.toFloat()).roundToInt()
+
+                // 총 평균 알콜섭취량
+                val averagePAOD = (totalPAOD / myDrinkExistedDate.toFloat()).roundToInt()
+
+                var drinkTendencyText = ""
+
+                // 경향 5종(절주/애주가/술고래/술꾼/열반)
+                // 빈도 + 알콜섭취량 기준한다.
+                // 빈도 : 4회미만/4회~15회/4회~15회/15회이상/22회이상
+                // 평균 주량 : 360/360~1080/1080~/1080~/1080~
+                // 알콜 섭취량 : 61.2ml = 소주 1병
+
+                if (drinkFrequencyDayNumber < 4) {
+                    // 절주
+                    drinkTendencyText = GRADE1
+                } else {
+                    if (drinkFrequencyDayNumber < 15) {
+                        // 애주가 or 술고래
+                        if (averagePAOD < ALCOHOL_PER_SOJU*3) {
+                            drinkTendencyText = GRADE2
+                        } else {
+                            drinkTendencyText = GRADE3
+                        }
+                    } else {
+                        if (drinkFrequencyDayNumber < 22) {
+                            if (averagePAOD < ALCOHOL_PER_SOJU * 3) {
+                                // 술꾼
+                                drinkTendencyText = GRADE4
+                            } else {
+                                // 열반
+                                drinkTendencyText = GRADE5
+                            }
+                        } else {
+                            // 22회 이상이어도, 소주 1병 이하면
+                            if (averageVOD < ALCOHOL_PER_SOJU) {
+                                // 술꾼
+                                drinkTendencyText =  GRADE4
+                            } else {
+                                // 열반
+                                drinkTendencyText = GRADE5
+                            }
+                        }
+                    }
+                }
+
+                val result = DrinkTendency(drinkFrequencyDayNumber,averageVOD, averagePAOD, drinkTendencyText)
+                _drinkTendencyResult.value = result
             }
         }
-        return result
     }
 
-}
+    // 최근 3개월 성향 기준 데이터를 업데이트하는 함수
+    fun getTendencyBaseDataRecent3Months() {
+        viewModelScope.launch {
+            //1. 최근 3개월 내 MyDrink dateForSort
+            val recent3MonthDateForSort = CalendarDay.today().toRecent3Months()
+            val myDrinkExistedDate = database.getMyDrinkExistedDateRecent3Months(recent3MonthDateForSort).distinct().count()
+            Log.e("스테틱 뷰모델","최근 3개월 : $myDrinkExistedDate")
+            // MyDrink 가 존재하는 날짜 수가 0개라면 데이터 부족으로 null 반환
+            if (myDrinkExistedDate == 0) {
+                _drinkRecent3MonthsTendencyResult.value = null
+            } else {
+                //3. 최근 3개월 주량 리스트
+                // 날짜순으로 정렬된 리스트를 가져와야 함
+                val allVODListBase: List<AllVODListBase> = database.getRecent3MonthsVODByDateForSort(recent3MonthDateForSort)
+                val allVODList = mutableListOf<AllVODList>()
 
+                for (each in allVODListBase) {
+                    if (each.myDrink != null) {
+                        val addList = AllVODList(
+                            each.dateForSort,
+                            each.myDrink!!.VOD!!.toFloat(),
+                            each.myDrink!!.POA!!.toFloat()
+                        )
+                        allVODList.add(addList)
+                    } else {
+                        continue
+                    }
+                }
+
+                // 맵 : 키-dateForSort, 값-VOD
+                // 일자별 주량 합계(한 날짜에 복수 기록이 있을 경우 통합하는 코드)
+                val VODWithDateForSort = mutableMapOf<Int, Float>()
+
+                // 일자별 알콜 섭취량 합계(한 날짜에 복수 기록이 있을 경우 통합하는 코드)
+                val PAODWithDateForSort = mutableMapOf<Int, Float>()
+
+                for (each in allVODList) {
+                    if (VODWithDateForSort.contains(each.dateForSort)) {
+                        val preValue = VODWithDateForSort[each.dateForSort]
+                        if (preValue != null) {
+                            // 기존 값이 있으면 1을 더하고
+                            VODWithDateForSort[each.dateForSort] = preValue + each.VOD
+                        }
+                    } else {
+                        // 없으면 추가한다.
+                        VODWithDateForSort[each.dateForSort] = each.VOD
+                    }
+
+                    if (PAODWithDateForSort.contains(each.dateForSort)) {
+                        val preValue = PAODWithDateForSort[each.dateForSort]
+                        if (preValue != null) {
+                            // 기존 값이 있으면 1을 더하고
+                            PAODWithDateForSort[each.dateForSort] = preValue + (each.VOD*each.POA)/100
+                        }
+                    } else {
+                        // 없으면 추가한다.
+                        PAODWithDateForSort[each.dateForSort] = (each.VOD*each.POA)/100
+                    }
+
+                }
+
+                //3-1. 총 평균 주량
+                var totalVOD = 0f
+                var totalMonthNumber = 0
+                var baseMonth = ""
+
+                //3-2. 총 평균 알콜섭취량
+                var totalPAOD = 0f
+
+
+                for ((dateForSort, VOD) in VODWithDateForSort) {
+                    totalVOD += VOD
+                    val month = dateForSort.toString().substring(0, 6)
+                    if (baseMonth != month) {
+                        baseMonth = month
+                        totalMonthNumber += 1
+                    }
+                }
+
+                for ((dateForSort, PAOD) in PAODWithDateForSort) {
+                    totalPAOD += PAOD
+                }
+
+
+                // 월 평균 빈도
+                val drinkFrequencyDayNumber: Int = kotlin.math.ceil(myDrinkExistedDate.toDouble() / totalMonthNumber.toDouble())
+                    .toInt()
+
+                // 총 평균 주량
+                val averageVOD = (totalVOD / myDrinkExistedDate.toFloat()).roundToInt()
+
+                // 총 평균 알콜섭취량
+                val averagePAOD = (totalPAOD / myDrinkExistedDate.toFloat()).roundToInt()
+
+                var drinkTendencyText = ""
+
+                // 경향 5종(절주/애주가/술고래/술꾼/열반)
+                // 빈도 + 알콜섭취량 기준한다.
+                // 빈도 : 4회미만/4회~15회/4회~15회/15회이상/22회이상
+                // 평균 주량 : 360/360~1080/1080~/1080~/1080~
+                // 알콜 섭취량 : 61.2ml = 소주 1병
+
+                if (drinkFrequencyDayNumber < 4) {
+                    // 절주
+                    drinkTendencyText = GRADE1
+                } else {
+                    if (drinkFrequencyDayNumber < 15) {
+                        // 애주가 or 술고래
+                        if (averagePAOD < ALCOHOL_PER_SOJU*3) {
+                            drinkTendencyText = GRADE2
+                        } else {
+                            drinkTendencyText = GRADE3
+                        }
+                    } else {
+                        if (drinkFrequencyDayNumber < 22) {
+                            if (averagePAOD < ALCOHOL_PER_SOJU * 3) {
+                                // 술꾼
+                                drinkTendencyText = GRADE4
+                            } else {
+                                // 열반
+                                drinkTendencyText = GRADE5
+                            }
+                        } else {
+                            // 22회 이상이어도, 소주 1병 이하면
+                            if (averageVOD < ALCOHOL_PER_SOJU) {
+                                // 술꾼
+                                drinkTendencyText =  GRADE4
+                            } else {
+                                // 열반
+                                drinkTendencyText = GRADE5
+                            }
+                        }
+                    }
+                }
+
+                val result = DrinkTendency(drinkFrequencyDayNumber,averageVOD, averagePAOD, drinkTendencyText)
+                _drinkRecent3MonthsTendencyResult.value = result
+            }
+        }
+    }
+}
 
 data class DrinkTypePieChartList(
     var drinkType: String,
@@ -204,9 +488,9 @@ data class DrinkTypePieChartList(
 )
 
 data class CombinedChartData(
-    var month : MyMonth,
-    var VOD : Float,
-    var drinkTimes : Float
+    var month: MyMonth,
+    var PAOD: Float,
+    var drinkTimes: Float
 )
 
 data class DrinkHorizontalProgressbarList(
@@ -216,4 +500,23 @@ data class DrinkHorizontalProgressbarList(
     var highDrinkVOD: Float,
     var lowDrinkPVOA: Float,
     var highDrinkPVOA: Float,
+    var targetDrinkType: String
+)
+
+data class AllVODListBase(
+    var dateForSort: Int,
+    var myDrink: MyDrink?
+)
+
+data class AllVODList(
+    var dateForSort: Int,
+    var VOD: Float,
+    var POA: Float
+)
+
+data class DrinkTendency(
+    var drinkFrequencyDayNumber : Int,
+    var averageVOD : Int,
+    var averagePAOD : Int,
+    var drinkTendency : String
 )

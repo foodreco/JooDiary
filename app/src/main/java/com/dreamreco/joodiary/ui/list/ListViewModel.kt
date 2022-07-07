@@ -39,6 +39,7 @@ class ListViewModel @Inject constructor(
 
     // DB 에서 가져온 리스트 가공 (미리 날짜별로 정렬한 리스트를 가져와야 함)
     private fun List<DiaryBase>.toListItems(): List<ListFragmentAdapterBase> {
+        Log.e("리스트 뷰모델","toListItems 작동")
         val result = arrayListOf<ListFragmentAdapterBase>() // 결과를 리턴할 리스트
         if (this == emptyList<DiaryBase>()) {
             result.add(ListFragmentAdapterBase.EmptyHeader())
@@ -59,12 +60,5 @@ class ListViewModel @Inject constructor(
         }
         return result
     }
-
-    private fun DiaryBase.toMyMonth(): MyMonth {
-        val year = this.date.year
-        val month = this.date.month
-        return MyMonth(year, month)
-    }
-
 
 }
