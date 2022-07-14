@@ -36,16 +36,17 @@ class StatisticsViewModel @Inject constructor(
     val drinkTendencyResult: LiveData<DrinkTendency?> = _drinkTendencyResult
 
     private val _drinkRecent3MonthsTendencyResult = MutableLiveData<DrinkTendency?>()
-    val drinkRecent3MonthsTendencyResult: LiveData<DrinkTendency?> = _drinkRecent3MonthsTendencyResult
+    val drinkRecent3MonthsTendencyResult: LiveData<DrinkTendency?> =
+        _drinkRecent3MonthsTendencyResult
 
 
     fun getMyDrinkListFlow(): LiveData<List<MyDrink>> {
         return database.getAllMyDrink().asLiveData()
     }
 
-    fun getProgressBarBaseData(targetDrinkType : String){
+    fun getProgressBarBaseData(targetDrinkType: String) {
         viewModelScope.launch {
-            val allBaseDate : List<MyDrink> = database.getAllMyDrinkBySuspend()
+            val allBaseDate: List<MyDrink> = database.getAllMyDrinkBySuspend()
 
             if (allBaseDate == emptyList<MyDrink>()) {
                 _horizontalProgressbarData.postValue(null)
@@ -167,12 +168,12 @@ class StatisticsViewModel @Inject constructor(
                         if (preValue != null) {
                             // 기존 값이 있으면 추가 주량을 더하고,
                             dataPAODMap[eachDrinkTimes.calendarDay.toMyMonth()] =
-                                preValue + ((eachDrinkTimes.myDrink?.VOD!!.toFloat())*(eachDrinkTimes.myDrink?.POA!!.toFloat()))/100
+                                preValue + ((eachDrinkTimes.myDrink?.VOD!!.toFloat()) * (eachDrinkTimes.myDrink?.POA!!.toFloat())) / 100
                         }
                     } else {
                         // 없으면 해당 값으로 시작한다.
                         dataPAODMap[eachDrinkTimes.calendarDay.toMyMonth()] =
-                            ((eachDrinkTimes.myDrink?.VOD!!.toFloat())*(eachDrinkTimes.myDrink?.POA!!.toFloat()))/100
+                            ((eachDrinkTimes.myDrink?.VOD!!.toFloat()) * (eachDrinkTimes.myDrink?.POA!!.toFloat())) / 100
                     }
 
                     if (drinkTimesMap.contains(eachDrinkTimes.calendarDay.toMyMonth())) {
@@ -205,7 +206,6 @@ class StatisticsViewModel @Inject constructor(
         viewModelScope.launch {
             //1. MyDrink 가 존재하는 날짜 수
             val myDrinkExistedDate = database.getMyDrinkExistedDate().distinct().count()
-            Log.e("스테틱 뷰모델","전체 : $myDrinkExistedDate")
             // MyDrink 가 존재하는 날짜 수가 0개라면 데이터 부족으로 null 반환
             if (myDrinkExistedDate == 0) {
                 _drinkTendencyResult.value = null
@@ -251,11 +251,12 @@ class StatisticsViewModel @Inject constructor(
                         val preValue = PAODWithDateForSort[each.dateForSort]
                         if (preValue != null) {
                             // 기존 값이 있으면 1을 더하고
-                            PAODWithDateForSort[each.dateForSort] = preValue + (each.VOD*each.POA)/100
+                            PAODWithDateForSort[each.dateForSort] =
+                                preValue + (each.VOD * each.POA) / 100
                         }
                     } else {
                         // 없으면 추가한다.
-                        PAODWithDateForSort[each.dateForSort] = (each.VOD*each.POA)/100
+                        PAODWithDateForSort[each.dateForSort] = (each.VOD * each.POA) / 100
                     }
 
                 }
@@ -284,8 +285,9 @@ class StatisticsViewModel @Inject constructor(
 
 
                 // 월 평균 빈도
-                val drinkFrequencyDayNumber: Int = kotlin.math.ceil(myDrinkExistedDate.toDouble() / totalMonthNumber.toDouble())
-                    .toInt()
+                val drinkFrequencyDayNumber: Int =
+                    kotlin.math.ceil(myDrinkExistedDate.toDouble() / totalMonthNumber.toDouble())
+                        .toInt()
 
                 // 총 평균 주량
                 val averageVOD = (totalVOD / myDrinkExistedDate.toFloat()).roundToInt()
@@ -302,12 +304,24 @@ class StatisticsViewModel @Inject constructor(
                 // 알콜 섭취량 : 61.2ml = 소주 1병
 
                 if (drinkFrequencyDayNumber < 4) {
-                    // 절주
-                    drinkTendencyText = GRADE1
+                    drinkTendencyText = if (averagePAOD < ALCOHOL_PER_SOJU * 5) {
+                        if (averagePAOD < ALCOHOL_PER_SOJU * 3) {
+                            if (averagePAOD < ALCOHOL_PER_SOJU * 2) {
+                                // 절주
+                                GRADE1
+                            } else {
+                                GRADE2
+                            }
+                        } else {
+                            GRADE4
+                        }
+                    } else {
+                        GRADE5
+                    }
                 } else {
                     if (drinkFrequencyDayNumber < 15) {
                         // 애주가 or 술고래
-                        if (averagePAOD < ALCOHOL_PER_SOJU*3) {
+                        if (averagePAOD < ALCOHOL_PER_SOJU * 3) {
                             drinkTendencyText = GRADE2
                         } else {
                             drinkTendencyText = GRADE3
@@ -325,7 +339,7 @@ class StatisticsViewModel @Inject constructor(
                             // 22회 이상이어도, 소주 1병 이하면
                             if (averageVOD < ALCOHOL_PER_SOJU) {
                                 // 술꾼
-                                drinkTendencyText =  GRADE4
+                                drinkTendencyText = GRADE4
                             } else {
                                 // 열반
                                 drinkTendencyText = GRADE5
@@ -334,7 +348,12 @@ class StatisticsViewModel @Inject constructor(
                     }
                 }
 
-                val result = DrinkTendency(drinkFrequencyDayNumber,averageVOD, averagePAOD, drinkTendencyText)
+                val result = DrinkTendency(
+                    drinkFrequencyDayNumber,
+                    averageVOD,
+                    averagePAOD,
+                    drinkTendencyText
+                )
                 _drinkTendencyResult.value = result
             }
         }
@@ -345,15 +364,17 @@ class StatisticsViewModel @Inject constructor(
         viewModelScope.launch {
             //1. 최근 3개월 내 MyDrink dateForSort
             val recent3MonthDateForSort = CalendarDay.today().toRecent3Months()
-            val myDrinkExistedDate = database.getMyDrinkExistedDateRecent3Months(recent3MonthDateForSort).distinct().count()
-            Log.e("스테틱 뷰모델","최근 3개월 : $myDrinkExistedDate")
+            val myDrinkExistedDate =
+                database.getMyDrinkExistedDateRecent3Months(recent3MonthDateForSort).distinct()
+                    .count()
             // MyDrink 가 존재하는 날짜 수가 0개라면 데이터 부족으로 null 반환
             if (myDrinkExistedDate == 0) {
                 _drinkRecent3MonthsTendencyResult.value = null
             } else {
                 //3. 최근 3개월 주량 리스트
                 // 날짜순으로 정렬된 리스트를 가져와야 함
-                val allVODListBase: List<AllVODListBase> = database.getRecent3MonthsVODByDateForSort(recent3MonthDateForSort)
+                val allVODListBase: List<AllVODListBase> =
+                    database.getRecent3MonthsVODByDateForSort(recent3MonthDateForSort)
                 val allVODList = mutableListOf<AllVODList>()
 
                 for (each in allVODListBase) {
@@ -392,11 +413,12 @@ class StatisticsViewModel @Inject constructor(
                         val preValue = PAODWithDateForSort[each.dateForSort]
                         if (preValue != null) {
                             // 기존 값이 있으면 1을 더하고
-                            PAODWithDateForSort[each.dateForSort] = preValue + (each.VOD*each.POA)/100
+                            PAODWithDateForSort[each.dateForSort] =
+                                preValue + (each.VOD * each.POA) / 100
                         }
                     } else {
                         // 없으면 추가한다.
-                        PAODWithDateForSort[each.dateForSort] = (each.VOD*each.POA)/100
+                        PAODWithDateForSort[each.dateForSort] = (each.VOD * each.POA) / 100
                     }
 
                 }
@@ -425,8 +447,9 @@ class StatisticsViewModel @Inject constructor(
 
 
                 // 월 평균 빈도
-                val drinkFrequencyDayNumber: Int = kotlin.math.ceil(myDrinkExistedDate.toDouble() / totalMonthNumber.toDouble())
-                    .toInt()
+                val drinkFrequencyDayNumber: Int =
+                    kotlin.math.ceil(myDrinkExistedDate.toDouble() / totalMonthNumber.toDouble())
+                        .toInt()
 
                 // 총 평균 주량
                 val averageVOD = (totalVOD / myDrinkExistedDate.toFloat()).roundToInt()
@@ -443,12 +466,24 @@ class StatisticsViewModel @Inject constructor(
                 // 알콜 섭취량 : 61.2ml = 소주 1병
 
                 if (drinkFrequencyDayNumber < 4) {
-                    // 절주
-                    drinkTendencyText = GRADE1
+                    drinkTendencyText = if (averagePAOD < ALCOHOL_PER_SOJU * 5) {
+                        if (averagePAOD < ALCOHOL_PER_SOJU * 3) {
+                            if (averagePAOD < ALCOHOL_PER_SOJU * 2) {
+                                // 절주
+                                GRADE1
+                            } else {
+                                GRADE2
+                            }
+                        } else {
+                            GRADE4
+                        }
+                    } else {
+                        GRADE5
+                    }
                 } else {
                     if (drinkFrequencyDayNumber < 15) {
                         // 애주가 or 술고래
-                        if (averagePAOD < ALCOHOL_PER_SOJU*3) {
+                        if (averagePAOD < ALCOHOL_PER_SOJU * 3) {
                             drinkTendencyText = GRADE2
                         } else {
                             drinkTendencyText = GRADE3
@@ -466,7 +501,7 @@ class StatisticsViewModel @Inject constructor(
                             // 22회 이상이어도, 소주 1병 이하면
                             if (averageVOD < ALCOHOL_PER_SOJU) {
                                 // 술꾼
-                                drinkTendencyText =  GRADE4
+                                drinkTendencyText = GRADE4
                             } else {
                                 // 열반
                                 drinkTendencyText = GRADE5
@@ -475,7 +510,12 @@ class StatisticsViewModel @Inject constructor(
                     }
                 }
 
-                val result = DrinkTendency(drinkFrequencyDayNumber,averageVOD, averagePAOD, drinkTendencyText)
+                val result = DrinkTendency(
+                    drinkFrequencyDayNumber,
+                    averageVOD,
+                    averagePAOD,
+                    drinkTendencyText
+                )
                 _drinkRecent3MonthsTendencyResult.value = result
             }
         }
@@ -515,8 +555,8 @@ data class AllVODList(
 )
 
 data class DrinkTendency(
-    var drinkFrequencyDayNumber : Int,
-    var averageVOD : Int,
-    var averagePAOD : Int,
-    var drinkTendency : String
+    var drinkFrequencyDayNumber: Int,
+    var averageVOD: Int,
+    var averagePAOD: Int,
+    var drinkTendency: String
 )

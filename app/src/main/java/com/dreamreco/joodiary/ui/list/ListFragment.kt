@@ -1,20 +1,23 @@
 package com.dreamreco.joodiary.ui.list
 
+import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.TypefaceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.FragmentListBinding
-import com.dreamreco.joodiary.util.SORT_IMPORTANCE
-import com.dreamreco.joodiary.util.SORT_NORMAL
+import com.dreamreco.joodiary.util.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -23,24 +26,24 @@ class ListFragment : Fragment() {
 
     private val listViewModel by viewModels<ListViewModel>()
     private val binding by lazy { FragmentListBinding.inflate(layoutInflater) }
-    private val mAdapter by lazy { ListFragmentAdapter(requireContext(), childFragmentManager)}
+    private var typeface: Typeface? = null
+    lateinit var mAdapter: ListFragmentAdapter
 
     // 정렬 관련 변수
     private val sortNumber = MutableLiveData(SORT_NORMAL) // 기본 세팅
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setRecyclerView()
+        // 폰트 설정 및 적용 코드
+        typeface = getFontType(requireContext())
+        typeface?.let { setRecyclerView(it) }
+        typeface?.let { setGlobalFont(binding.root, it) }
     }
-
-
-    // 3) 이미지 가로 세로 똑같이 유지하기 => 잘라서 정사각형으로 도출할 수 있게?
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         with(listViewModel) {
 
 //             정렬 설정에 따라 가져오는 데이터
@@ -74,6 +77,7 @@ class ListFragment : Fragment() {
         // 1. 툴바 관련 코드
         with(binding.listFragmentToolbar) {
             title = getString(com.dreamreco.joodiary.R.string.list_fragment_toolbar_title)
+
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.sort_by_recent -> {
@@ -88,21 +92,17 @@ class ListFragment : Fragment() {
                 }
             }
         }
-
         return binding.root
     }
 
 
-
-
-    private fun setRecyclerView() {
+    private fun setRecyclerView(typeface: Typeface) {
+        mAdapter = ListFragmentAdapter(requireContext(),childFragmentManager, typeface, getThemeType())
         with(binding) {
             with(listFragmentRecyclerView) {
                 adapter = mAdapter
-//                setHasFixedSize(true)
                 setItemViewCacheSize(13)
             }
-
 
             // recyclerView 갱신 시, 깜빡임 방지
             val animator = listFragmentRecyclerView.itemAnimator
@@ -112,8 +112,4 @@ class ListFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.e("리스트 프레그먼트","onResume 작동")
-    }
 }

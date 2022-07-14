@@ -1,5 +1,6 @@
 package com.dreamreco.joodiary.ui.customDialog
 
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -10,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.dreamreco.joodiary.MyApplication
 import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.PasswordSettingDialogBinding
 import com.dreamreco.joodiary.ui.setting.SettingViewModel
@@ -30,12 +30,39 @@ class PasswordSettingDialog : DialogFragment() {
     private var firstPassword = ""
     private var secondPassword = ""
 
+    private var typeface: Typeface? = null
+    private var themeDarkState = false
+
+    // 뒤로 가기 처리를 위한 콜백 변수
+    private lateinit var callback: OnBackPressedCallback
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        typeface = getFontType(requireContext())
+        typeface?.let { setGlobalFont(binding.root, it) }
+
+        if (getThemeType() == THEME_2) {
+            themeDarkState = true
+            binding.viewNumber1.imageTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+            binding.viewNumber2.imageTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+            binding.viewNumber3.imageTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+            binding.viewNumber4.imageTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+
+            binding.passwordToolbarExitButton.imageTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        backButtonCancel()
         with(binding) {
             val textViewArray = arrayListOf<View>(
                 number0,
@@ -49,7 +76,6 @@ class PasswordSettingDialog : DialogFragment() {
                 number8,
                 number9,
                 textDeleteAll,
-                textDeleteUnit
             )
             for (numberButton in textViewArray) {
                 numberButton.setOnClickListener(btnListener)
@@ -62,7 +88,11 @@ class PasswordSettingDialog : DialogFragment() {
             passwordRegisterDone.observe(viewLifecycleOwner) { done ->
                 if (done) {
                     findNavController().navigateUp()
-                    Toast.makeText(requireContext(),getString(R.string.login_with_password_setting),Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.login_with_password_setting),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -72,6 +102,15 @@ class PasswordSettingDialog : DialogFragment() {
         with(binding) {
             // #1 Top Toolbar
             toolbarTitleTextView.text = getString(R.string.login_setting_dialog_title)
+
+            passwordToolbarExitButton.setOnClickListener {
+                findNavController().navigateUp()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.login_with_password_setting_cancel),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
 
@@ -84,7 +123,7 @@ class PasswordSettingDialog : DialogFragment() {
     // 버튼 클릭 했을때
     private val btnListener = View.OnClickListener { view ->
         var currentValue = -1
-        when(view.id){
+        when (view.id) {
             R.id.number0 -> currentValue = 0
             R.id.number1 -> currentValue = 1
             R.id.number2 -> currentValue = 2
@@ -96,30 +135,74 @@ class PasswordSettingDialog : DialogFragment() {
             R.id.number8 -> currentValue = 8
             R.id.number9 -> currentValue = 9
             R.id.text_delete_all -> onClear()
-            R.id.text_delete_unit -> onDeleteKey()
         }
 
         with(binding) {
 
-            val strCurrentValue = currentValue.toString() // 현재 입력된 번호 String 으로 변경
-            passwordNumber += strCurrentValue
+            if (currentValue != -1) {
 
-            if (currentValue != -1){
+                val strCurrentValue = currentValue.toString() // 현재 입력된 번호 String 으로 변경
+                passwordNumber += strCurrentValue
+
                 when (focusState) {
                     0 -> {
-                        binding.viewNumber1.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_circle))
+                        binding.viewNumber1.apply {
+                            setImageDrawable(
+                                ContextCompat.getDrawable(
+                                    requireContext(),
+                                    R.drawable.ic_circle
+                                )
+                            )
+                            if (themeDarkState) {
+                                imageTintList =
+                                    ContextCompat.getColorStateList(requireContext(), R.color.white)
+                            }
+                        }
                         focusState += 1
                     }
                     1 -> {
-                        binding.viewNumber2.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_circle))
+                        binding.viewNumber2.apply {
+                            setImageDrawable(
+                                ContextCompat.getDrawable(
+                                    requireContext(),
+                                    R.drawable.ic_circle
+                                )
+                            )
+                            if (themeDarkState) {
+                                imageTintList =
+                                    ContextCompat.getColorStateList(requireContext(), R.color.white)
+                            }
+                        }
                         focusState += 1
                     }
                     2 -> {
-                        binding.viewNumber3.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_circle))
+                        binding.viewNumber3.apply {
+                            setImageDrawable(
+                                ContextCompat.getDrawable(
+                                    requireContext(),
+                                    R.drawable.ic_circle
+                                )
+                            )
+                            if (themeDarkState) {
+                                imageTintList =
+                                    ContextCompat.getColorStateList(requireContext(), R.color.white)
+                            }
+                        }
                         focusState += 1
                     }
                     3 -> {
-                        binding.viewNumber4.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_circle))
+                        binding.viewNumber4.apply {
+                            setImageDrawable(
+                                ContextCompat.getDrawable(
+                                    requireContext(),
+                                    R.drawable.ic_circle
+                                )
+                            )
+                            if (themeDarkState) {
+                                imageTintList =
+                                    ContextCompat.getColorStateList(requireContext(), R.color.white)
+                            }
+                        }
                         // 비밀번호 4자리 모두 입력시
                         if (!reWritePassword) {
                             // 첫번째 입력인 경우,
@@ -134,35 +217,14 @@ class PasswordSettingDialog : DialogFragment() {
                                 // 1,2 차 입력이 같아야 비밀번호 등록
                                 settingViewModel.passwordRegister(firstPassword)
                             } else {
-                                Toast.makeText(requireContext(), getString(R.string.second_password_discordant),Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(),
+                                    getString(R.string.second_password_discordant),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 onClear()
                             }
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun onDeleteKey() {
-        if (focusState > 0) {
-            with(binding) {
-                focusState -= 1
-                when (focusState) {
-                    0 -> {
-                        viewNumber1.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-                        viewNumber2.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-                        viewNumber3.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-                        viewNumber4.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-                    }
-                    1 -> {
-                        viewNumber2.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-                        viewNumber3.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-                        viewNumber4.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-                    }
-                    2 -> {
-                        viewNumber3.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-                        viewNumber4.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
                     }
                 }
             }
@@ -173,14 +235,67 @@ class PasswordSettingDialog : DialogFragment() {
         focusState = 0
         passwordNumber = ""
         with(binding) {
-            viewNumber1.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-            viewNumber2.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-            viewNumber3.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
-            viewNumber4.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_outline_circle))
+            viewNumber1.apply {
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_outline_circle
+                    )
+                )
+                if (themeDarkState) {
+                    imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                }
+            }
+            viewNumber2.apply {
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_outline_circle
+                    )
+                )
+                if (themeDarkState) {
+                    imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                }
+            }
+            viewNumber3.apply {
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_outline_circle
+                    )
+                )
+                if (themeDarkState) {
+                    imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                }
+            }
+            viewNumber4.apply {
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_outline_circle
+                    )
+                )
+                if (themeDarkState) {
+                    imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                }
+            }
         }
     }
 
-
+    private fun backButtonCancel() {
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 뒤로가기 및 토스트
+                findNavController().navigateUp()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.login_with_password_setting_cancel),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
 }
 
 

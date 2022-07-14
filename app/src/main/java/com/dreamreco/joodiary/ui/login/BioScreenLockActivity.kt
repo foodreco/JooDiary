@@ -2,6 +2,7 @@ package com.dreamreco.joodiary.ui.login
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -40,6 +41,8 @@ class BioScreenLockActivity : AppCompatActivity() {
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
 
+    private var typeface: Typeface? = null
+
     private val loginLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -62,11 +65,17 @@ class BioScreenLockActivity : AppCompatActivity() {
             // 테마 2
             THEME_2 -> {
                 setTheme(R.style.SoundCustomAppTheme)
+                binding.bioToolbarLogo.imageTintList = ContextCompat.getColorStateList(this,R.color.white)
+                binding.viewNumber1.imageTintList = ContextCompat.getColorStateList(this,R.color.white)
             }
         }
 
+
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        typeface = getFontType(this)
+        setGlobalFont(binding.root, typeface!!)
 
         // 로그인 기본 설정
         setBiometricLogin()

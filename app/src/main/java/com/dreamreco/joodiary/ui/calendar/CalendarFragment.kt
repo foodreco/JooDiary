@@ -1,12 +1,17 @@
 package com.dreamreco.joodiary.ui.calendar
 
+import android.graphics.Typeface
+import android.graphics.fonts.FontFamily
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -29,7 +34,9 @@ class CalendarFragment : Fragment() {
     private val binding by lazy { FragmentCalendarBinding.inflate(layoutInflater) }
     private val calendarViewModel by viewModels<CalendarViewModel>()
     lateinit var recentDate: CalendarDate
-    private val mAdapter by lazy { CalenderAdapter(requireContext(), childFragmentManager) }
+    private lateinit var mAdapter : CalenderAdapter
+    private var typeface: Typeface? = null
+
 
     // 뒤로 가기 연속 클릭 대기 시간
     var mBackWait: Long = 0
@@ -40,11 +47,16 @@ class CalendarFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // 폰트 설정 및 적용 코드
+        typeface = getFontType(requireContext())
+        typeface?.let { setGlobalFont(binding.root, it) }
+
         // 캘린더 기본 설정
         setCalender()
 
         // 리싸이클러뷰 설정
         setRecyclerView()
+
     }
 
     override fun onCreateView(
@@ -63,7 +75,6 @@ class CalendarFragment : Fragment() {
             calenderView.setOnDateChangedListener { widget, date, selected -> // 선택 시, recentDate 업데이트
                 calendarViewModel.changeRecentDate(date)
             }
-
         }
 
 
@@ -118,7 +129,6 @@ class CalendarFragment : Fragment() {
 
         // 1. 툴바 관련 코드
         with(binding.calenderToolbar) {
-            title = getString(R.string.calendar_fragment_toolbar_title)
 //            setOnMenuItemClickListener {
 //                when (it.itemId) {
 //                    R.id.menu_search -> {
@@ -162,34 +172,28 @@ class CalendarFragment : Fragment() {
         return binding.root
     }
 
+    // 옵저버를 통해, Room Data 값을 달력에 실시간으로 반영하는 코드
     private fun setDotDecorate() {
         with(calendarViewModel) {
             dotForCalendar.observe(viewLifecycleOwner) { list ->
                 basicDecoratorReset()
                 with(binding.calenderView) {
-                    addDecorator(EventDecorator(requireContext(), list.notImportantList))
+                    // 중요 기록 일자 표시 데코레이터
                     addDecorator(
                         EventDecoratorForImportantData(
                             requireContext(),
                             list.importantList
                         )
                     )
+                    if (getThemeType() == THEME_2) {
+                        // 일반 기록 일자 표시 데코레이터
+                        addDecorator(EventDecoratorForDark(requireContext(), list.notImportantList))
+                    } else {
+                        // 일반 기록 일자 표시 데코레이터
+                        addDecorator(EventDecorator(requireContext(), list.notImportantList))
+                    }
                 }
             }
-
-//            //  일반 기록 날짜에 dot 표시를 하는 코드
-//            getNotImportantCalendarDayForDecorator().observe(viewLifecycleOwner){ listOfCalendarDay ->
-//                if (listOfCalendarDay != emptyList<CalendarDay>()) {
-//                    binding.calenderView.addDecorator(EventDecorator(requireContext(), listOfCalendarDay))
-//                }
-//            }
-//
-//            // 중요한 기록 날짜에 dot 표시를 하는 코드
-//            getImportantCalendarDayForDecorator().observe(viewLifecycleOwner){ listOfImportantCalendarDay ->
-//                if (listOfImportantCalendarDay != emptyList<CalendarDay>()) {
-//                    binding.calenderView.addDecorator(EventDecoratorForImportantData(requireContext(), listOfImportantCalendarDay))
-//                }
-//            }
         }
     }
 
@@ -197,16 +201,27 @@ class CalendarFragment : Fragment() {
         with(binding.calenderView) {
             // 데코 전체 삭제
             removeDecorators()
-
-            // 데코 다시 설정
-            val sundayDecorator = SundayDecorator()
-            val saturdayDecorator = SaturdayDecorator()
-            val todayDecorator = TodayDecorator(requireContext())
-            addDecorators(
-                sundayDecorator,
-                saturdayDecorator,
-                todayDecorator
-            )
+            if (getThemeType() == THEME_2) {
+                // 꾸밈 표시 설정 (다크)
+                val sundayDecorator = SundayDecoratorForDark(requireContext())
+                val saturdayDecorator = SaturdayDecoratorForDark(requireContext())
+                val todayDecorator = TodayDecorator(requireContext())
+                addDecorators(
+                    sundayDecorator,
+                    saturdayDecorator,
+                    todayDecorator
+                )
+            } else {
+                // 데코 다시 설정
+                val sundayDecorator = SundayDecorator()
+                val saturdayDecorator = SaturdayDecorator()
+                val todayDecorator = TodayDecorator(requireContext())
+                addDecorators(
+                    sundayDecorator,
+                    saturdayDecorator,
+                    todayDecorator
+                )
+            }
         }
     }
 
@@ -222,18 +237,12 @@ class CalendarFragment : Fragment() {
         val action = CalendarFragmentDirections.actionCalenderFragmentToDiaryDetailDialog(
             item
         )
-
         findNavController().navigate(action)
-
-//        val bundle = bundleOf()
-//        bundle.putParcelable("DiaryBase", item)
-//        val dialog = DiaryDetailDialog()
-//        dialog.arguments = bundle
-//        dialog.show(childFragmentManager, "DiaryDetailDialog")
     }
 
     // 캘린더 기본 설정 코드
     private fun setCalender() {
+        Log.e("캘린더 프레그먼트","setCalender")
         val startTimeCalendar = Calendar.getInstance()
         val endTimeCalendar = Calendar.getInstance()
 
@@ -248,23 +257,67 @@ class CalendarFragment : Fragment() {
 
         with(binding) {
             with(calenderView) {
-                // 캘린더 테마 설정
-                when (MyApplication.prefs.getString(THEME_TYPE, THEME_BASIC)) {
-                    THEME_BASIC -> {
-                        setDateTextAppearance(R.style.CalenderViewDateCustomText)
-                        setHeaderTextAppearance(R.style.CalendarWidgetHeader)
-                        setWeekDayTextAppearance(R.style.CalenderViewWeekCustomText)
+                // 캘린더 폰트 설정
+                if (getThemeType() == THEME_2) {
+                    // 다크모드 적용 시,
+                    selectionColor =
+                        ContextCompat.getColor(requireContext(), R.color.theme2_primary_touch_color)
+                    arrowColor = ContextCompat.getColor(requireContext(), R.color.white)
+                    when (MyApplication.prefs.getString(FONT_TYPE, FONT_BASIC)) {
+                        FONT_BASIC -> {
+                            setDateTextAppearance(R.style.CustomTextAppearanceForCalendarFontBasic)
+                            setHeaderTextAppearance(R.style.CustomHeaderTextAppearanceForCalendarFontBasic)
+                            setWeekDayTextAppearance(R.style.CustomTextAppearanceForCalendarFontBasic)
+                        }
+                        FONT_1 -> {
+                            setDateTextAppearance(R.style.CustomTextAppearanceForCalendarFont1)
+                            setHeaderTextAppearance(R.style.CustomHeaderTextAppearanceForCalendarFont1)
+                            setWeekDayTextAppearance(R.style.CustomTextAppearanceForCalendarFont1)
+                        }
+                        FONT_2 -> {
+                            setDateTextAppearance(R.style.CustomTextAppearanceForCalendarFont2)
+                            setHeaderTextAppearance(R.style.CustomHeaderTextAppearanceForCalendarFont2)
+                            setWeekDayTextAppearance(R.style.CustomTextAppearanceForCalendarFont2)
+                        }
                     }
-                    THEME_1 -> {
-                        setDateTextAppearance(R.style.CalenderViewDateCustomTextTheme1)
-                        setHeaderTextAppearance(R.style.CalendarWidgetHeaderTheme1)
-                        setWeekDayTextAppearance(R.style.CalenderViewWeekCustomTextTheme1)
+                    // 꾸밈 표시 설정 (다크)
+                    val sundayDecorator = SundayDecoratorForDark(requireContext())
+                    val saturdayDecorator = SaturdayDecoratorForDark(requireContext())
+                    val todayDecorator = TodayDecorator(requireContext())
+
+                    addDecorators(
+                        sundayDecorator,
+                        saturdayDecorator,
+                        todayDecorator
+                    )
+                } else {
+                    when (MyApplication.prefs.getString(FONT_TYPE, FONT_BASIC)) {
+                        FONT_BASIC -> {
+                            setDateTextAppearance(R.style.CalenderViewDateCustomText)
+                            setHeaderTextAppearance(R.style.CalendarWidgetHeader)
+                            setWeekDayTextAppearance(R.style.CalenderViewWeekCustomText)
+                        }
+                        FONT_1 -> {
+                            setDateTextAppearance(R.style.CalenderViewDateCustomTextTheme1)
+                            setHeaderTextAppearance(R.style.CalendarWidgetHeaderTheme1)
+                            setWeekDayTextAppearance(R.style.CalenderViewWeekCustomTextTheme1)
+                        }
+                        FONT_2 -> {
+                            setDateTextAppearance(R.style.CalenderViewDateCustomTextTheme2)
+                            setHeaderTextAppearance(R.style.CalendarWidgetHeaderTheme2)
+                            setWeekDayTextAppearance(R.style.CalenderViewWeekCustomTextTheme2)
+                        }
                     }
-                    THEME_2 -> {
-                        setDateTextAppearance(R.style.CalenderViewDateCustomTextTheme2)
-                        setHeaderTextAppearance(R.style.CalendarWidgetHeaderTheme2)
-                        setWeekDayTextAppearance(R.style.CalenderViewWeekCustomTextTheme2)
-                    }
+                    // 꾸밈 표시 설정
+                    val sundayDecorator = SundayDecorator()
+                    val saturdayDecorator = SaturdayDecorator()
+                    val todayDecorator = TodayDecorator(requireContext())
+
+                    calenderView.addDecorators(
+                        sundayDecorator,
+                        saturdayDecorator,
+                        todayDecorator
+                    )
                 }
             }
 
@@ -283,32 +336,12 @@ class CalendarFragment : Fragment() {
                 )
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
-
-//        val stCalendarDay = CalendarDay.from(currentYear-1, currentMonth, currentDate)
-//        val enCalendarDay = CalendarDay.from(
-//            endTimeCalendar.get(Calendar.YEAR),
-//            endTimeCalendar.get(Calendar.MONTH),
-//            endTimeCalendar.get(Calendar.DATE)
-//        )
-
-            // 꾸밈 표시 설정
-            val sundayDecorator = SundayDecorator()
-            val saturdayDecorator = SaturdayDecorator()
-//        val minMaxDecorator = MinMaxDecorator(stCalendarDay, enCalendarDay)
-//        val boldDecorator = BoldDecorator(stCalendarDay, enCalendarDay)
-            val todayDecorator = TodayDecorator(requireContext())
-
-            calenderView.addDecorators(
-                sundayDecorator,
-                saturdayDecorator,
-//            boldDecorator,
-//            minMaxDecorator,
-                todayDecorator
-            )
         }
     }
 
     private fun setRecyclerView() {
+        mAdapter = CalenderAdapter(requireContext(),childFragmentManager, typeface!!, getThemeType())
+
         with(binding) {
             with(calenderRecyclerView) {
                 adapter = mAdapter

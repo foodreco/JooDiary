@@ -7,17 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".ui.calendar.CalendarFragment">
 
-    <androidx.appcompat.widget.Toolbar
+    <!--    <androidx.appcompat.widget.Toolbar-->
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/calender_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:title="툴바타이틀"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar" />
+        app:title="@string/calendar_fragment_toolbar_title" />
 
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/calenderView"
@@ -26,26 +24,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/calender_toolbar"
-        app:mcv_selectionColor="#2196F3" />
+        app:mcv_selectionColor="#673AB7" />
 
     <com.google.android.material.divider.MaterialDivider
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/calenderView"
-        />
+        app:layout_constraintTop_toBottomOf="@id/calenderView" />
 
     <TextView
         android:id="@+id/text_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:textSize="12sp"
         android:layout_marginTop="2dp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider" />
@@ -70,17 +67,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        <!--        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="4dp"
-            android:backgroundTint="@color/joo_dark"
             android:clickable="true"
-            android:contentDescription="리스트 추가 버튼"
-            app:icon="@drawable/ic_add"
-            app:iconTint="@color/white"
+            android:src="@drawable/ic_add"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

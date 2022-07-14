@@ -38,8 +38,6 @@ class SplashActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         },1500)
-
-//        테마별, raw 변경 적용하기??
     }
 
 }

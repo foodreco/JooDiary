@@ -63,19 +63,23 @@
     <string name="textMaxVODPerMonth">회당 %1$dmL(소주 %2$S병)</string>
     <string name="drink_tendency_summary">%1$S</string>
     <string name="high_low_standard">※ 저도주 : 도수 20%이하 / 고도주 : 도수 20%이상</string>
-    <string name="activateVODCombinedChart_text1">ㆍ횟수가 가장 많은 달 : %1$d년 %2$d월</string>
-    <string name="activateVODCombinedChart_text1_sub">%1$d회</string>
-    <string name="activateVODCombinedChart_text2">ㆍ알콜섭취량이 가장 많은 달 : %1$d년 %2$d월</string>
-    <string name="activateVODCombinedChart_text2_sub">%1$dml(소주 %2$s병)</string>
+    <string name="activateVODCombinedChart_text1">－%1$d년 %2$d월</string>
+    <string name="activateVODCombinedChart_text1_sub">/ %1$d회</string>
+    <string name="activateVODCombinedChart_text2">－%1$d년 %2$d월</string>
+    <string name="activateVODCombinedChart_text2_sub">/ 총 %1$dmL(소주 %2$s병)</string>
     <string name="generateBarData">알콜섭취량(ml)</string>
     <string name="generateLineData">음주횟수</string>
-    <string name="theme_apply_finished">%1$s 적용 완료</string>
+    <string name="theme_apply_finished">테마 변경 완료</string>
     <string name="theme_basic">기본 테마</string>
     <string name="theme_1">테마 1</string>
     <string name="theme_2">테마 2</string>
     <string name="get_empty_DrinkTypePieChartList">데이터 없음</string>
     <string name="change_drinkType_string">해당 주종은 입력할 수 없습니다.</string>
-    <string name="pie_chart_center_text_empty">주종\n비율</string>
+    <string name="pie_chart_center_text_empty">주종\n비율(%)</string>
+    <string name="login_with_password_setting_cancel">비밀번호 설정이 취소되었습니다.</string>
+    <string name="no_available_data">관련 기록이 없습니다.</string>
+    <string name="explanation_for_tendency">1. 절주 : 술을 절제하는 사람\n2. 애주가 : 술을 사랑하는 사람\n3. 술고래 : 주량이 많은 사람\n4. 술꾼 : 프로의 경지에 이른 사람\n5. 열반 : 술로 도를 터득한 사람</string>
+    <string name="explanation_for_tendency_first">· 성향 5단계</string>
 
 
 </resources>

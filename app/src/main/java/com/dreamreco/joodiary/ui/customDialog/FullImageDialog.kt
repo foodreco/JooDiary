@@ -3,6 +3,7 @@ package com.dreamreco.joodiary.ui.customDialog
 import android.app.AlertDialog
 import android.content.res.ColorStateList
 import android.graphics.ImageDecoder
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -24,6 +25,7 @@ import com.dreamreco.joodiary.databinding.FullImageDialogBinding
 import com.dreamreco.joodiary.room.entity.MyDate
 import com.dreamreco.joodiary.ui.calendar.CalendarViewModel
 import com.dreamreco.joodiary.util.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.FileNotFoundException
 
@@ -34,16 +36,26 @@ class FullImageDialog : DialogFragment() {
     private val calendarViewModel by viewModels<CalendarViewModel>()
     private val binding by lazy { FullImageDialogBinding.inflate(layoutInflater) }
     private val args by navArgs<FullImageDialogArgs>()
+    private var typeface: Typeface? = null
+
 
     // 원본 사진이 저장되는 Uri
     // update 변수 역할도 함
     private var photoUri: Uri? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // 폰트 설정 및 적용 코드
+        typeface = getFontType(requireContext())
+        typeface?.let { setGlobalFont(binding.root, it) }
+    }
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
 
         // diaryBase 요소 세팅
         basicDiarySetting()
@@ -135,7 +147,8 @@ class FullImageDialog : DialogFragment() {
     }
 
     private fun deleteData() {
-        val builder = AlertDialog.Builder(requireContext())
+//        val builder = AlertDialog.Builder(requireContext())
+        val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setPositiveButton(getString(R.string.positive_button)) { _, _ ->
             // 해당 이미지 데이터 삭제 적용 코드
             calendarViewModel.setImageLoadType(IMAGE_DELETE)

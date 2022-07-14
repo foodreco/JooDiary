@@ -1,8 +1,10 @@
 package com.dreamreco.joodiary.ui.calendar
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.ImageDecoder
+import android.graphics.Typeface
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -15,40 +17,25 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.dreamreco.joodiary.MyApplication
 import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.CalendarChildBinding
 import com.dreamreco.joodiary.databinding.CalendarEmptyHeaderBinding
 import com.dreamreco.joodiary.room.entity.DiaryBase
-import com.dreamreco.joodiary.util.decodeSampledBitmapFromInputStream
+import com.dreamreco.joodiary.util.*
 import java.io.FileNotFoundException
 
 class CalenderAdapter(
     ctx: Context,
-    fragmentManager: FragmentManager
+    fragmentManager: FragmentManager, typeface: Typeface, theme: String
 ) :
     ListAdapter<CalendarAdapterBase, RecyclerView.ViewHolder>(CalendarDiffCallback()) {
 
     // 기본 코드
     private var mFragmentManager: FragmentManager = fragmentManager
     private var mContext: Context = ctx
-
-//    // 삭제 관련 코드
-//    private var checkBoxControlNumber: Int = 0
-//    private val checkboxStatus = SparseBooleanArray()
-//
-//    // item.title 을 리스트로 받음
-//    val checkBoxReturnList = mutableListOf<String>()
-//    private val _deleteEventActive = MutableLiveData<Boolean?>()
-//    val deleteEventActive: LiveData<Boolean?> = _deleteEventActive
-//
-//
-//    private val importanceStatus = SparseBooleanArray()
-//    private val _ttrImportanceSetting = MutableLiveData<TextToReadBase?>()
-//    val ttrImportanceSetting: LiveData<TextToReadBase?> = _ttrImportanceSetting
-//    private val _ttrImportanceRemoving = MutableLiveData<TextToReadBase?>()
-//    val ttrImportanceRemoving: LiveData<TextToReadBase?> = _ttrImportanceRemoving
-//    private val _checkBoxCheckedNumber = MutableLiveData(0)
-//    val checkBoxCheckedNumber: LiveData<Int> = _checkBoxCheckedNumber
+    private var mTypeface = typeface
+    private val thisTheme = theme
 
     override fun getItemViewType(position: Int): Int = getItem(position).layoutId
 
@@ -59,7 +46,7 @@ class CalenderAdapter(
         return when (viewType) {
             CalendarAdapterBase.Item.VIEW_TYPE -> CalenderItemViewHolder(binding)
             CalendarAdapterBase.EmptyHeader.VIEW_TYPE -> CalenderEmptyHeaderViewHolder.from(
-                parent
+                parent, mTypeface
             )
             else -> throw IllegalArgumentException("Cannot create ViewHolder for view type: $viewType")
         }
@@ -76,33 +63,11 @@ class CalenderAdapter(
                     bind(diaryBase)
                 }
             }
+            is CalenderEmptyHeaderViewHolder -> {
+                viewHolder.bind()
+            }
         }
     }
-
-//    fun onCheckBox(number: Int) {
-//        checkBoxControlNumber = number
-//        notifyDataSetChanged()
-//    }
-//
-//    fun deleteEventReset() {
-//        _deleteEventActive.value = null
-//    }
-//
-//    @JvmName("getCheckBoxReturnList1")
-//    fun getCheckBoxReturnList(): List<String> {
-//        return checkBoxReturnList
-//    }
-//
-//    fun clearCheckBoxReturnList() {
-//        checkBoxReturnList.clear()
-//        checkboxStatus.clear()
-//        _checkBoxCheckedNumber.value = 0
-//    }
-//
-//    fun importanceReset() {
-//        _ttrImportanceSetting.value = null
-//        _ttrImportanceRemoving.value = null
-//    }
 
     // 리스트용 뷰홀더
     inner class CalenderItemViewHolder constructor(private val binding: CalendarChildBinding) :
@@ -110,6 +75,7 @@ class CalenderAdapter(
 
         @RequiresApi(Build.VERSION_CODES.P)
         fun bind(item: DiaryBase) {
+            setGlobalFont(binding.root, mTypeface)
             binding.apply {
 
                 diaryTitle.text = item.title
@@ -145,8 +111,8 @@ class CalenderAdapter(
 
                 if (item.myDrink != null) {
                     diaryDrinkType.text = item.myDrink!!.drinkType
-                    diaryVOD.text = item.myDrink!!.VOD
-                    diaryPOA.text = item.myDrink!!.POA
+                    diaryVOD.text = "${item.myDrink!!.VOD}mL"
+                    diaryPOA.text = "${item.myDrink!!.POA}%"
                 } else {
                     diaryDrinkType.text = ""
                     diaryVOD.text = ""
@@ -155,6 +121,12 @@ class CalenderAdapter(
 
                 if (item.importance) {
                     diaryBaseImportance.visibility = View.VISIBLE
+                    when (thisTheme) {
+                        THEME_2 -> diaryBaseImportance.imageTintList =
+                            mContext.getColorStateList(R.color.theme2_primary_touch_color)
+                        else -> diaryBaseImportance.imageTintList =
+                            mContext.getColorStateList(R.color.basic_primary)
+                    }
                 } else {
                     diaryBaseImportance.visibility = View.INVISIBLE
                 }
@@ -180,16 +152,27 @@ class CalenderAdapter(
 }
 
 // empty 헤더용 뷰홀더
-class CalenderEmptyHeaderViewHolder constructor(private val binding: CalendarEmptyHeaderBinding) :
+class CalenderEmptyHeaderViewHolder constructor(
+    private val binding: CalendarEmptyHeaderBinding,
+    typeface: Typeface
+) :
     RecyclerView.ViewHolder(binding.root) {
 
+    private val mTypeface = typeface
+
+    fun bind() {
+        setGlobalFont(binding.root, mTypeface)
+    }
+
     companion object {
-        fun from(parent: ViewGroup): CalenderEmptyHeaderViewHolder {
+        fun from(parent: ViewGroup, typeface: Typeface): CalenderEmptyHeaderViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
             val binding = CalendarEmptyHeaderBinding.inflate(layoutInflater, parent, false)
-            return CalenderEmptyHeaderViewHolder(binding)
+            return CalenderEmptyHeaderViewHolder(binding, typeface)
         }
     }
+
+
 }
 
 class CalendarDiffCallback : DiffUtil.ItemCallback<CalendarAdapterBase>() {

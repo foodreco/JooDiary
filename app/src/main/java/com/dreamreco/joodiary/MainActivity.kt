@@ -1,15 +1,17 @@
 package com.dreamreco.joodiary
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.dreamreco.joodiary.databinding.ActivityMainBinding
@@ -21,7 +23,6 @@ import com.dreamreco.joodiary.ui.login.ScreenService
 import com.dreamreco.joodiary.util.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.reflect.Field
 
 
 @AndroidEntryPoint
@@ -29,10 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val calendarViewModel by viewModels<CalendarViewModel>()
-    private var typeface: Typeface? = null
-
-    // 앱 테마 색상 정하기
-    // 레이아웃 weight 기준으로 재설계하기
+    private var bottomNavColor = R.color.bottom_nav_color
 
     override fun onStart() {
         super.onStart()
@@ -78,39 +76,28 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // 테마 설정 코드
-        when (MyApplication.prefs.getString(THEME_TYPE, THEME_BASIC)) {
+        when (getThemeType()) {
             // 기본 테마
             THEME_BASIC -> {
                 setTheme(R.style.Theme_JooDiary)
+                bottomNavColor = R.color.bottom_nav_color
             }
             // 테마 1
             THEME_1 -> {
                 setTheme(R.style.NewCustomAppTheme)
+                bottomNavColor = R.color.bottom_nav_color
             }
             // 테마 2
             THEME_2 -> {
                 setTheme(R.style.SoundCustomAppTheme)
+                bottomNavColor = R.color.bottom_nav_color_dark
             }
         }
-
-
-        FontOverride.setDefaultFont(this, "monospace", "binggraemelona_regular.ttf")
-
-        setFont("monospace","binggraemelona_regular.ttf")
-
-
-
-
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-
-//        if (typeface == null) {
-//            typeface = Typeface.createFromAsset(this.assets, "binggraemelona_regular.ttf");
-//        }
-//
-//        setGlobalFont(window.decorView)
-
+        binding.bottomNav.itemIconTintList = getColorStateList(bottomNavColor)
+//            ActivityCompat.getColorStateList(this, bottomNavColor)
 
         // 신규 코드
         val navHostFragment =
@@ -176,61 +163,4 @@ class MainActivity : AppCompatActivity() {
         stopService(intent)
     }
 
-
-
-
-    private fun setGlobalFont(view: View?) {
-        Log.e("메인 액티비티","setGlobalFont")
-        if (view != null) {
-            if (view is ViewGroup) {
-                val vgCnt = view.childCount
-                for (i in 0 until vgCnt) {
-                    val v = view.getChildAt(i)
-                    if (v is TextView) {
-                        v.typeface = typeface
-                    }
-                    setGlobalFont(v)
-                }
-            }
-        }
-    }
-
-    fun setFont(defaultFontNameToOverride: String, newFontFileNameInAssets: String): Boolean {
-        try {
-            Log.e("메인 액티비티","setFont")
-            val fontMaintext = Typeface.createFromAsset(this.assets, newFontFileNameInAssets)
-            val defaultFontTypefaceField: Field = Typeface::class.java.getDeclaredField(defaultFontNameToOverride)
-            defaultFontTypefaceField.isAccessible = true
-            defaultFontTypefaceField.set(null, fontMaintext)
-        } catch (e: java.lang.Exception) {
-            Log.e("메인 액티비티","catch")
-            return false
-        }
-        return true
-    }
-}
-
-object FontOverride {
-    /** 기본 폰트 셋팅  */
-    fun setDefaultFont(context: Context, staticTypefaceFieldName: String?, fontAssetName: String?) {
-        Log.e("메인 액티비티","setDefaultFont")
-        val regular = Typeface.createFromAsset(context.getAssets(), fontAssetName)
-        replaceFont(staticTypefaceFieldName, regular)
-    }
-
-    /** 기존의 폰트에서 설정한 폰트로 설정  */
-    internal fun replaceFont(staticTypefaceFieldName: String?, newTypeface: Typeface?) {
-        try {
-            Log.e("메인 액티비티","replaceFont")
-            val staticField = Typeface::class.java.getDeclaredField(staticTypefaceFieldName)
-            staticField.isAccessible = true
-            staticField.set(null,newTypeface)
-        } catch (e: NoSuchFieldException) {
-            Log.e("메인 액티비티","NoSuchFieldException")
-            e.printStackTrace()
-        } catch (e: IllegalAccessException) {
-            Log.e("메인 액티비티","IllegalAccessException")
-            e.printStackTrace()
-        }
-    }
 }

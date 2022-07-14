@@ -9,6 +9,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,6 +22,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -38,6 +41,7 @@ import com.dreamreco.joodiary.room.entity.MyDrink
 import com.dreamreco.joodiary.ui.calendar.CalendarViewModel
 import com.dreamreco.joodiary.util.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONArray
@@ -48,8 +52,6 @@ import java.util.*
 
 @AndroidEntryPoint
 class DiaryDetailDialog : DialogFragment() {
-
-
     private val calendarViewModel by viewModels<CalendarViewModel>()
     private val binding by lazy { DiaryDetailDialogBinding.inflate(layoutInflater) }
     private val args by navArgs<DiaryDetailDialogArgs>()
@@ -68,9 +70,11 @@ class DiaryDetailDialog : DialogFragment() {
     private var photoUri: Uri? = null
 
     // 날짜 변경 관련 변수 설정
-    private var updatedYear : Int = 0
-    private var updatedMonth : Int = 0
-    private var updatedDay : Int = 0
+    private var updatedYear: Int = 0
+    private var updatedMonth: Int = 0
+    private var updatedDay: Int = 0
+
+    private var typeface: Typeface? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +82,48 @@ class DiaryDetailDialog : DialogFragment() {
         // 날짜 변경 관련 변수 설정
         updatedYear = args.diaryBase.date.year
         updatedMonth = args.diaryBase.date.month
-        updatedDay  = args.diaryBase.date.day
+        updatedDay = args.diaryBase.date.day
+
+        // 폰트 설정 및 적용 코드
+        typeface = getFontType(requireContext())
+        typeface?.let { setGlobalFont(binding.root, it) }
+
+        with(binding) {
+            drinkTypeTextInputLayout.typeface = typeface
+            VODTextInputLayout.typeface = typeface
+            POATextInputLayout.typeface = typeface
+
+            if (getThemeType() == THEME_2) {
+                drinkTypeTextInputLayout.defaultHintTextColor = ContextCompat.getColorStateList(
+                    requireContext(),
+                    R.color.theme2_primary_text_color
+                )
+                drinkTypeTextInputLayout.boxStrokeColor =
+                    ContextCompat.getColor(requireContext(), R.color.theme2_primary_text_color)
+                drinkTypeTextInputLayout.boxStrokeWidth = 0
+                drinkTypeTextInputLayout.boxStrokeWidthFocused = 0
+
+                POATextInputLayout.defaultHintTextColor = ContextCompat.getColorStateList(
+                    requireContext(),
+                    R.color.theme2_primary_text_color
+                )
+                POATextInputLayout.boxStrokeColor =
+                    ContextCompat.getColor(requireContext(), R.color.theme2_primary_text_color)
+                POATextInputLayout.boxStrokeWidth = 0
+                POATextInputLayout.boxStrokeWidthFocused = 0
+
+                VODTextInputLayout.defaultHintTextColor = ContextCompat.getColorStateList(
+                    requireContext(),
+                    R.color.theme2_primary_text_color
+                )
+                VODTextInputLayout.boxStrokeColor =
+                    ContextCompat.getColor(requireContext(), R.color.theme2_primary_text_color)
+                VODTextInputLayout.boxStrokeWidth = 0
+                VODTextInputLayout.boxStrokeWidthFocused = 0
+            }
+        }
+
+
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -86,7 +131,6 @@ class DiaryDetailDialog : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         // diaryBase 요소 세팅
         basicDiarySetting()
 
@@ -136,12 +180,16 @@ class DiaryDetailDialog : DialogFragment() {
             // 저장 완료 후, 이전으로 돌아가는 코드
             insertOrUpdateEventDone.observe(viewLifecycleOwner) { done ->
                 if (done) {
+                    // 키보드 올라가 있다면 내리고,
+                    binding.titleText.clearFocusAndHideKeyboard(requireContext())
                     findNavController().navigateUp()
                 }
             }
             // 삭제 완료 후, 이전으로 돌아가는 코드
             dialogDeleteCompleted.observe(viewLifecycleOwner) { done ->
                 if (done) {
+                    // 키보드 올라가 있다면 내리고,
+                    binding.titleText.clearFocusAndHideKeyboard(requireContext())
                     findNavController().navigateUp()
                 }
             }
@@ -170,9 +218,6 @@ class DiaryDetailDialog : DialogFragment() {
             }
         }
 
-//        4) 주종, 도수, 주량 부분 감싸기 extendedLayout 또는 내용 아래로 내리기
-
-
         // 1. 툴바 관련 코드
         with(binding) {
             // #1 Top Toolbar
@@ -191,11 +236,11 @@ class DiaryDetailDialog : DialogFragment() {
             toolbarTitleTextView.setOnClickListener {
                 val datePickerDialog = DatePickerDialog(requireContext(), { _, year, month, day ->
                     // 캘린더 날짜 선택 후 확인 시,
-                    toolbarTitleTextView.text = getString(R.string.diary_date, year, month+1, day)
+                    toolbarTitleTextView.text = getString(R.string.diary_date, year, month + 1, day)
                     updatedYear = year
-                    updatedMonth = month+1
+                    updatedMonth = month + 1
                     updatedDay = day
-                }, args.diaryBase.date.year, args.diaryBase.date.month-1, args.diaryBase.date.day)
+                }, args.diaryBase.date.year, args.diaryBase.date.month - 1, args.diaryBase.date.day)
                 datePickerDialog.show()
             }
 
@@ -203,9 +248,16 @@ class DiaryDetailDialog : DialogFragment() {
 
                 // X 터치 시 이전으로 돌아가는 코드
                 setNavigationIcon(R.drawable.ic_close)
+                if (getThemeType() == THEME_2) {
+                    navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.white))
+                }
                 setNavigationOnClickListener {
+                    // 키보드 올라가 있다면 내리고,
+                    titleText.clearFocusAndHideKeyboard(requireContext())
+                    // 뒤로 가기 이동
                     findNavController().navigateUp()
                 }
+
 
                 menuDataSave.setOnClickListener {
                     updateData()
@@ -253,24 +305,35 @@ class DiaryDetailDialog : DialogFragment() {
                             requireContext(), R.drawable.ic_star
                         )
                     )
-                    btnBottomToolbarImportance.setColorFilter(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.important_color
+                    if (getThemeType() == THEME_2) {
+                        btnBottomToolbarImportance.setColorFilter(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.theme2_primary_touch_color
+                            )
                         )
-                    )
+                    } else {
+                        btnBottomToolbarImportance.setColorFilter(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.important_color
+                            )
+                        )
+                    }
                 } else {
                     btnBottomToolbarImportance.setImageDrawable(
                         ContextCompat.getDrawable(
                             requireContext(), R.drawable.ic_star_border
                         )
                     )
-                    btnBottomToolbarImportance.setColorFilter(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.not_important_color
+                    if (getThemeType() == THEME_2) {
+                        btnBottomToolbarImportance.setColorFilter(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.theme2_primary_text_color
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -307,13 +370,10 @@ class DiaryDetailDialog : DialogFragment() {
             getMyDrinkDoneEvent.observe(viewLifecycleOwner) {
                 if (it) {
                     spinnerDrinkTypeListCall()
+
                     //스피너
-                    val spinnerAdapter =
-                        ArrayAdapter(
-                            requireContext(),
-                            R.layout.spinner_item,
-                            spinnerDrinkTypeList
-                        )
+                    // 폰트 지정 spinnerAdapter 를 가져오는 코드
+                    val spinnerAdapter = getSpinnerAdapterWithCustomFont(spinnerDrinkTypeList)
 
                     binding.spinnerDrinkType.adapter = spinnerAdapter
 
@@ -332,13 +392,6 @@ class DiaryDetailDialog : DialogFragment() {
 
                                 // 스피너 그룹명 선택에 따른 경우
                                 when (selectedDrinkType) {
-
-                                    // 0. 초기상태, 아무 변화 없음
-                                    "" -> {
-                                        binding.drinkType.isEnabled = false
-                                        binding.drinkType.setText(args.diaryBase.myDrink?.drinkType)
-                                    }
-
                                     // 1. " " 선택 시, 아무 변화 없음
                                     getString(R.string.spinner_first) -> {
                                         binding.drinkType.isEnabled = false
@@ -378,13 +431,10 @@ class DiaryDetailDialog : DialogFragment() {
             getMyDrinkDoneEvent.observe(viewLifecycleOwner) {
                 if (it) {
                     spinnerPOAListCall()
+
                     //스피너
-                    val spinnerAdapter =
-                        ArrayAdapter(
-                            requireContext(),
-                            R.layout.spinner_item,
-                            spinnerPOAList
-                        )
+                    // 폰트 지정 spinnerAdapter 를 가져오는 코드
+                    val spinnerAdapter = getSpinnerAdapterWithCustomFont(spinnerPOAList)
 
                     binding.spinnerPOA.adapter = spinnerAdapter
 
@@ -403,13 +453,6 @@ class DiaryDetailDialog : DialogFragment() {
 
                                 // 스피너 그룹명 선택에 따른 경우
                                 when (selectedPOA) {
-
-                                    // 0. 초기상태, 아무 변화 없음
-                                    "" -> {
-                                        binding.POA.isEnabled = false
-                                        binding.POA.setText(args.diaryBase.myDrink?.POA)
-                                    }
-
                                     // 1. " " 선택 시, 아무 변화 없음
                                     getString(R.string.spinner_first) -> {
                                         binding.POA.isEnabled = false
@@ -449,13 +492,10 @@ class DiaryDetailDialog : DialogFragment() {
             getMyDrinkDoneEvent.observe(viewLifecycleOwner) {
                 if (it) {
                     spinnerVODListCall()
+
                     //스피너
-                    val spinnerAdapter =
-                        ArrayAdapter(
-                            requireContext(),
-                            R.layout.spinner_item,
-                            spinnerVODList
-                        )
+                    // 폰트 지정 spinnerAdapter 를 가져오는 코드
+                    val spinnerAdapter = getSpinnerAdapterWithCustomFont(spinnerVODList)
 
                     binding.spinnerVOD.adapter = spinnerAdapter
 
@@ -474,13 +514,6 @@ class DiaryDetailDialog : DialogFragment() {
 
                                 // 스피너 그룹명 선택에 따른 경우
                                 when (selectedVOD) {
-
-                                    // 0. 초기상태, 아무 변화 없음
-                                    "" -> {
-                                        binding.VOD.isEnabled = false
-                                        binding.VOD.setText(args.diaryBase.myDrink?.VOD)
-                                    }
-
                                     // 1. " " 선택 시, 아무 변화 없음
                                     getString(R.string.spinner_first) -> {
                                         binding.VOD.isEnabled = false
@@ -517,6 +550,67 @@ class DiaryDetailDialog : DialogFragment() {
                 }
             }
         }
+    }
+
+    // 폰트가 적용된 스피너
+    private fun getSpinnerAdapterWithCustomFont(list: List<String>): ArrayAdapter<String> {
+        val spinnerAdapter: ArrayAdapter<String> = object : ArrayAdapter<String>(
+            requireContext(),
+            R.layout.spinner_item, list
+        ) {
+            // 선택된 스피너 font 적용
+            override fun getView(
+                position: Int,
+                convertView: View?,
+                parent: ViewGroup
+            ): View {
+                val view = super.getView(position, convertView, parent)
+                val text = view.findViewById<View>(R.id.spinner_item) as TextView
+                text.typeface = typeface
+                if (getThemeType() == THEME_2) {
+                    text.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.theme2_primary_background_color
+                        )
+                    )
+                    text.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.theme2_primary_text_color
+                        )
+                    )
+                }
+                return view
+            }
+
+            // 드랍다운 스피너 font 적용
+            override fun getDropDownView(
+                position: Int,
+                convertView: View?,
+                parent: ViewGroup
+            ): View {
+                val view = super.getDropDownView(position, convertView, parent)
+                val text = view.findViewById<View>(R.id.spinner_item) as TextView
+                text.typeface = typeface
+                if (getThemeType() == THEME_2) {
+                    text.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.theme2_primary_background_color
+                        )
+                    )
+                    text.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.theme2_primary_text_color
+                        )
+                    )
+                }
+                return view
+            }
+        }
+        return spinnerAdapter
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -853,11 +947,15 @@ class DiaryDetailDialog : DialogFragment() {
                 getString(R.string.drink_records_error),
                 Toast.LENGTH_SHORT
             ).show()
-        } else if ( total == 3 ) {
+        } else if (total == 3) {
             // 주량 기록을 다 채웠는데,
             // drinkType 이 "데이터 없음" 일 때,
             if (updatedList().myDrink?.drinkType == getString(R.string.get_empty_DrinkTypePieChartList)) {
-                Toast.makeText(requireContext(), getString(R.string.change_drinkType_string),Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.change_drinkType_string),
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
                 calendarViewModel.insertOrUpdateData(updatedList(), args.diaryBase)
             }
@@ -878,7 +976,7 @@ class DiaryDetailDialog : DialogFragment() {
 
         val newTitle = binding.titleText.text.trim().toString()
         val newContent = binding.contentText.text.trim().toString()
-        var newMyDrink : MyDrink? = MyDrink(
+        var newMyDrink: MyDrink? = MyDrink(
             binding.drinkType.text.trim().toString(),
             binding.POA.text.trim().toString(),
             binding.VOD.text.trim().toString()
@@ -900,12 +998,12 @@ class DiaryDetailDialog : DialogFragment() {
         val updateList = DiaryBase(
             newImage,
             newDate,
-            CalendarDay.from(updatedYear,updatedMonth-1,updatedDay),
+            CalendarDay.from(updatedYear, updatedMonth - 1, updatedDay),
             newTitle,
             newContent,
             newMyDrink,
             newImportance,
-            intToDateInt(updatedYear,updatedMonth,updatedDay),
+            intToDateInt(updatedYear, updatedMonth, updatedDay),
             newBitmap,
             args.diaryBase.id
         )

@@ -9,13 +9,10 @@
         android:id="@+id/dialog_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/toolbar_title_textView"
@@ -33,9 +30,9 @@
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackground"
             android:gravity="center"
             android:text="저장하기"
-            android:textColor="@color/menu_icon_tint_color"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -45,20 +42,16 @@
         android:id="@+id/dialog_bottom_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar">
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
             android:id="@+id/btn_bottom_toolbar_importance"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:backgroundTint="@color/white"
             android:src="@drawable/ic_star_border" />
 
         <ImageButton
@@ -66,7 +59,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:backgroundTint="@color/white"
             android:src="@drawable/ic_delete"
             android:visibility="gone"
             tools:visibility="visible" />
@@ -92,15 +84,17 @@
             <!--350 250-->
             <ImageView
                 android:id="@+id/diary_imageView"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_add_photo_52"
                 android:background="?attr/selectableItemBackground"
-                app:layout_constraintBottom_toTopOf="@+id/drink_info_layout"
+                app:layout_constraintBottom_toTopOf="@+id/divider_image"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/gray" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider_image"
@@ -124,17 +118,19 @@
                 app:layout_constraintTop_toBottomOf="@id/divider_image">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:id="@+id/drink_type_linear_layout"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:orientation="vertical">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/drink_type_textInputLayout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp">
 
                         <EditText
                             android:id="@+id/drink_type"
@@ -149,27 +145,28 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <Spinner
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
                         android:id="@+id/spinner_drinkType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
                         android:contentDescription="주종 선택" />
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/POA_textInputLayout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp">
 
                         <EditText
                             android:id="@+id/POA"
@@ -184,27 +181,28 @@
 
 
                     <Spinner
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
                         android:id="@+id/spinner_POA"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
                         android:contentDescription="도수 선택" />
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/VOD_textInputLayout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp">
 
                         <EditText
                             android:id="@+id/VOD"
@@ -219,11 +217,11 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <Spinner
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
                         android:id="@+id/spinner_VOD"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
                         android:contentDescription="주량 선택" />
                 </LinearLayout>
             </LinearLayout>

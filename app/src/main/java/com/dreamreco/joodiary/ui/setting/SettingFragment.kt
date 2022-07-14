@@ -1,28 +1,22 @@
 package com.dreamreco.joodiary.ui.setting
 
 import android.app.Activity
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.dreamreco.joodiary.MainActivity
 import com.dreamreco.joodiary.MyApplication
 import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.SplashActivity
@@ -31,7 +25,6 @@ import com.dreamreco.joodiary.ui.customDialog.BackUpLoadingDialog
 import com.dreamreco.joodiary.util.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.system.exitProcess
 
 
 @AndroidEntryPoint
@@ -41,19 +34,43 @@ class SettingFragment : Fragment() {
     private val binding by lazy { FragmentSettingBinding.inflate(layoutInflater) }
     private var settingLoginState = true
     private var settingThemeState = true
+    private var typeface: Typeface? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // 폰트 설정 및 적용 코드
+        typeface = getFontType(requireContext())
+        typeface?.let { setGlobalFont(binding.root, it) }
+
+        // 테마 적용 코드
+        if (getThemeType() == THEME_2) {
+            setImageColorForDark(binding.root)
+            with(binding) {
+                settingFontBasicBtn.buttonTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                settingThemeBasicBtn.buttonTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                settingFont1Btn.buttonTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                settingFont2Btn.buttonTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                settingTheme1Btn.buttonTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+//                settingTheme2Btn.buttonTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                radioButtonForBio.buttonTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                radioButtonForPassword.buttonTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+                radioButtonForNothing.buttonTintList = ContextCompat.getColorStateList(requireContext(), R.color.white)
+            }
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         // 기록 시작일과 기록 일수를 가져오는 코드
         setDaysOfRecord()
 
 //        2.pdf 파일로 내보내기
 
         with(binding) {
+
             settingBackUp.setOnClickListener {
                 checkPermissionsAndSetBackup()
             }
@@ -62,18 +79,31 @@ class SettingFragment : Fragment() {
             settingTheme.setOnClickListener {
                 settingThemeButtonExpend()
             }
-            // 테마 기본
+            // 배경 기본
             settingThemeBasicBtn.setOnClickListener {
                 setThemeAndRestartApp(THEME_BASIC)
             }
-            // 테마 1
+            // 배경 1
             settingTheme1Btn.setOnClickListener {
-                setThemeAndRestartApp(THEME_1)
-            }
-            // 테마 2
-            settingTheme2Btn.setOnClickListener {
                 setThemeAndRestartApp(THEME_2)
             }
+//            // 배경 2
+//            settingTheme2Btn.setOnClickListener {
+//                setThemeAndRestartApp(THEME_2)
+//            }
+            // 폰트 기본
+            settingFontBasicBtn.setOnClickListener {
+                setFontAndRestartApp(FONT_BASIC)
+            }
+            // 폰트 1
+            settingFont1Btn.setOnClickListener {
+                setFontAndRestartApp(FONT_1)
+            }
+            // 폰트 2
+            settingFont2Btn.setOnClickListener {
+                setFontAndRestartApp(FONT_2)
+            }
+
 
 
 
@@ -106,7 +136,6 @@ class SettingFragment : Fragment() {
 
         // 1. 툴바 관련 코드
         with(binding.settingToolbar) {
-            title = getString(com.dreamreco.joodiary.R.string.setting_fragment_toolbar_title)
         }
         return binding.root
     }
@@ -217,7 +246,7 @@ class SettingFragment : Fragment() {
 
     private fun setThemeRadioButton() {
         with(binding) {
-            when (MyApplication.prefs.getString(THEME_TYPE, THEME_BASIC)) {
+            when (getThemeType()) {
                 THEME_BASIC -> {
                     settingThemeBasicBtn.isChecked = true
                     settingThemeBasicBtn.isEnabled = false
@@ -225,28 +254,60 @@ class SettingFragment : Fragment() {
                     settingTheme1Btn.isChecked = false
                     settingTheme1Btn.isEnabled = true
 
-                    settingTheme2Btn.isChecked = false
-                    settingTheme2Btn.isEnabled = true
+//                    settingTheme2Btn.isChecked = false
+//                    settingTheme2Btn.isEnabled = true
                 }
-                THEME_1 -> {
+                THEME_2 -> {
                     settingThemeBasicBtn.isChecked = false
                     settingThemeBasicBtn.isEnabled = true
 
                     settingTheme1Btn.isChecked = true
                     settingTheme1Btn.isEnabled = false
 
-                    settingTheme2Btn.isChecked = false
-                    settingTheme2Btn.isEnabled = true
+//                    settingTheme2Btn.isChecked = false
+//                    settingTheme2Btn.isEnabled = true
                 }
-                THEME_2 -> {
-                    settingThemeBasicBtn.isChecked = false
-                    settingThemeBasicBtn.isEnabled = true
+//                THEME_2 -> {
+//                    settingThemeBasicBtn.isChecked = false
+//                    settingThemeBasicBtn.isEnabled = true
+//
+//                    settingTheme1Btn.isChecked = false
+//                    settingTheme1Btn.isEnabled = true
+//
+//                    settingTheme2Btn.isChecked = true
+//                    settingTheme2Btn.isEnabled = false
+//                }
+            }
+            when (MyApplication.prefs.getString(FONT_TYPE, FONT_BASIC)) {
+                FONT_BASIC -> {
+                    settingFontBasicBtn.isChecked = true
+                    settingFontBasicBtn.isEnabled = false
 
-                    settingTheme1Btn.isChecked = false
-                    settingTheme1Btn.isEnabled = true
+                    settingFont1Btn.isChecked = false
+                    settingFont1Btn.isEnabled = true
 
-                    settingTheme2Btn.isChecked = true
-                    settingTheme2Btn.isEnabled = false
+                    settingFont2Btn.isChecked = false
+                    settingFont2Btn.isEnabled = true
+                }
+                FONT_1 -> {
+                    settingFontBasicBtn.isChecked = false
+                    settingFontBasicBtn.isEnabled = true
+
+                    settingFont1Btn.isChecked = true
+                    settingFont1Btn.isEnabled = false
+
+                    settingFont2Btn.isChecked = false
+                    settingFont2Btn.isEnabled = true
+                }
+                FONT_2 -> {
+                    settingFontBasicBtn.isChecked = false
+                    settingFontBasicBtn.isEnabled = true
+
+                    settingFont1Btn.isChecked = false
+                    settingFont1Btn.isEnabled = true
+
+                    settingFont2Btn.isChecked = true
+                    settingFont2Btn.isEnabled = false
                 }
             }
         }
@@ -345,20 +406,17 @@ class SettingFragment : Fragment() {
         settingViewModel.setThemeAndRestartApp(type)
     }
 
+    private fun setFontAndRestartApp(type: String) {
+        settingViewModel.setFontAndRestartApp(type)
+    }
+
     // 테마 적용 후 재시작
     private fun restartApp() {
-        var theme = ""
-        when (MyApplication.prefs.getString(THEME_TYPE, THEME_BASIC)) {
-            THEME_BASIC -> theme = getString(R.string.theme_basic)
-            THEME_1 -> theme = getString(R.string.theme_1)
-            THEME_2 -> theme = getString(R.string.theme_2)
-        }
-
         val intent = Intent(requireContext(), SplashActivity::class.java)
         requireActivity().finishAffinity()
         startActivity(intent)
         requireActivity().overridePendingTransition(0,1)
-        Toast.makeText(requireContext(), getString(R.string.theme_apply_finished, theme),Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.theme_apply_finished),Toast.LENGTH_SHORT).show()
     }
 
 

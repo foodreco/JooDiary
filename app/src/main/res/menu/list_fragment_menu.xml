@@ -4,9 +4,8 @@
 
     <item
         android:icon="@drawable/ic_sort"
-        android:iconTint="@color/menu_icon_tint_color"
         android:title="@string/list_menu_sort"
-        app:showAsAction="ifRoom|collapseActionView">
+        app:showAsAction="always">
         <menu>
             <item
                 android:id="@+id/sort_by_recent"

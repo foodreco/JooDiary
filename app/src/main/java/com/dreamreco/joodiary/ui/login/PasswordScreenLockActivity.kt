@@ -1,7 +1,9 @@
 package com.dreamreco.joodiary.ui.login
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -24,11 +26,17 @@ class PasswordScreenLockActivity : AppCompatActivity() {
     private var passwordNumber = ""
 
     // 등록된 비밀번호
-    private val registeredPassword = MyApplication.prefs.getString(PASSWORD_KEY, NO_REGISTERED_PASSWORD)
+    private val registeredPassword =
+        MyApplication.prefs.getString(PASSWORD_KEY, NO_REGISTERED_PASSWORD)
+
+    private var typeface: Typeface? = null
+
+    private var themeDarkState = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // 테마 설정 코드
-        when (MyApplication.prefs.getString(THEME_TYPE, THEME_BASIC)) {
+        when (getThemeType()) {
             // 기본 테마
             THEME_BASIC -> {
                 setTheme(R.style.Theme_JooDiary)
@@ -40,10 +48,44 @@ class PasswordScreenLockActivity : AppCompatActivity() {
             // 테마 2
             THEME_2 -> {
                 setTheme(R.style.SoundCustomAppTheme)
+                themeDarkState = true
+
+                with(binding) {
+                    viewNumber1.imageTintList = ContextCompat.getColorStateList(
+                        this@PasswordScreenLockActivity,
+                        R.color.white
+                    )
+                    viewNumber2.imageTintList = ContextCompat.getColorStateList(
+                        this@PasswordScreenLockActivity,
+                        R.color.white
+                    )
+                    viewNumber3.imageTintList = ContextCompat.getColorStateList(
+                        this@PasswordScreenLockActivity,
+                        R.color.white
+                    )
+                    viewNumber4.imageTintList = ContextCompat.getColorStateList(
+                        this@PasswordScreenLockActivity,
+                        R.color.white
+                    )
+
+                    passwordToolbarLogo.imageTintList = ContextCompat.getColorStateList(
+                        this@PasswordScreenLockActivity,
+                        R.color.white
+                    )
+                    passwordToolbarExitButton.imageTintList = ContextCompat.getColorStateList(
+                        this@PasswordScreenLockActivity,
+                        R.color.white
+                    )
+                }
             }
         }
+
+
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        typeface = getFontType(this)
+        setGlobalFont(binding.root, typeface!!)
 
         with(binding) {
             val textViewArray = arrayListOf<View>(
@@ -58,7 +100,6 @@ class PasswordScreenLockActivity : AppCompatActivity() {
                 number8,
                 number9,
                 textDeleteAll,
-                textDeleteUnit
             )
             for (numberButton in textViewArray) {
                 numberButton.setOnClickListener(btnListener)
@@ -74,7 +115,7 @@ class PasswordScreenLockActivity : AppCompatActivity() {
     // 버튼 클릭 했을때
     private val btnListener = View.OnClickListener { view ->
         var currentValue = -1
-        when(view.id){
+        when (view.id) {
             R.id.number0 -> currentValue = 0
             R.id.number1 -> currentValue = 1
             R.id.number2 -> currentValue = 2
@@ -86,68 +127,98 @@ class PasswordScreenLockActivity : AppCompatActivity() {
             R.id.number8 -> currentValue = 8
             R.id.number9 -> currentValue = 9
             R.id.text_delete_all -> onClear()
-            R.id.text_delete_unit -> onDeleteKey()
         }
 
         with(binding) {
+            if (currentValue != -1) {
 
-            val strCurrentValue = currentValue.toString() // 현재 입력된 번호 String 으로 변경
-            passwordNumber += strCurrentValue
+                val strCurrentValue = currentValue.toString() // 현재 입력된 번호 String 으로 변경
+                passwordNumber += strCurrentValue
 
-            if (currentValue != -1){
                 when (focusState) {
                     0 -> {
-                        binding.viewNumber1.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity, R.drawable.ic_circle))
+                        binding.viewNumber1.apply {
+                            setImageDrawable(
+                                ContextCompat.getDrawable(
+                                    this@PasswordScreenLockActivity,
+                                    R.drawable.ic_circle
+                                )
+                            )
+                            if (themeDarkState) {
+                                imageTintList = ContextCompat.getColorStateList(
+                                    this@PasswordScreenLockActivity,
+                                    R.color.white
+                                )
+                            }
+                        }
                         focusState += 1
                     }
                     1 -> {
-                        binding.viewNumber2.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_circle))
+                        binding.viewNumber2.apply {
+                            setImageDrawable(
+                                ContextCompat.getDrawable(
+                                    this@PasswordScreenLockActivity,
+                                    R.drawable.ic_circle
+                                )
+                            )
+                            if (themeDarkState) {
+                                imageTintList = ContextCompat.getColorStateList(
+                                    this@PasswordScreenLockActivity,
+                                    R.color.white
+                                )
+                            }
+                        }
                         focusState += 1
                     }
                     2 -> {
-                        binding.viewNumber3.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_circle))
+                        binding.viewNumber3.apply {
+                            setImageDrawable(
+                                ContextCompat.getDrawable(
+                                    this@PasswordScreenLockActivity,
+                                    R.drawable.ic_circle
+                                )
+                            )
+                            if (themeDarkState) {
+                                imageTintList = ContextCompat.getColorStateList(
+                                    this@PasswordScreenLockActivity,
+                                    R.color.white
+                                )
+                            }
+                        }
                         focusState += 1
                     }
                     3 -> {
-                        binding.viewNumber4.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_circle))
+                        binding.viewNumber4.apply {
+                            setImageDrawable(
+                                ContextCompat.getDrawable(
+                                    this@PasswordScreenLockActivity,
+                                    R.drawable.ic_circle
+                                )
+                            )
+                            if (themeDarkState) {
+                                imageTintList = ContextCompat.getColorStateList(
+                                    this@PasswordScreenLockActivity,
+                                    R.color.white
+                                )
+                            }
+                        }
                         // 비밀번호 4자리 모두 입력시
                         if (registeredPassword == passwordNumber) {
                             // 등록된 비밀번호와 일치하는 경우,
                             // 로그인 성공
                             MyApplication.prefs.setString(LOGIN_STATE, LOGIN_CLEAR)
-                            val intent = Intent(this@PasswordScreenLockActivity, MainActivity::class.java)
+                            val intent =
+                                Intent(this@PasswordScreenLockActivity, MainActivity::class.java)
                             startActivity(intent)
                         } else {
                             // 비밀번호가 일치하지 않을 때,
+                            Toast.makeText(
+                                this@PasswordScreenLockActivity,
+                                getString(R.string.second_password_discordant),
+                                Toast.LENGTH_SHORT
+                            ).show()
                             onClear()
-                                Toast.makeText(this@PasswordScreenLockActivity, getString(R.string.second_password_discordant),Toast.LENGTH_SHORT).show()
-                                onClear()
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun onDeleteKey() {
-        if (focusState > 0) {
-            with(binding) {
-                focusState -= 1
-                when (focusState) {
-                    0 -> {
-                        viewNumber1.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-                        viewNumber2.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-                        viewNumber3.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-                        viewNumber4.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-                    }
-                    1 -> {
-                        viewNumber2.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-                        viewNumber3.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-                        viewNumber4.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-                    }
-                    2 -> {
-                        viewNumber3.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-                        viewNumber4.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
                     }
                 }
             }
@@ -158,10 +229,62 @@ class PasswordScreenLockActivity : AppCompatActivity() {
         focusState = 0
         passwordNumber = ""
         with(binding) {
-            viewNumber1.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-            viewNumber2.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-            viewNumber3.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
-            viewNumber4.setImageDrawable(ContextCompat.getDrawable(this@PasswordScreenLockActivity,R.drawable.ic_outline_circle))
+            viewNumber1.apply {
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this@PasswordScreenLockActivity,
+                        R.drawable.ic_outline_circle
+                    )
+                )
+                if (themeDarkState) {
+                    imageTintList = ContextCompat.getColorStateList(
+                        this@PasswordScreenLockActivity,
+                        R.color.white
+                    )
+                }
+            }
+            viewNumber2.apply {
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this@PasswordScreenLockActivity,
+                        R.drawable.ic_outline_circle
+                    )
+                )
+                if (themeDarkState) {
+                    imageTintList = ContextCompat.getColorStateList(
+                        this@PasswordScreenLockActivity,
+                        R.color.white
+                    )
+                }
+            }
+            viewNumber3.apply {
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this@PasswordScreenLockActivity,
+                        R.drawable.ic_outline_circle
+                    )
+                )
+                if (themeDarkState) {
+                    imageTintList = ContextCompat.getColorStateList(
+                        this@PasswordScreenLockActivity,
+                        R.color.white
+                    )
+                }
+            }
+            viewNumber4.apply {
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this@PasswordScreenLockActivity,
+                        R.drawable.ic_outline_circle
+                    )
+                )
+                if (themeDarkState) {
+                    imageTintList = ContextCompat.getColorStateList(
+                        this@PasswordScreenLockActivity,
+                        R.color.white
+                    )
+                }
+            }
         }
     }
 

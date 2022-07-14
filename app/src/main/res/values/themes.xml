@@ -14,39 +14,85 @@
     </style>
 
     <!-- 1.기본 감성   2.밝은거   3.어두운거-->
-
     <!-- Base application theme. -->
     <style name="Theme.JooDiary" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/basic_primary</item>
+        <item name="colorPrimaryVariant">@color/basic_primary_light</item>
+        <item name="colorOnPrimary">@color/basic_primary_dark</item>
 
-        <item name="android:fontFamily">@font/custom_font</item>
+        <item name="android:colorPrimary">@color/basic_primary</item>
+        <item name="android:colorPrimaryDark">@color/basic_primary_dark</item>
+        <item name="android:colorAccent">@color/red</item>
 
-        <item name="android:typeface">monospace</item>
+        <!--기본 글씨 색상-->
+        <item name="android:textColor">@color/basic_primary_text_color</item>
+        <item name="android:textColorPrimary">@color/basic_primary_text_color</item>
+        <item name="android:lineSpacingExtra">5dp</item>
+        <!--메뉴, 뒤로가기 색상-->
+        <item name="colorControlNormal">@color/basic_primary_dark</item>
+        <item name="android:actionMenuTextColor">@color/basic_primary_text_color</item>
+        <!-- EditText 활성화 색상-->
+        <item name="colorControlActivated">@color/basic_primary_dark</item>
+        <!--기본 배경 색상-->
+        <item name="android:windowBackground">@color/basic_primary_background_color</item>
+        <!--상태바 색상-->
+        <item name="android:statusBarColor" tools:targetApi="l">
+            @color/basic_primary_statusBar_color
+        </item>
+        <!--터치 효과 색상-->
+        <item name="colorControlHighlight">@color/basic_primary_touch_color</item>
+        <!--툴바 색상-->
+        <item name="toolbarStyle">@style/toolbarStyle</item>
+        <!--바텀Nav 색상-->
+        <item name="bottomNavigationStyle">@style/bottomNavStyle</item>
+        <!--플로팅 버튼-->
+        <item name="floatingActionButtonStyle">@style/floatingButtonStyle</item>
+        <!--카드뷰-->
+        <item name="cardViewStyle">@style/myCustomCardViewStyle</item>
+        <!--확인창-->
+        <item name="materialAlertDialogTheme">@style/myCustomAlertDialogStyle</item>
+        <!--Date picker-->
+        <item name="android:datePickerDialogTheme">@style/myCustomDatePickerStyle</item>
+        <!--이미지 버튼-->
+        <item name="imageButtonStyle">@style/imageButtonThemeInToolbar</item>
+    </style>
 
+    <style name="toolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+        <item name="titleTextColor">@color/black</item>
+        <item name="android:background">@color/basic_primary_background_color</item>
+    </style>
 
-<!--        &lt;!&ndash;custom font-family 적용&ndash;&gt;-->
-<!--        <item name="android:textViewStyle">@style/customTextViewFontStyle</item>-->
+    <style name="imageButtonThemeInToolbar" parent="Widget.AppCompat.ImageButton">
+        <item name="backgroundTint">@color/basic_primary_background_color</item>
+    </style>
 
-<!--        <item name="android:buttonStyle">@style/customButtonFontStyle</item>-->
+    <style name="bottomNavStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="backgroundTint">@color/basic_primary_background_color</item>
+    </style>
 
-<!--        <item name="android:editTextStyle">@style/customEditTextFontStyle</item>-->
-<!--        <item name="editTextStyle">@style/customEditTextFontStyle</item>-->
+    <style name="floatingButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/basic_primary_dark</item>
+        <item name="tint">@color/basic_primary_background_color</item>
+    </style>
 
-<!--        <item name="materialAlertDialogTheme">@style/customAlertDialog</item>-->
+    <style name="myCustomCardViewStyle" parent="CardView.Light">
+        <item name="android:backgroundTint">@color/basic_primary_background_color</item>
+    </style>
 
-<!--        <item name="android:radioButtonStyle">@style/customRadioButtonFontStyle</item>-->
+    <style name="myCustomAlertDialogStyle" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:backgroundTint">@color/basic_primary_background_color</item>
+    </style>
 
-<!--        <item name="android:checkboxStyle">@style/customCheckboxFontStyle</item>-->
+    <style name="myCustomDatePickerStyle" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="colorAccent">@color/basic_primary_light</item>
+        <item name="android:windowBackground">@color/basic_primary_background_color
+        </item>     <!--calendar background-->
+        <item name="android:colorControlActivated">@color/basic_primary_dark
+        </item> <!--selected day-->
+        <item name="android:textColorPrimary">@color/black</item> <!--days of the month-->
+        <item name="android:textColorSecondary">@color/basic_primary_dark
+        </item>    <!--days of the week-->
     </style>
     <!-- 달력관련 -->
     <!-- 달력 안의 숫자들에 적용되는 스타일 -->
@@ -72,57 +118,99 @@
     </style>
 
 
-
     <!--테마1-->
     <style name="NewCustomAppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/hau_dark_green</item>
-        <item name="colorPrimaryDark">@color/hau_status_bar_color</item>
-        <item name="colorAccent">@color/hau_green</item>
+        <item name="colorPrimary">@color/theme1_primary</item>
+        <item name="colorPrimaryVariant">@color/theme1_primary_light</item>
+        <item name="colorOnPrimary">@color/theme1_primary_dark</item>
 
-        <item name="android:fontFamily">@font/custom_font_theme1</item>
+        <item name="android:colorPrimary">@color/theme1_primary</item>
+        <item name="android:colorPrimaryDark">@color/theme1_primary_dark</item>
+        <item name="android:colorAccent">@color/red</item>
 
         <!--기본 글씨 색상-->
-        <item name="android:textColorPrimary">@color/hau_status_bar_color</item>
-
+        <item name="android:textColor">@color/theme1_primary_text_color</item>
+        <item name="android:textColorPrimary">@color/theme1_primary_text_color</item>
+        <item name="android:lineSpacingExtra">5dp</item>
         <!--메뉴, 뒤로가기 색상-->
-        <item name="colorControlNormal">@color/hau_status_bar_color</item>
+        <item name="colorControlNormal">@color/theme1_primary_dark</item>
+        <item name="android:actionMenuTextColor">@color/theme1_primary_text_color</item>
+        <!-- EditText 활성화 색상-->
+        <item name="colorControlActivated">@color/theme1_primary_dark</item>
         <!--기본 배경 색상-->
-        <item name="android:windowBackground">@color/hau_white_green</item>
+        <item name="android:windowBackground">@color/theme1_primary_background_color</item>
         <!--상태바 색상-->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/hau_status_bar_color</item>
+        <item name="android:statusBarColor" tools:targetApi="l">
+            @color/theme1_primary_statusBar_color
+        </item>
         <!--터치 효과 색상-->
-        <item name="colorControlHighlight">@color/hau_bright_green</item>
-        <!--액션바 색상-->
-        <item name="actionBarTheme">@style/ThemeOverlay.ActionBar</item>
-
-<!--        &lt;!&ndash;custom font-family 적용&ndash;&gt;-->
-<!--        <item name="android:textViewStyle">@style/customTextViewFontStyleTheme1</item>-->
-<!--        <item name="android:buttonStyle">@style/customButtonFontStyleTheme1</item>-->
-<!--        <item name="android:editTextStyle">@style/customEditTextFontStyleTheme1</item>-->
-
-<!--        <item name="materialAlertDialogTheme">@style/customAlertDialogTheme1</item>-->
-
-<!--        <item name="editTextStyle">@style/customEditTextFontStyleTheme1</item>-->
-<!--        <item name="android:radioButtonStyle">@style/customRadioButtonFontStyleTheme1</item>-->
-<!--        <item name="android:checkboxStyle">@style/customCheckboxFontStyleTheme1</item>-->
+        <item name="colorControlHighlight">@color/theme1_primary_touch_color</item>
+        <!--툴바 색상-->
+        <item name="toolbarStyle">@style/toolbarStyleTheme1</item>
+        <!--바텀Nav 색상-->
+        <item name="bottomNavigationStyle">@style/bottomNavStyleTheme1</item>
+        <!--플로팅 버튼-->
+        <item name="floatingActionButtonStyle">@style/floatingButtonStyleTheme1</item>
+        <!--카드뷰-->
+        <item name="cardViewStyle">@style/myCustomCardViewStyleTheme1</item>
+        <!--확인창-->
+        <item name="materialAlertDialogTheme">@style/myCustomAlertDialogStyleTheme1</item>
+        <!--Date picker-->
+        <item name="android:datePickerDialogTheme">@style/myCustomDatePickerStyleTheme1</item>
+        <!--이미지 버튼-->
+        <item name="imageButtonStyle">@style/imageButtonThemeInToolbarTheme1</item>
     </style>
 
-    <style name="ThemeOverlay.ActionBar" parent="">
-        <item name="colorPrimary">@color/hau_white_green</item>
+    <style name="toolbarStyleTheme1" parent="Widget.MaterialComponents.Toolbar">
+        <item name="titleTextColor">@color/theme1_primary_text_color</item>
+        <item name="android:background">@color/theme1_primary_background_color</item>
+    </style>
+
+    <style name="imageButtonThemeInToolbarTheme1" parent="Widget.AppCompat.ImageButton">
+        <item name="backgroundTint">@color/theme1_primary_background_color</item>
+    </style>
+
+    <style name="bottomNavStyleTheme1" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="backgroundTint">@color/theme1_primary_background_color</item>
+    </style>
+
+    <style name="floatingButtonStyleTheme1" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/theme1_primary_dark</item>
+        <item name="tint">@color/theme1_primary_background_color</item>
+    </style>
+
+    <style name="myCustomCardViewStyleTheme1" parent="CardView.Light">
+        <item name="android:backgroundTint">@color/theme1_primary_background_color</item>
+    </style>
+
+    <style name="myCustomAlertDialogStyleTheme1" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:backgroundTint">@color/theme1_primary_background_color</item>
+    </style>
+
+    <style name="myCustomDatePickerStyleTheme1" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="colorAccent">@color/theme1_primary_light</item>
+        <item name="android:windowBackground">@color/theme1_primary_background_color
+        </item>     <!--calendar background-->
+        <item name="android:colorControlActivated">@color/theme1_primary_dark
+        </item> <!--selected day-->
+        <item name="android:textColorPrimary">@color/theme1_primary_text_color
+        </item> <!--days of the month-->
+        <item name="android:textColorSecondary">@color/theme1_primary_dark
+        </item>    <!--days of the week-->
     </style>
     <!-- 달력관련 -->
     <!-- 달력 안의 숫자들에 적용되는 스타일 -->
     <style name="CalenderViewDateCustomTextTheme1" parent="TextAppearance.MaterialCalendarWidget.Date">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:weekNumberColor">@android:color/holo_red_light</item>
-        <item name="android:fontFamily">@font/dohyeon_regular</item>
+        <item name="android:fontFamily">@font/binggraemelona_regular</item>
     </style>
 
     <!-- 달력 안의 요일들에 적용되는 스타일 -->
     <style name="CalenderViewWeekCustomTextTheme1" parent="TextAppearance.MaterialCalendarWidget.WeekDay">
         <item name="android:textColor">@color/black</item>
         <item name="android:weekNumberColor">@android:color/holo_red_light</item>
-        <item name="android:fontFamily">@font/dohyeon_regular</item>
+        <item name="android:fontFamily">@font/binggraemelona_regular</item>
     </style>
 
     <!-- 연, 월을 표시하는 헤더에 적용되는 스타일 -->
@@ -130,113 +218,242 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@android:color/darker_gray</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">@font/dohyeon_regular</item>
+        <item name="android:fontFamily">@font/binggraemelona_regular</item>
     </style>
 
 
-    <!--테마2-->
+    <!--테마2 : 다크모드-->
     <style name="SoundCustomAppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/sound_text_color</item>
-        <item name="colorPrimaryDark">@color/sound_yellow_green</item>
-        <item name="colorAccent">@color/sound_yellow</item>
+        <item name="colorPrimary">@color/theme2_primary</item>
+        <item name="colorPrimaryVariant">@color/theme2_primary_light</item>
+        <item name="colorOnPrimary">@color/theme2_primary_dark</item>
 
-        <item name="android:fontFamily">@font/custom_font_theme2</item>
+        <item name="android:colorPrimary">@color/theme2_primary</item>
+        <item name="android:colorPrimaryDark">@color/theme2_primary_dark</item>
+        <item name="android:colorAccent">@color/red</item>
 
         <!--기본 글씨 색상-->
-        <item name="android:textColorPrimary">@color/sound_yellow_green</item>
-
-        <!--상태바 아이콘 색상 회색-->
-        <item name="android:windowLightStatusBar">true</item>
-
+        <item name="android:textColor">@color/theme2_primary_text_color</item>
+        <item name="android:textColorPrimary">@color/theme2_primary_text_color</item>
+        <item name="android:lineSpacingExtra">5dp</item>
         <!--메뉴, 뒤로가기 색상-->
-        <item name="colorControlNormal">@color/sound_text_color</item>
+        <item name="colorControlNormal">@color/theme2_primary_text_color</item>
+        <item name="android:colorControlNormal">@color/theme2_primary_text_color</item>
+        <item name="android:actionMenuTextColor">@color/theme2_primary_text_color</item>
+        <item name="actionMenuTextColor">@color/theme2_primary_text_color</item>
+        <item name="popupMenuBackground">@color/theme2_primary_background_color</item>
+        <!--툴바 메뉴 아이콘 색상-->
+        <item name="iconTint">@color/theme2_primary_text_color</item>
+        <item name="android:iconTint">@color/theme2_primary_text_color</item>
+        <!-- EditText 활성화 색상-->
+        <item name="colorControlActivated">@color/theme2_primary_text_color</item>
+        <item name="hintTextColor">@color/theme2_primary_text_color</item>
+        <item name="android:textColorHint">@color/theme2_primary_text_color</item>
         <!--기본 배경 색상-->
-        <item name="android:windowBackground">@color/sound_white_yellow</item>
+        <item name="android:windowBackground">@color/theme2_primary_background_color</item>
         <!--상태바 색상-->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/sound_status_bar_color</item>
+        <item name="android:statusBarColor" tools:targetApi="l">
+            @color/theme2_primary_statusBar_color
+        </item>
         <!--터치 효과 색상-->
-        <item name="colorControlHighlight">@color/sound_bright_yellow</item>
-        <!--액션바 색상-->
-        <item name="actionBarTheme">@style/ThemeOverlay.ActionBar2</item>
-
-        <!--custom font-family 적용-->
-<!--        <item name="android:textViewStyle">@style/customTextViewFontStyleTheme2</item>-->
-<!--        <item name="android:buttonStyle">@style/customButtonFontStyleTheme2</item>-->
-<!--        <item name="android:editTextStyle">@style/customEditTextFontStyleTheme2</item>-->
-
-<!--        <item name="materialAlertDialogTheme">@style/customAlertDialogTheme2</item>-->
-
-<!--        <item name="editTextStyle">@style/customEditTextFontStyleTheme2</item>-->
-
-<!--        <item name="android:radioButtonStyle">@style/customRadioButtonFontStyleTheme2</item>-->
-<!--        <item name="android:checkboxStyle">@style/customCheckboxFontStyleTheme2</item>-->
-
-<!--        <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>-->
-
+        <item name="colorControlHighlight">@color/theme2_primary_touch_color</item>
+        <!--툴바 색상-->
+        <item name="toolbarStyle">@style/toolbarStyleTheme2</item>
+        <!--바텀Nav 색상-->
+        <item name="bottomNavigationStyle">@style/bottomNavStyleTheme2</item>
+        <!--플로팅 버튼-->
+        <item name="floatingActionButtonStyle">@style/floatingButtonStyleTheme2</item>
+        <!--카드뷰-->
+        <item name="cardViewStyle">@style/myCustomCardViewStyleTheme2</item>
+        <!--확인창-->
+        <item name="materialAlertDialogTheme">@style/myCustomAlertDialogStyleTheme2</item>
+        <!--Date picker-->
+        <item name="android:datePickerDialogTheme">@style/myCustomDatePickerStyleTheme2</item>
+        <!--이미지 버튼-->
+        <item name="imageButtonStyle">@style/imageButtonThemeInToolbarTheme2</item>
+        <!--이미지 뷰-->
+        <item name="android:editTextColor">@color/theme2_primary_text_color</item>
+        <!--디바이더-->
+        <item name="materialDividerStyle">@style/myCustomDividerForDark</item>
+    </style>
+    <style name="toolbarStyleTheme2" parent="Widget.MaterialComponents.Toolbar">
+        <item name="titleTextColor">@color/theme2_primary_text_color</item>
+        <item name="android:background">@color/theme2_primary_background_color</item>
     </style>
 
-    <style name="ThemeOverlay.ActionBar2" parent="">
-        <item name="colorPrimary">@color/sound_white_yellow</item>
+    <style name="imageButtonThemeInToolbarTheme2" parent="Widget.AppCompat.ImageButton">
+        <item name="backgroundTint">@color/theme2_primary_background_color</item>
+        <item name="android:tint">@color/theme2_primary_text_color</item>
+        <item name="tint">@color/theme2_primary_text_color</item>
     </style>
+
+    <style name="bottomNavStyleTheme2" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="backgroundTint">@color/theme2_primary_background_color</item>
+    </style>
+
+    <style name="floatingButtonStyleTheme2" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/theme2_primary_dark</item>
+        <item name="tint">@color/theme2_primary_text_color</item>
+    </style>
+
+    <style name="myCustomCardViewStyleTheme2" parent="CardView.Light">
+        <item name="android:backgroundTint">@color/theme2_primary_background_color_for_cardView
+        </item>
+    </style>
+
+    <style name="myCustomAlertDialogStyleTheme2" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:backgroundTint">@color/theme2_primary_background_color</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/theme2_primary_text_color</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/theme2_primary_text_color</item>
+    </style>
+
+    <style name="myCustomDatePickerStyleTheme2" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="colorAccent">@color/theme2_primary_light</item>
+        <item name="android:windowBackground">@color/theme2_primary_background_color
+        </item>     <!--calendar background-->
+        <item name="android:colorControlActivated">@color/theme2_primary_dark
+        </item> <!--selected day-->
+        <item name="android:textColorPrimary">@color/theme2_primary_text_color
+        </item> <!--days of the month-->
+        <item name="android:textColorSecondary">@color/theme2_primary_touch_color
+        </item>    <!--days of the week-->
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyleForDate</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyleForDate</item>
+    </style>
+    <style name="NegativeButtonStyleForDate" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/theme2_primary_text_color</item>
+    </style>
+    <style name="PositiveButtonStyleForDate" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/theme2_primary_text_color</item>
+    </style>
+    <style name="myCustomDividerForDark" parent="Widget.MaterialComponents.MaterialDivider">
+        <item name="dividerColor">@color/white_for_dark</item>
+    </style>
+
+<!--    <style name="myTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">-->
+
+<!--        &lt;!&ndash;        <item name="android:colorControlActivated">@color/theme2_primary_text_color</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="android:colorControlNormal">@color/theme2_primary_text_color</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="colorControlHighlight">@color/theme2_primary_text_color</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="android:colorActivatedHighlight">@color/theme2_primary_text_color</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="colorControlNormal">@color/theme2_primary_text_color</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;&lt;!&ndash;        <item name="textOutlineColor">@color/theme2_primary_text_color</item>&ndash;&gt;&ndash;&gt;-->
+<!--        &lt;!&ndash;&lt;!&ndash;        <item name="boxBackgroundColor">@color/red</item>&ndash;&gt;&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="hintEnabled">true</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="boxStrokeColor">@color/theme2_primary_text_color</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;&lt;!&ndash;        <item name="boxStrokeErrorColor">@color/orange</item>&ndash;&gt;&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="hintTextColor">@color/theme2_primary_text_color</item>&ndash;&gt;-->
+
+<!--        &lt;!&ndash;        <item name="colorAccent">@color/theme2_primary_text_color</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="boxStrokeColor">@color/textInput_default_box_stroke_color</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="boxStrokeWidth">1dp</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TextInputLayout</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="hintTextColor">?attr/colorOnSurface</item>&ndash;&gt;-->
+
+<!--        &lt;!&ndash; border color &ndash;&gt;-->
+<!--        <item name="boxStrokeColor">@color/theme2_primary_text_color</item>-->
+
+<!--        <item name="boxBackgroundColor">@color/theme2_primary_text_color</item>-->
+
+<!--        &lt;!&ndash;        &lt;!&ndash; The color of the label when it is collapsed and the text field is active &ndash;&gt;&ndash;&gt;-->
+<!--        <item name="hintTextColor">@color/theme2_primary_text_color</item>-->
+<!--        <item name="android:textColorHint">@color/theme2_primary_text_color</item>-->
+
+<!--        &lt;!&ndash;        <item name="android:textColor">@color/theme2_primary_text_color</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="textOutlineColor">@color/theme2_primary_text_color</item>&ndash;&gt;-->
+
+<!--        &lt;!&ndash;        &lt;!&ndash; The color of the label in all other text field states (such as resting and disabled) &ndash;&gt;&ndash;&gt;-->
+
+<!--    </style>-->
+
+
+
+<!--    <style name="myCustomTextInputEditText" parent="Widget.AppCompat.EditText">-->
+<!--        <item name="colorControlActivated">@color/theme2_primary_text_color</item>-->
+<!--        <item name="android:colorActivatedHighlight">@color/theme2_primary_text_color</item>-->
+<!--    </style>-->
+
+<!--    <style name="TextAppearance.App.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">-->
+<!--        <item name="fontFamily">@font/custom_font_theme1</item>-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme1</item>-->
+<!--        <item name="textOutlineColor">@color/theme2_primary_text_color</item>-->
+<!--        <item name="android:textColor">@color/theme2_primary_text_color</item>-->
+<!--    </style>-->
+
+<!--    <style name="TextAppearance.App.Caption" parent="TextAppearance.MaterialComponents.Caption">-->
+<!--        <item name="fontFamily">@font/custom_font_theme2</item>-->
+<!--        <item name="android:fontFamily">@font/custom_font_theme2</item>-->
+<!--        <item name="android:textColor">@color/theme2_primary_text_color</item>-->
+<!--        <item name="textOutlineColor">@color/theme2_primary_text_color</item>-->
+<!--    </style>-->
+
     <!-- 달력관련 -->
     <!-- 달력 안의 숫자들에 적용되는 스타일 -->
     <style name="CalenderViewDateCustomTextTheme2" parent="TextAppearance.MaterialCalendarWidget.Date">
         <item name="android:textColor">@android:color/black</item>
-        <item name="android:weekNumberColor">@android:color/holo_red_light</item>
-        <item name="android:fontFamily">@font/binggraemelona_regular</item>
+        <!--        <item name="android:weekNumberColor">@android:color/holo_red_light</item>-->
+        <item name="android:fontFamily">@font/binggraesamanco</item>
     </style>
 
     <!-- 달력 안의 요일들에 적용되는 스타일 -->
     <style name="CalenderViewWeekCustomTextTheme2" parent="TextAppearance.MaterialCalendarWidget.WeekDay">
         <item name="android:textColor">@color/black</item>
-        <item name="android:weekNumberColor">@android:color/holo_red_light</item>
-        <item name="android:fontFamily">@font/binggraemelona_regular</item>
+        <!--        <item name="android:weekNumberColor">@android:color/holo_red_light</item>-->
+        <item name="android:fontFamily">@font/binggraesamanco</item>
     </style>
-
     <!-- 연, 월을 표시하는 헤더에 적용되는 스타일 -->
     <style name="CalendarWidgetHeaderTheme2" parent="TextAppearance.MaterialCalendarWidget.Header">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@android:color/darker_gray</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">@font/binggraemelona_regular</item>
+        <item name="android:fontFamily">@font/binggraesamanco</item>
     </style>
 
-<!--    &lt;!&ndash;TextInputLayout 관련&ndash;&gt;-->
-<!--    <style name="Widget.App.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
-<!--        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TextInputLayout</item>-->
-<!--        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>-->
-<!--        &lt;!&ndash;직접 입력할 때, 힌트 색상&ndash;&gt;-->
-<!--        <item name="hintTextColor">@color/red</item>-->
-<!--    </style>-->
-<!--    <style name="ThemeOverlay.App.TextInputLayout" parent="">-->
-<!--        &lt;!&ndash;직접 입력할 때, 테두리 색상&ndash;&gt;-->
-<!--        <item name="colorPrimary">@color/hau_green</item>-->
-<!--        &lt;!&ndash;기본 테두리 및 글자 색상&ndash;&gt;-->
-<!--        <item name="colorOnSurface">@color/ANALOGOUS_color_2</item>-->
-<!--&lt;!&ndash;        <item name="colorError">@color/purple_500</item>&ndash;&gt;-->
-<!--        <item name="textAppearanceSubtitle1">@style/TextAppearance.App.Subtitle1</item>-->
-<!--        <item name="textAppearanceCaption">@style/TextAppearance.App.Caption</item>-->
-<!--        <item name="editTextStyle">@style/TextInputLayoutEditTextStyle</item>-->
-<!--    </style>-->
-<!--    <style name="TextInputLayoutEditTextStyle" parent="@style/Widget.Material3.TextInputEditText.OutlinedBox.Dense">-->
-<!--        <item name="android:fontFamily">@font/custom_font_theme2</item>-->
-<!--    </style>-->
-<!--    <style name="TextAppearance.App.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">-->
-<!--        <item name="fontFamily">@font/custom_font_theme2</item>-->
-<!--        <item name="android:fontFamily">@font/custom_font_theme2</item>-->
-<!--    </style>-->
-<!--    <style name="TextAppearance.App.Caption" parent="TextAppearance.MaterialComponents.Caption">-->
-<!--        <item name="fontFamily">@font/custom_font_theme2</item>-->
-<!--        <item name="android:fontFamily">@font/custom_font_theme2</item>-->
-<!--    </style>-->
-<!--    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">-->
-<!--        <item name="cornerFamily">rounded</item>-->
-<!--&lt;!&ndash;        <item name="cornerSize">4dp</item>&ndash;&gt;-->
-<!--    </style>-->
 
-
-
-
-
+    <!--다크 시, 달력숫자, 요일 스타일-->
+    <style name="CustomTextAppearanceForCalendarFontBasic" parent="TextAppearance.MaterialCalendarWidget.Date">
+        <item name="android:textColor">@color/mcv_text_date_dark</item>
+        <item name="android:fontFamily">@font/maruburi_regular</item>
+    </style>
+    <!-- 연, 월을 표시하는 헤더에 적용되는 스타일 -->
+    <style name="CustomHeaderTextAppearanceForCalendarFontBasic" parent="TextAppearance.MaterialCalendarWidget.Header">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/mcv_text_date_dark</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/maruburi_regular</item>
+    </style>
+    <!--다크 시, 달력숫자, 요일 스타일-->
+    <style name="CustomTextAppearanceForCalendarFont1" parent="TextAppearance.MaterialCalendarWidget.Date">
+        <item name="android:textColor">@color/mcv_text_date_dark</item>
+        <item name="android:fontFamily">@font/binggraemelona_regular</item>
+    </style>
+    <!-- 연, 월을 표시하는 헤더에 적용되는 스타일 -->
+    <style name="CustomHeaderTextAppearanceForCalendarFont1" parent="TextAppearance.MaterialCalendarWidget.Header">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/mcv_text_date_dark</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/binggraemelona_regular</item>
+    </style>
+    <!--다크 시, 달력숫자, 요일 스타일-->
+    <style name="CustomTextAppearanceForCalendarFont2" parent="TextAppearance.MaterialCalendarWidget.Date">
+        <item name="android:textColor">@color/mcv_text_date_dark</item>
+        <item name="android:fontFamily">@font/binggraesamanco</item>
+    </style>
+    <!-- 연, 월을 표시하는 헤더에 적용되는 스타일 -->
+    <style name="CustomHeaderTextAppearanceForCalendarFont2" parent="TextAppearance.MaterialCalendarWidget.Header">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/mcv_text_date_dark</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/binggraesamanco</item>
+    </style>
 
 </resources>

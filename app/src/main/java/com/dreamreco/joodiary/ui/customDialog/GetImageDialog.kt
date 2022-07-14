@@ -1,7 +1,9 @@
 package com.dreamreco.joodiary.ui.customDialog
 
+import android.app.Dialog
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
@@ -15,8 +17,7 @@ import com.dreamreco.joodiary.MyApplication
 import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.GetImageDialogBinding
 import com.dreamreco.joodiary.ui.calendar.CalendarViewModel
-import com.dreamreco.joodiary.util.LOAD_IMAGE_FROM_CAMERA
-import com.dreamreco.joodiary.util.LOAD_IMAGE_FROM_GALLERY
+import com.dreamreco.joodiary.util.*
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,6 +26,17 @@ class GetImageDialog : BottomSheetDialogFragment() {
 
     private val calendarViewModel by viewModels<CalendarViewModel>()
     private val binding by lazy { GetImageDialogBinding.inflate(layoutInflater) }
+    private var typeface: Typeface? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        typeface = getFontType(requireContext())
+        typeface?.let { setGlobalFont(binding.root, it) }
+
+        if (getThemeType() == THEME_2) {
+            binding.getImageDialogLayout.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.theme2_primary_background_color))
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,6 +96,7 @@ class GetImageDialog : BottomSheetDialogFragment() {
             val appIcon: Drawable =
                 requireContext().packageManager.getApplicationIcon(cameraPackageName)
             binding.cameraImageBtn.setImageDrawable(appIcon)
+
         } catch (e: PackageManager.NameNotFoundException) {
             binding.cameraImageBtn.setImageDrawable(
                 ContextCompat.getDrawable(

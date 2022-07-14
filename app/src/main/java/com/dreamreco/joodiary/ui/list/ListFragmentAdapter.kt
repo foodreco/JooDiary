@@ -3,6 +3,7 @@ package com.dreamreco.joodiary.ui.list
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.ImageDecoder
+import android.graphics.Typeface
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,41 +16,28 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.dreamreco.joodiary.MyApplication
 import com.dreamreco.joodiary.R
 import com.dreamreco.joodiary.databinding.CalendarEmptyHeaderBinding
 import com.dreamreco.joodiary.databinding.DateHeaderBinding
 import com.dreamreco.joodiary.databinding.ListFragmentChildBinding
 import com.dreamreco.joodiary.room.entity.DiaryBase
-import com.dreamreco.joodiary.util.decodeSampledBitmapFromInputStream
+import com.dreamreco.joodiary.util.*
 import java.io.FileNotFoundException
 
 class ListFragmentAdapter(
     ctx: Context,
-    fragmentManager: FragmentManager
+    fragmentManager: FragmentManager,
+    typeface: Typeface,
+    theme: String
 ) :
     ListAdapter<ListFragmentAdapterBase, RecyclerView.ViewHolder>(ListFragmentDiffCallback()) {
-
     // 기본 코드
     private var mFragmentManager: FragmentManager = fragmentManager
     private var mContext: Context = ctx
+    private var mTypeface = typeface
+    private val thisTheme = theme
 
-//    // 삭제 관련 코드
-//    private var checkBoxControlNumber: Int = 0
-//    private val checkboxStatus = SparseBooleanArray()
-//
-//    // item.title 을 리스트로 받음
-//    val checkBoxReturnList = mutableListOf<String>()
-//    private val _deleteEventActive = MutableLiveData<Boolean?>()
-//    val deleteEventActive: LiveData<Boolean?> = _deleteEventActive
-//
-//
-//    private val importanceStatus = SparseBooleanArray()
-//    private val _ttrImportanceSetting = MutableLiveData<TextToReadBase?>()
-//    val ttrImportanceSetting: LiveData<TextToReadBase?> = _ttrImportanceSetting
-//    private val _ttrImportanceRemoving = MutableLiveData<TextToReadBase?>()
-//    val ttrImportanceRemoving: LiveData<TextToReadBase?> = _ttrImportanceRemoving
-//    private val _checkBoxCheckedNumber = MutableLiveData(0)
-//    val checkBoxCheckedNumber: LiveData<Int> = _checkBoxCheckedNumber
 
     override fun getItemViewType(position: Int): Int = getItem(position).layoutId
 
@@ -64,7 +52,7 @@ class ListFragmentAdapter(
             )
             ListFragmentAdapterBase.DateHeader.VIEW_TYPE -> ListFragmentDateHeaderViewHolder.from(
                 parent,
-                mContext
+                mContext, mTypeface
             )
             else -> throw IllegalArgumentException("Cannot create ViewHolder for view type: $viewType")
         }
@@ -88,37 +76,15 @@ class ListFragmentAdapter(
         }
     }
 
-//    fun onCheckBox(number: Int) {
-//        checkBoxControlNumber = number
-//        notifyDataSetChanged()
-//    }
-//
-//    fun deleteEventReset() {
-//        _deleteEventActive.value = null
-//    }
-//
-//    @JvmName("getCheckBoxReturnList1")
-//    fun getCheckBoxReturnList(): List<String> {
-//        return checkBoxReturnList
-//    }
-//
-//    fun clearCheckBoxReturnList() {
-//        checkBoxReturnList.clear()
-//        checkboxStatus.clear()
-//        _checkBoxCheckedNumber.value = 0
-//    }
-//
-//    fun importanceReset() {
-//        _ttrImportanceSetting.value = null
-//        _ttrImportanceRemoving.value = null
-//    }
-
     // 리스트용 뷰홀더
     inner class ListFragmentItemViewHolder constructor(private val binding: ListFragmentChildBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         @RequiresApi(Build.VERSION_CODES.P)
         fun bind(item: DiaryBase) {
+
+            setGlobalFont(binding.root, mTypeface)
+
             binding.apply {
 
                 diaryTitle.text = item.title
@@ -169,6 +135,12 @@ class ListFragmentAdapter(
 
                 if (item.importance) {
                     diaryBaseImportance.visibility = View.VISIBLE
+                    when (thisTheme) {
+                        THEME_2 -> diaryBaseImportance.imageTintList =
+                            mContext.getColorStateList(R.color.theme2_primary_touch_color)
+                        else -> diaryBaseImportance.imageTintList =
+                            mContext.getColorStateList(R.color.basic_primary)
+                    }
                 } else {
                     diaryBaseImportance.visibility = View.INVISIBLE
                 }
@@ -207,21 +179,25 @@ class ListFragmentEmptyHeaderViewHolder constructor(private val binding: Calenda
 // date 헤더용 뷰홀더
 class ListFragmentDateHeaderViewHolder constructor(
     private val binding: DateHeaderBinding,
-    context: Context
+    context: Context, typeface: Typeface
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
     private val mContext = context
+    private val mTypeface = typeface
 
     companion object {
-        fun from(parent: ViewGroup, context: Context): ListFragmentDateHeaderViewHolder {
+        fun from(parent: ViewGroup, context: Context, typeface: Typeface): ListFragmentDateHeaderViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
             val binding = DateHeaderBinding.inflate(layoutInflater, parent, false)
-            return ListFragmentDateHeaderViewHolder(binding, context)
+            return ListFragmentDateHeaderViewHolder(binding, context, typeface)
         }
     }
 
     fun bind(item: ListFragmentAdapterBase) {
+
+         setGlobalFont(binding.root, mTypeface)
+
         val diaryBase = (item as ListFragmentAdapterBase.DateHeader).diaryBase
         binding.apply {
             textDate.text = mContext.getString(

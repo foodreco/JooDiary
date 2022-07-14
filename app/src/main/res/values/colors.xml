@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,8 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white_for_dark">#A4FFFFFF</color>
     <color name="red">#FD0000</color>
     <color name="blue">#3F51B5</color>
+    <color name="light_blue">#0090CD</color>
     <color name="yellow">#FFE500</color>
     <color name="gray">#8E8E8E</color>
 
@@ -22,14 +24,25 @@
     <color name="menu_icon_tint_color">#000000</color>
     <color name="important_color">#4b178b</color>
     <color name="not_important_color">#000000</color>
-    <color name="roundCornerProgressBar_color_1">#DADADA</color>
-    <color name="roundCornerProgressBar_color_2">#3F51B5</color>
+    <color name="roundCornerProgressBar_background_color">#DADADA</color>
+    <color name="drinkTimes_color">#5fb74a</color>
+    <color name="drinkTimes_color_for_dark">#D7E1FF</color>
+    <color name="PAOD_color">#8E24AA</color>
+    <color name="VOD_color">#3F51B5</color>
     <color name="pieChart_center_text">#000000</color>
     <color name="pieChart_no_data_text_color">#4b178b</color>
+
     <!--캘린더 색-->
     <color name="calendar_dot_normal">#FF000000</color>
     <color name="calendar_dot_important">#FD0000</color>
     <color name="calendar_today">#FF018786</color>
+    <!--캘린더 색 다크모드-->
+    <color name="sunday_for_dark">#F44336</color>
+    <color name="saturday_for_dark">#00BCD4</color>
+    <color name="calendar_dot_normal_dark">#FF000000</color>
+    <color name="calendar_dot_important_dark">#FD0000</color>
+
+
 
 
 
@@ -62,5 +75,55 @@
     <color name="sound_bright_yellow">#faeaaf</color>
     <color name="sound_status_bar_color">#FFFFFFFF</color>
     <color name="sound_text_color">#341f00</color>
+
+    <!--기본 테마 색상-->
+    <color name="basic_primary">#8e24aa</color>
+    <color name="basic_primary_light">#c158dc</color>
+    <color name="basic_primary_dark">#5c007a</color>
+    <color name="basic_primary_text_color">#000000</color>
+    <color name="basic_primary_background_color">#fff5f5</color>
+    <color name="basic_primary_touch_color">#c158dc</color>
+    <color name="basic_primary_actionbar_color">#8e24aa</color>
+    <color name="basic_primary_statusBar_color">#5c007a</color>
+
+    <!--테마1 색상-->
+    <color name="theme1_primary">#091a59</color>
+    <color name="theme1_primary_light">#404087</color>
+    <color name="theme1_primary_dark">#000030</color>
+    <color name="theme1_primary_text_color">#000000</color>
+    <color name="theme1_primary_background_color">#FFF7F9FF</color>
+    <color name="theme1_primary_touch_color">#404087</color>
+    <color name="theme1_primary_actionbar_color">#091a59</color>
+    <color name="theme1_primary_statusBar_color">#000030</color>
+
+    <!--테마2 색상-->
+    <color name="theme2_primary">#262626</color>
+    <color name="theme2_primary_light">#434343</color>
+    <color name="theme2_primary_dark">#000000</color>
+    <color name="theme2_primary_text_color">#FFFFFF</color>
+    <color name="theme2_primary_background_color">#434343</color>
+    <color name="theme2_primary_background_color_for_cardView">#555555</color>
+    <color name="theme2_primary_touch_color">#e1d7ff</color>
+    <color name="theme2_primary_actionbar_color">#434343</color>
+    <color name="theme2_primary_statusBar_color">#000000</color>
+
+    <color name="testColor">#bf4f5e</color>
+    63,81,131
+    131,113,63
+    63,115,131
+    79,63,131
+    113,63,131
+    131,63,81
+
+    87,126,183
+    185,171,77
+    101,149,166
+    94,81,152
+    140,76,148
+    191,79,94
+
+
+
+
 
 </resources>

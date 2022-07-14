@@ -38,8 +38,6 @@ class SettingViewModel @Inject constructor(
     val setThemeDone: LiveData<Boolean> = _setThemeDone
 
 
-
-
     fun getStartDate(): LiveData<MyDate> {
         return database.getStartDate().asLiveData()
     }
@@ -99,6 +97,17 @@ class SettingViewModel @Inject constructor(
                 THEME_BASIC -> MyApplication.prefs.setString(THEME_TYPE, THEME_BASIC)
                 THEME_1 -> MyApplication.prefs.setString(THEME_TYPE, THEME_1)
                 THEME_2 -> MyApplication.prefs.setString(THEME_TYPE, THEME_2)
+            }
+            _setThemeDone.value = true
+        }
+    }
+
+    fun setFontAndRestartApp(themeType: String) {
+        viewModelScope.launch {
+            when (themeType) {
+                FONT_BASIC-> MyApplication.prefs.setString(FONT_TYPE, FONT_BASIC)
+                FONT_1 -> MyApplication.prefs.setString(FONT_TYPE, FONT_1)
+                FONT_2 -> MyApplication.prefs.setString(FONT_TYPE, FONT_2)
             }
             _setThemeDone.value = true
         }

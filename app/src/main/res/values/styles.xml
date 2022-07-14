@@ -16,4 +16,13 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
     </style>
+
+    <!--메뉴 스타일-->
+    <style name="MyMenu" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:textSize">17sp</item> //size desired.
+        <item name="android:textColor">@color/red</item> //font color
+        <item name="android:background">#FFFFFF</item> //background
+        <item name="android:fontFamily">@font/binggraesamanco</item>
+    </style>
+
 </resources>

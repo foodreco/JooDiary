@@ -41,9 +41,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/btn_bottom_toolbar_delete"
-            android:layout_width="wrap_content"
+            android:layout_width="52dp"
+            android:padding="12dp"
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:backgroundTint="@color/black"

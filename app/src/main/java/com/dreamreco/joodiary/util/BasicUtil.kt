@@ -3,10 +3,15 @@ package com.dreamreco.joodiary.util
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
+import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
@@ -14,11 +19,19 @@ import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.dreamreco.joodiary.MyApplication
 import com.dreamreco.joodiary.room.entity.DiaryBase
 import com.dreamreco.joodiary.room.entity.MyDate
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import java.io.InputStream
 import java.text.SimpleDateFormat
@@ -69,11 +82,24 @@ const val LOGIN_TYPE = "login_type"
 const val LOGIN_WITH_BIO = "login_with_bio"
 const val LOGIN_WITH_PASSWORD = "login_with_password"
 const val LOGIN_WITH_NOTHING = "login_with_nothing"
-// 테마 관련
+
+// 배경 관련
 const val THEME_TYPE = "theme_type"
 const val THEME_1 = "theme1"
 const val THEME_2 = "theme2"
 const val THEME_BASIC = "theme_basic"
+
+// 글씨체 관련
+const val FONT_TYPE = "font_type"
+const val FONT_BASIC = "maruburi_regular.ttf"
+const val FONT_1 = "binggraemelona_regular.ttf"
+const val FONT_2 = "binggraesamanco.ttf"
+//const val MELONA_REGULAR_PATH = "binggraemelona_regular.ttf"
+//const val MELONA_BOLD_PATH = "binggraemelona_bold.ttf"
+//const val MARUBURI_REGULAR_PATH = "maruburi_regular.ttf"
+//const val MARUBURI_BOLD_PATH = "maruburi_bold.ttf"
+//const val MINI_REGULAR_PATH = "mini_hand.ttf"
+
 // 로그인 상태
 const val LOGIN_STATE = "login_state"
 const val LOGIN_CLEAR = "login_clear"
@@ -100,6 +126,96 @@ val GET_DATA_PERMISSIONS = arrayOf(
 )
 
 val CAMERA_PERMISSION = arrayOf(Manifest.permission.CAMERA)
+
+// view 의 폰트를 변경하는 함수
+fun setGlobalFont(view: View?, typeface: Typeface) {
+    if (view != null) {
+        if (view is ViewGroup) {
+            val vgCnt = view.childCount
+            for (i in 0 until vgCnt) {
+                val v = view.getChildAt(i)
+                if (v is ViewGroup) {
+                    // 자식 뷰 중에 또 ViewGroup 있다면,
+                    // 다시 반복
+                    setGlobalFont(v, typeface)
+                } else {
+                    if (v is TextView) {
+                        v.typeface = typeface
+                    }
+                    if (v is EditText) {
+                        v.typeface = typeface
+                    }
+                    if (v is TextInputLayout) {
+                        v.typeface = typeface
+                    }
+                    if (v is TextInputEditText) {
+                        v.typeface = typeface
+                    }
+                }
+            }
+        } else {
+            if (view is TextView) {
+                view.typeface = typeface
+            }
+            if (view is EditText) {
+                view.typeface = typeface
+            }
+            if (view is TextInputLayout) {
+                view.typeface = typeface
+            }
+            if (view is TextInputEditText) {
+                view.typeface = typeface
+            }
+        }
+    }
+}
+
+// 다크 모드 시, 이미지 색상을 변경하는 함수
+fun setImageColorForDark(view: View?) {
+    if (view != null) {
+        if (view is ViewGroup) {
+            val vgCnt = view.childCount
+            for (i in 0 until vgCnt) {
+                val v = view.getChildAt(i)
+                if (v is ViewGroup) {
+                    // 자식 뷰 중에 또 ViewGroup 있다면,
+                    // 다시 반복
+                    setImageColorForDark(v)
+                } else {
+                    if (v is ImageView) {
+                        v.imageTintList = ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
+                    }
+                }
+            }
+        } else {
+            if (view is ImageView) {
+                view.imageTintList = ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
+            }
+        }
+    }
+}
+
+
+fun getFontType(context: Context): Typeface {
+    var typeface: Typeface? = null
+    // 폰트 설정 및 적용 코드
+    when (MyApplication.prefs.getString(FONT_TYPE, FONT_BASIC)) {
+        FONT_BASIC -> typeface = Typeface.createFromAsset(context.assets, FONT_BASIC)
+        FONT_1 -> typeface = Typeface.createFromAsset(context.assets, FONT_1)
+        FONT_2 -> typeface = Typeface.createFromAsset(context.assets, FONT_2)
+    }
+    return typeface!!
+}
+
+fun getThemeType(): String {
+    var result = ""
+    when (MyApplication.prefs.getString(THEME_TYPE, THEME_BASIC)) {
+        THEME_BASIC -> result = THEME_BASIC
+        THEME_1 -> result = THEME_1
+        THEME_2 -> result = THEME_2
+    }
+    return result
+}
 
 
 // windowSoftInputMode 를 제어하는 코드
@@ -145,7 +261,7 @@ class InputModeLifecycleHelper(
 
 // uri 를 받아 이미지를 원하는 사이즈 이하로 줄여주는 코드
 fun decodeSampledBitmapFromInputStream(
-    photoUri : Uri,
+    photoUri: Uri,
     reqWidth: Int,
     reqHeight: Int,
     context: Context
@@ -173,7 +289,7 @@ fun decodeSampledBitmapFromInputStream(
 //        BitmapFactory.decodeStream(fileInputStream, null, this)
 
         // 이미지 회전을 본래대로 반영하는 코드
-        val result =  ImageOrientation.modifyOrientation(
+        val result = ImageOrientation.modifyOrientation(
             context,
             BitmapFactory.decodeStream(fileInputStream, null, this)!!,
             photoUri
@@ -315,7 +431,7 @@ fun MyMonth.toMonthString(): String {
 // 적용 일자는 yyyymmdd 방식으로 표현된 String 이어야 함
 // dateForSort 적용
 @SuppressLint("SimpleDateFormat")
-fun calculateDuration(startDate: String, endDate: String) : Int {
+fun calculateDuration(startDate: String, endDate: String): Int {
     val sdf = SimpleDateFormat("yyyyMMdd")
 
     val startDateValue = sdf.parse(startDate)
@@ -323,9 +439,8 @@ fun calculateDuration(startDate: String, endDate: String) : Int {
 
     val diff: Long = endDateValue!!.time - startDateValue!!.time
 
-    return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS).toInt()+1
+    return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS).toInt() + 1
 }
-
 
 
 data class MyMonth(
@@ -334,15 +449,47 @@ data class MyMonth(
 )
 
 // 맞춤 차트 그래프 색
+
 val CUSTOM_CHART_COLORS = arrayListOf<Int>(
-    Color.rgb(0, 205, 62), Color.rgb(0, 144, 205), Color.rgb(0, 112, 64), Color.rgb(0, 205, 164),
-    Color.rgb(0, 94, 152), Color.rgb(9, 0, 197),
-    Color.rgb(0, 113, 0),
-    Color.rgb(0, 100, 54),
-    Color.rgb(0, 168, 0),
-    Color.rgb(0, 147, 97),
-    Color.rgb(97, 24, 219)
+    Color.rgb(87,126,183), Color.rgb(185,171,77), Color.rgb(101,149,166), Color.rgb(94,81,152),
+    Color.rgb(140,76,148), Color.rgb(191,79,94)
 )
+
+// #2
+//val CUSTOM_CHART_COLORS = arrayListOf<Int>(
+//    Color.rgb(63,81,131), Color.rgb(131,113,63), Color.rgb(63,115,131), Color.rgb(79,63,131),
+//    Color.rgb(113,63,131), Color.rgb(131,63,81)
+//)
+
+// #1
+//val CUSTOM_CHART_COLORS = arrayListOf<Int>(
+//    Color.rgb(0, 205, 62), Color.rgb(0, 144, 205), Color.rgb(0, 112, 64), Color.rgb(0, 205, 164),
+//    Color.rgb(0, 94, 152), Color.rgb(9, 0, 197),
+//    Color.rgb(0, 113, 0),
+//    Color.rgb(0, 100, 54),
+//    Color.rgb(0, 168, 0),
+//    Color.rgb(0, 147, 97),
+//    Color.rgb(97, 24, 219)
+//)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -29,8 +30,7 @@ import com.dreamreco.joodiary.databinding.BackUpLoadingDialogBinding
 import com.dreamreco.joodiary.databinding.GetImageDialogBinding
 import com.dreamreco.joodiary.ui.calendar.CalendarViewModel
 import com.dreamreco.joodiary.ui.setting.SettingViewModel
-import com.dreamreco.joodiary.util.LOAD_IMAGE_FROM_CAMERA
-import com.dreamreco.joodiary.util.LOAD_IMAGE_FROM_GALLERY
+import com.dreamreco.joodiary.util.*
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -43,9 +43,9 @@ class BackUpLoadingDialog : DialogFragment() {
 
     private val settingViewModel by viewModels<SettingViewModel>()
     private val binding by lazy { BackUpLoadingDialogBinding.inflate(layoutInflater) }
-    private var backUpText = ""
     private var _saveFileUri = MutableLiveData<Uri?>(null)
     private var saveFileUri : Uri? = null
+    private var typeface: Typeface? = null
 
     // 뒤로가기 관련 변수
     private var cancelState = 0
@@ -54,6 +54,11 @@ class BackUpLoadingDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // 폰트 설정 및 적용 코드
+        typeface = getFontType(requireContext())
+        typeface?.let { setGlobalFont(binding.root, it) }
+
         return dialog
     }
 
@@ -63,9 +68,7 @@ class BackUpLoadingDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         setBackUp()
-
         _saveFileUri.observe(viewLifecycleOwner){
             // Uri 값에 주소가 전달되면 바로 작동
             if (it != null) {

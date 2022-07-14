@@ -7,15 +7,12 @@
     android:orientation="vertical"
     tools:context=".ui.list.ListFragment">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/list_fragment_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
         app:menu="@menu/list_fragment_menu"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar">
-    </androidx.appcompat.widget.Toolbar>
+        app:title="@string/list_fragment_toolbar_title"/>
 
     <TextView
         android:id="@+id/sort_textView"
